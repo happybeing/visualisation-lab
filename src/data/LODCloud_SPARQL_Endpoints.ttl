@@ -1,0 +1,2636 @@
+@prefix schema: 	 <http://schema.org/> .
+@prefix sd: 		 <http://www.w3.org/ns/sparql-service-description#> .
+@prefix void: 		 <http://rdfs.org/ns/void#> .
+@prefix owl: 		 <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: 		 <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix skos: 		 <http://www.w3.org/2004/02/skos/core#> .
+@prefix rdfs: 		 <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix oplattrib:   <http://www.openlinksw.com/schemas/reification#> .
+@prefix prov: 		 <http://www.w3.org/ns/prov#> .
+@prefix foaf: 		 <http://xmlns.com/foaf/0.1/> .
+@prefix dcterms: 	 <http://purl.org/dc/terms/> . 
+@prefix cc:          <http://creativecommons.org/ns#> .
+@prefix :            <#> .
+@prefix source:      <http://www.openlinksw.com/data/turtle/oplweb/LODCloud_SPARQL_Endpoints.ttl> .
+@prefix sourceDAV:   <http://www.openlinksw.com/DAV/data/turtle/oplweb/LODCloud_SPARQL_Endpoints.ttl> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+sourceDAV:
+   a schema:CreativeWork ;
+   schema:name "LOD Cloud Knowledge Graph SPARQL Query Services Description"^^xsd:string ;
+   dcterms:format "text/turtle" ;
+   schema:dateCreated "2019-12-19T13:00:00-05:00"^^xsd:dateTime ;
+   schema:dateModified "2019-12-19T13:00:00-05:00"^^xsd:dateTime ;
+   schema:author <http://www.openlinksw.com/#this> ;
+   schema:publisher <http://www.openlinksw.com/#this> ;
+   schema:license <http://creativecommons.org/licenses/by/4.0/deed.en_US> ;
+   cc:attributionName  "OpenLink Software" ;
+   owl:sameAs source: .
+
+source: a schema:CreativeWork ;
+   schema:name "LOD Cloud SPARQL Query Services Description"^^xsd:string ;
+   schema:comment """RDF-Turtle document that describes a collection of SPARQL Service Endpoints associated with the LOD Cloud Knowledge Graph"""@en ;
+   schema:dateCreated "2019-12-19T13:00:00-05:00"^^xsd:dateTime ;
+   schema:dateModified "2019-12-19T13:00:00-05:00"^^xsd:dateTime ;
+   schema:author <http://www.openlinksw.com/#this> ;
+   schema:license <http://creativecommons.org/licenses/by/4.0/deed.en_US> ;
+   cc:attributionName  "OpenLink Software" ;
+   schema:about	<http://data.openlinksw.com/oplweb/sparql-endpoint0#this> , 
+   				<http://data.openlinksw.com/oplweb/sparql-endpoint1#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint2#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint3#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint4#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint5#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint6#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint7#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint8#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint9#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint10#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint11#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint12#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint13#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint14#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint15#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint16#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint17#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint18#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint19#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint20#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint21#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint22#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint23#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint24#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint25#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint26#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint27#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint28#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint29#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint30#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint31#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint32#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint33#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint34#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint35#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint36#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint37#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint38#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint39#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint40#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint41#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint42#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint43#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint44#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint45#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint46#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint47#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint48#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint49#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint50#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint51#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint52#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint53#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint54#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint55#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint56#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint57#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint58#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint59#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint60#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint61#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint62#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint63#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint64#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint65#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint66#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint67#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint68#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint69#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint70#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint71#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint72#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint73#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint74#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint75#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint76#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint77#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint78#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint79#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint80#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint81#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint82#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint83#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint84#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint85#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint86#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint87#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint88#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint89#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint90#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint91#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint92#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint93#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint94#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint95#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint96#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint97#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint98#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint99#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint100#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint101#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint102#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint103#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint104#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint105#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint106#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint107#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint108#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint109#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint110#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint111#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint112#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint113#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint114#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint115#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint116#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint117#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint118#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint119#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint120#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint121#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint122#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint123#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint124#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint125#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint126#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint127#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint128#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint129#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint130#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint131#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint132#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint133#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint134#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint135#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint136#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint137#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint138#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint139#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint140#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint141#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint142#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint143#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint144#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint145#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint146#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint147#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint148#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint149#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint150#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint151#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint152#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint153#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint154#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint155#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint156#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint157#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint158#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint159#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint160#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint161#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint162#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint163#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint164#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint165#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint166#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint167#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint168#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint169#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint170#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint171#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint172#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint173#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint174#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint175#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint176#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint177#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint178#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint179#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint180#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint181#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint182#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint183#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint184#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint185#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint186#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint187#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint188#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint189#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint190#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint191#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint192#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint193#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint194#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint195#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint196#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint197#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint198#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint199#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint200#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint201#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint202#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint203#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint204#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint205#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint206#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint207#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint208#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint209#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint210#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint211#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint212#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint213#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint214#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint215#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint216#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint217#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint218#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint219#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint220#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint221#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint222#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint223#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint224#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint225#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint226#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint227#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint228#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint229#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint230#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint231#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint232#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint233#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint234#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint235#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint236#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint237#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint238#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint239#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint240#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint241#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint242#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint243#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint244#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint245#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint246#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint247#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint248#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint249#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint250#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint251#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint252#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint253#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint254#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint255#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint256#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint257#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint258#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint259#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint260#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint261#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint262#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint263#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint264#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint265#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint266#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint267#this> , 
+				<http://data.openlinksw.com/oplweb/sparql-endpoint268#this> .
+
+
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint0#this> a sd:Service ;
+	sd:endpoint "http://acm.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://acm.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://acm.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://acm.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint1#this> sd:endpoint "http://aemet.linkeddata.es/sparql/" ;
+	a sd:Service ;
+	schema:publisher <http://aemet.linkeddata.es//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://aemet.linkeddata.es/sparql/#this> ;
+	schema:url <http://aemet.linkeddata.es/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint2#this> a sd:Service ;
+	sd:endpoint "http://affymetrix.bio2rdf.org/sparql/" ;
+	schema:publisher <http://affymetrix.bio2rdf.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://affymetrix.bio2rdf.org/sparql/#this> ;
+	schema:url <http://affymetrix.bio2rdf.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint3#this> a sd:Service ;
+	sd:endpoint "http://agrovoc.uniroma2.it:3030/agrovoc/sparql" ;
+	rdfs:label "AGROVOC" ;
+	void:triples "no response 2019-12-19"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "AGROVOC" ;
+	schema:publisher <http://agrovoc.uniroma2.it:3030/agrovoc/#webid> ;
+	owl:sameAs <http://agrovoc.uniroma2.it:3030/agrovoc/sparql#this> ;
+	schema:url <http://agrovoc.uniroma2.it:3030/agrovoc/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint4#this> a sd:Service ;
+	sd:endpoint "http://apps.morelab.deusto.es/labman/sparql/" ;
+	schema:publisher <http://apps.morelab.deusto.es/labman//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://apps.morelab.deusto.es/labman/sparql/#this> ;
+	schema:url <http://apps.morelab.deusto.es/labman/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint5#this> a sd:Service ;
+	sd:endpoint "http://ariadne-registry.dcu.gr:8890/sparql" ;
+	rdfs:label "ARIADANE" ;
+	void:triples "2210644"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "ARIADANE" ;
+	schema:publisher <http://ariadne-registry.dcu.gr:8890/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://ariadne-registry.dcu.gr:8890/sparql#this> ;
+	schema:url <http://ariadne-registry.dcu.gr:8890/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint6#this> sd:endpoint "http://babelnet.org/sparql/" ;
+	a sd:Service ;
+	rdfs:label "BabelNet" ;
+	void:triples "1947548744"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "BabelNet" ;
+	schema:publisher <http://babelnet.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://babelnet.org/sparql/#this> ;
+	schema:url <http://babelnet.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint7#this> a sd:Service ;
+	sd:endpoint "http://bio2rdf.org/sparql" ;
+	rdfs:label "Bio2RDF" ;
+	void:triples "1377023536"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Bio2RDF" ;
+	schema:publisher <http://bio2rdf.org/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://bio2rdf.org/sparql#this> ;
+	schema:url <http://bio2rdf.org/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint8#this> sd:endpoint "http://biolit.rkbexplorer.com/sparql/" ;
+	a sd:Service ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://biolit.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://biolit.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://biolit.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint9#this> a sd:Service ;
+	sd:endpoint "http://biomodels.bio2rdf.org/sparql/" ;
+	rdfs:label "Bio2RDF Biomodels" ;
+	void:triples "1377023536"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Bio2RDF Biomodels" ;
+	schema:publisher <http://biomodels.bio2rdf.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://biomodels.bio2rdf.org/sparql/#this> ;
+	schema:url <http://biomodels.bio2rdf.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint10#this> a sd:Service ;
+	sd:endpoint "http://bioportal.bio2rdf.org/sparql/" ;
+	rdfs:label "Bio2Portal" ;
+	void:triples "1377023536"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Bio2Portal" ;
+	schema:publisher <http://bioportal.bio2rdf.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://bioportal.bio2rdf.org/sparql/#this> ;
+	schema:url <http://bioportal.bio2rdf.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint11#this> sd:endpoint "http://biordf.net/sparql/" ;
+	a sd:Service ;
+	schema:publisher <http://biordf.net//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://biordf.net/sparql/#this> ;
+	schema:url <http://biordf.net/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint12#this> a sd:Service ;
+	sd:endpoint "http://biosoda.expasy.org:8080/rdf4j-server/repositories/bgeelight" ;
+	rdfs:label "Bgee Lite" ;
+	void:triples "refuses to count"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Bgee Lite" ;
+	schema:publisher <http://biosoda.expasy.org:8080/rdf4j-server/repositories/bgeelight#webid> ;
+	owl:sameAs <http://biosoda.expasy.org:8080/rdf4j-server/repositories/bgeelight#this> ;
+	schema:url <http://biosoda.expasy.org:8080/rdf4j-server/repositories/bgeelight> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint13#this> a sd:Service ;
+	sd:endpoint "http://bmrbpub.protein.osaka-u.ac.jp/search/rdf" ;
+	rdfs:label "PDBj-BMRB" ;
+	void:triples "6365423287"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "PDBj-BMRB" ;
+	schema:publisher <http://bmrbpub.protein.osaka-u.ac.jp/search/rdf#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://bmrbpub.protein.osaka-u.ac.jp/search/rdf#this> ;
+	schema:url <http://bmrbpub.protein.osaka-u.ac.jp/search/rdf> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint14#this> a sd:Service ;
+	sd:endpoint "http://bnb.data.bl.uk/sparql/" ;
+	rdfs:label "British National Bibliography" ;
+	schema:name "British National Bibliography" ;
+	schema:publisher <http://bnb.data.bl.uk//#webid> ;
+	owl:sameAs <http://bnb.data.bl.uk/sparql/#this> ;
+	schema:url <http://bnb.data.bl.uk/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint15#this> a sd:Service ;
+	sd:endpoint "http://budapest.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://budapest.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://budapest.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://budapest.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint16#this> a sd:Service ;
+	sd:endpoint "http://caligraph.org/sparql" ;
+	rdfs:label "CaLiGraph " ;
+	schema:name "CaLiGraph " ;
+	schema:publisher <http://caligraph.org/#this> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://caligraph.org/sparql#this> ;
+	schema:url <http://caligraph.org/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint17#this> a sd:Service ;
+	sd:endpoint "http://canlink.library.ualberta.ca/sparql" ;
+	rdfs:label "Canadian Linked Thesis" ;
+	schema:name "Canadian Linked Thesis" ;
+	schema:publisher <http://canlink.library.ualberta.ca/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://canlink.library.ualberta.ca/sparql#this> ;
+	schema:url <http://canlink.library.ualberta.ca/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint18#this> sd:endpoint "http://citeseer.rkbexplorer.com/sparql/" ;
+	a sd:Service ;
+	rdfs:label "CiteSeer" ;
+	void:triples "8146852"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "CiteSeer" ;
+	schema:publisher <http://citeseer.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://citeseer.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://citeseer.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint19#this> a sd:Service ;
+	sd:endpoint "http://citeseer.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://citeseer.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://citeseer.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://citeseer.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint20#this> a sd:Service ;
+	sd:endpoint "http://colil.dbcls.jp/sparql" ;
+	rdfs:label "Colil" ;
+	void:triples "2795848463"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Colil" ;
+	schema:publisher <http://colil.dbcls.jp/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://colil.dbcls.jp/sparql#this> ;
+	schema:url <http://colil.dbcls.jp/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint21#this> sd:endpoint "http://collection.britishart.yale.edu/sparql/" ;
+	a sd:Service ;
+	rdfs:label "Yale Center of British Art" ;
+	schema:name "Yale Center of British Art" ;
+	schema:publisher <http://collection.britishart.yale.edu//#webid> ;
+	owl:sameAs <http://collection.britishart.yale.edu/sparql/#this> ;
+	schema:url <http://collection.britishart.yale.edu/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint22#this> a sd:Service ;
+	sd:endpoint "http://cordis.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://cordis.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://cordis.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://cordis.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint23#this> a sd:Service ;
+	sd:endpoint "http://courseware.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://courseware.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://courseware.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://courseware.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint24#this> a sd:Service ;
+	sd:endpoint "http://crime.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://crime.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://crime.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://crime.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint25#this> a sd:Service ;
+	sd:endpoint "http://crm.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://crm.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://crm.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://crm.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint26#this> a sd:Service ;
+	sd:endpoint "http://crtm.linkeddata.es/sparql/" ;
+	schema:publisher <http://crtm.linkeddata.es//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://crtm.linkeddata.es/sparql/#this> ;
+	schema:url <http://crtm.linkeddata.es/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint27#this> a sd:Service ;
+	sd:endpoint "http://ctd.bio2rdf.org/sparql/" ;
+	schema:publisher <http://ctd.bio2rdf.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://ctd.bio2rdf.org/sparql/#this> ;
+	schema:url <http://ctd.bio2rdf.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint28#this> a sd:Service ;
+	sd:endpoint "http://cultura.linkeddata.es/sparql/" ;
+	schema:publisher <http://cultura.linkeddata.es//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://cultura.linkeddata.es/sparql/#this> ;
+	schema:url <http://cultura.linkeddata.es/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint29#this> a sd:Service ;
+	sd:endpoint "http://curriculum.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://curriculum.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://curriculum.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://curriculum.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint30#this> a sd:Service ;
+	sd:endpoint "http://darmstadt.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://darmstadt.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://darmstadt.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://darmstadt.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint31#this> a sd:Service ;
+	sd:endpoint "http://data.aalto.fi/sparql/" ;
+	rdfs:label "Opening Aalto University Content for Applications" ;
+	schema:name "Opening Aalto University Content for Applications" ;
+	schema:publisher <http://data.aalto.fi//#webid> ;
+	owl:sameAs <http://data.aalto.fi/sparql/#this> ;
+	schema:url <http://data.aalto.fi/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint32#this> a sd:Service ;
+	sd:endpoint "http://data.allie.dbcls.jp/sparql" ;
+	rdfs:label "Allie" ;
+	void:triples "197763840"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Allie" ;
+	schema:publisher <http://data.allie.dbcls.jp/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://data.allie.dbcls.jp/sparql#this> ;
+	schema:url <http://data.allie.dbcls.jp/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint33#this> sd:endpoint "http://data.allie.dbcls.jp/sparql/" ;
+	a sd:Service ;
+	rdfs:label "Allie" ;
+	schema:name "Allie" ;
+	schema:publisher <http://data.allie.dbcls.jp//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://data.allie.dbcls.jp/sparql/#this> ;
+	schema:url <http://data.allie.dbcls.jp/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint34#this> a sd:Service ;
+	sd:endpoint "http://data.americanartcollaborative.org/sparql" ;
+	rdfs:label "American Art Collaborative" ;
+	schema:name "American Art Collaborative" ;
+	schema:publisher <http://data.americanartcollaborative.org/#webid> ;
+	owl:sameAs <http://data.americanartcollaborative.org/sparql#this> ;
+	schema:url <http://data.americanartcollaborative.org/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint35#this> a sd:Service ;
+	sd:endpoint "http://data.archiveshub.ac.uk/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://data.archiveshub.ac.uk//#webid> ;
+	owl:sameAs <http://data.archiveshub.ac.uk/sparql/#this> ;
+	schema:url <http://data.archiveshub.ac.uk/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint36#this> a sd:Service ;
+	sd:endpoint "http://data.bibliotheken.nl/sparql" ;
+	rdfs:label "Royal Library of The Netherlands" ;
+	void:triples "161540462"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Royal Library of The Netherlands" ;
+	schema:publisher <http://data.bibliotheken.nl/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://data.bibliotheken.nl/sparql#this> ;
+	schema:url <http://data.bibliotheken.nl/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint37#this> a sd:Service ;
+	sd:endpoint "http://data.cnr.it/sparql-proxy/" ;
+	schema:publisher <http://data.cnr.it/-proxy/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://data.cnr.it/sparql-proxy/#this> ;
+	schema:url <http://data.cnr.it/sparql-proxy/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint38#this> a sd:Service ;
+	sd:endpoint "http://data.doremus.org/sparql" ;
+	rdfs:label "Doremus" ;
+	void:triples "91088390"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Doremus" ;
+	schema:publisher <http://data.doremus.org/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://data.doremus.org/sparql#this> ;
+	schema:url <http://data.doremus.org/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint39#this> a sd:Service ;
+	sd:endpoint "http://data.legilux.public.lu/sparql" ;
+	rdfs:label "Legislation in Luxembourg" ;
+	void:triples "7285871"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Legislation in Luxembourg" ;
+	schema:publisher <http://data.legilux.public.lu/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://data.legilux.public.lu/sparql#this> ;
+	schema:url <http://data.legilux.public.lu/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint40#this> a sd:Service ;
+	sd:endpoint "http://data.logainm.ie/sparql/" ;
+	schema:publisher <http://data.logainm.ie//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://data.logainm.ie/sparql/#this> ;
+	schema:url <http://data.logainm.ie/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint41#this> a sd:Service ;
+	sd:endpoint "http://data.organic-edunet.eu/sparql" ;
+	rdfs:label "Organic.Edunet" ;
+	void:triples "no response 2019-12-19"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Organic.Edunet" ;
+	schema:publisher <http://data.organic-edunet.eu/#webid> ;
+	owl:sameAs <http://data.organic-edunet.eu/sparql#this> ;
+	schema:url <http://data.organic-edunet.eu/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint42#this> a sd:Service ;
+	sd:endpoint "http://data.ox.ac.uk/sparql/" ;
+	schema:publisher <http://data.ox.ac.uk//#webid> ;
+	owl:sameAs <http://data.ox.ac.uk/sparql/#this> ;
+	schema:url <http://data.ox.ac.uk/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint43#this> a sd:Service ;
+	sd:endpoint "http://data.persee.fr/explorer/sparql-endpoint/" ;
+	rdfs:label "Data Persee" ;
+	void:triples "42406274"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Data Persee" ;
+	schema:publisher <http://data.persee.fr/explorer/-endpoint/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://data.persee.fr/explorer/sparql-endpoint/#this> ;
+	schema:url <http://data.persee.fr/explorer/sparql-endpoint/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint44#this> a sd:Service ;
+	sd:endpoint "http://data.plan4all.eu/sparql" ;
+	rdfs:label "Plan4All" ;
+	void:triples "333321917"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Plan4All" ;
+	schema:publisher <http://data.plan4all.eu/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://data.plan4all.eu/sparql#this> ;
+	schema:url <http://data.plan4all.eu/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint45#this> a sd:Service ;
+	sd:endpoint "http://dati.beniculturali.it/sparql" ;
+	rdfs:label "ArCo Italian Cultural Heritage Knowledge Graph" ;
+	void:triples "215270533"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "ArCo Italian Cultural Heritage Knowledge Graph" ;
+	schema:publisher <http://dati.beniculturali.it/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://dati.beniculturali.it/sparql#this> ;
+	schema:url <http://dati.beniculturali.it/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint46#this> a sd:Service ;
+	sd:endpoint "http://dati.camera.it/sparql" ;
+	rdfs:label "Italian Parliament" ;
+	void:triples "239259287"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Italian Parliament" ;
+	schema:publisher <http://dati.camera.it/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://dati.camera.it/sparql#this> ;
+	schema:url <http://dati.camera.it/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint47#this> a sd:Service ;
+	sd:endpoint "http://dati.senato.it/sparql" ;
+	rdfs:label "Senate of The Republic of Italy" ;
+	void:triples "54020364"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Senate of The Republic of Italy" ;
+	schema:publisher <http://dati.senato.it/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://dati.senato.it/sparql#this> ;
+	schema:url <http://dati.senato.it/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint48#this> a sd:Service ;
+	sd:endpoint "http://datos.bcn.cl/sparql" ;
+	rdfs:label "Library of Congress Chile" ;
+	void:triples "12087086"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Library of Congress Chile" ;
+	schema:publisher <http://datos.bcn.cl/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://datos.bcn.cl/sparql#this> ;
+	schema:url <http://datos.bcn.cl/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint49#this> a sd:Service ;
+	sd:endpoint "http://datos.bne.es/sparql/" ;
+	rdfs:label "Datos" ;
+	void:triples "289777525"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Datos" ;
+	schema:publisher <http://datos.bne.es//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://datos.bne.es/sparql/#this> ;
+	schema:url <http://datos.bne.es/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint50#this> a sd:Service ;
+	sd:endpoint "http://dbkwik.webdatacommons.org/sparql" ;
+	rdfs:label "Web Data Commons - DBkWik" ;
+	void:triples "126923393"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Web Data Commons - DBkWik" ;
+	schema:publisher <http://dbkwik.webdatacommons.org/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://dbkwik.webdatacommons.org/sparql#this> ;
+	schema:url <http://dbkwik.webdatacommons.org/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint51#this> a sd:Service ;
+	sd:endpoint "http://dblp.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://dblp.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://dblp.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://dblp.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint52#this> a sd:Service ;
+	sd:endpoint "http://dbpedia-live.openlinksw.com/sparql" ;
+	rdfs:label "OpenLink DBpedia Live " ;
+	void:triples "590596030"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "OpenLink DBpedia Live " ;
+	schema:publisher <http://www.openlinksw.com/#this> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://dbpedia-live.openlinksw.com/sparql#this> ;
+	schema:url <http://dbpedia-live.openlinksw.com/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint53#this> a sd:Service ;
+	sd:endpoint "http://dbpedia.org/sparql" ;
+	rdfs:label "DBpedia Association" ;
+	void:triples "1625383616"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "DBpedia Association" ;
+	schema:publisher <http://dbpedia.org/resource/DBpedia> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://dbpedia.org/sparql#this> ;
+	schema:url <http://dbpedia.org/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint54#this> a sd:Service ;
+	sd:endpoint "http://dbsnp.bio2rdf.org/sparql/" ;
+	schema:publisher <http://dbsnp.bio2rdf.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://dbsnp.bio2rdf.org/sparql/#this> ;
+	schema:url <http://dbsnp.bio2rdf.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint55#this> a sd:Service ;
+	sd:endpoint "http://dbtune.org/bbc/peel/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://dbtune.org/bbc/peel//#webid> ;
+	owl:sameAs <http://dbtune.org/bbc/peel/sparql/#this> ;
+	schema:url <http://dbtune.org/bbc/peel/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint56#this> a sd:Service ;
+	sd:endpoint "http://dbtune.org/classical/sparql/" ;
+	rdfs:label "DBTune Classic" ;
+	schema:name "DBTune Classic" ;
+	schema:publisher <http://dbtune.org/classical//#webid> ;
+	owl:sameAs <http://dbtune.org/classical/sparql/#this> ;
+	schema:url <http://dbtune.org/classical/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint57#this> a sd:Service ;
+	sd:endpoint "http://dbtune.org/jamendo/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://dbtune.org/jamendo//#webid> ;
+	owl:sameAs <http://dbtune.org/jamendo/sparql/#this> ;
+	schema:url <http://dbtune.org/jamendo/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint58#this> a sd:Service ;
+	sd:endpoint "http://dbtune.org/magnatune/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://dbtune.org/magnatune//#webid> ;
+	owl:sameAs <http://dbtune.org/magnatune/sparql/#this> ;
+	schema:url <http://dbtune.org/magnatune/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint59#this> schema:url <http://dbtune.org/musicbrainz/sparql/> ;
+	a sd:Service ;
+	sd:endpoint "http://dbtune.org/musicbrainz/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://dbtune.org/musicbrainz//#webid> ;
+	owl:sameAs <http://dbtune.org/musicbrainz/sparql/#this> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint60#this> a sd:Service ;
+	sd:endpoint "http://dbtune.org/myspace/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://dbtune.org/myspace//#webid> ;
+	owl:sameAs <http://dbtune.org/myspace/sparql/#this> ;
+	schema:url <http://dbtune.org/myspace/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint61#this> sd:endpoint "http://de.dbpedia.org/sparql" ;
+	a sd:Service ;
+	rdfs:label "German DBpedia Edition " ;
+	schema:name "German DBpedia Edition " ;
+	schema:publisher <http://de.dbpedia.org/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://de.dbpedia.org/sparql#this> ;
+	schema:url <http://de.dbpedia.org/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint62#this> a sd:Service ;
+	sd:endpoint "http://deepblue.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://deepblue.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://deepblue.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://deepblue.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint63#this> a sd:Service ;
+	sd:endpoint "http://demo.openlinksw.com/sparql" ;
+	rdfs:label "Open Demo Server" ;
+	schema:name "Open Demo Server" ;
+	schema:publisher <http://demo.openlinksw.com/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://demo.openlinksw.com/sparql#this> ;
+	schema:url <http://demo.openlinksw.com/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint64#this> a sd:Service ;
+	sd:endpoint "http://deploy.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://deploy.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://deploy.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://deploy.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint65#this> a sd:Service ;
+	sd:endpoint "http://digital-agenda-data.eu/sparql" ;
+	rdfs:label "EU Digital Agenda" ;
+	void:triples "9286192"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "EU Digital Agenda" ;
+	schema:publisher <http://digital-agenda-data.eu/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://digital-agenda-data.eu/sparql#this> ;
+	schema:url <http://digital-agenda-data.eu/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint66#this> a sd:Service ;
+	sd:endpoint "http://digitaleconomy.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://digitaleconomy.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://digitaleconomy.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://digitaleconomy.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint67#this> a sd:Service ;
+	sd:endpoint "http://dotac.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://dotac.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://dotac.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://dotac.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint68#this> a sd:Service ;
+	sd:endpoint "http://drugbank.bio2rdf.org/sparql/" ;
+	schema:publisher <http://drugbank.bio2rdf.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://drugbank.bio2rdf.org/sparql/#this> ;
+	schema:url <http://drugbank.bio2rdf.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint69#this> a sd:Service ;
+	sd:endpoint "http://edan.si.edu/saam/sparql " ;
+	rdfs:label "Smithsonian Museum" ;
+	schema:name "Smithsonian Museum" ;
+	schema:publisher <http://data.openlinksw.com/oplweb/http%3A%2F%2Fedan.si.edu%2Fsaam%2F+%23webid> ;
+	owl:sameAs <http://data.openlinksw.com/oplweb/http%3A%2F%2Fedan.si.edu%2Fsaam%2Fsparql+%23this> ;
+	schema:url <http://data.openlinksw.com/oplweb/http%3A%2F%2Fedan.si.edu%2Fsaam%2Fsparql+> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint70#this> a sd:Service ;
+	sd:endpoint "http://el.dbpedia.org/sparql/" ;
+	schema:publisher <http://el.dbpedia.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://el.dbpedia.org/sparql/#this> ;
+	schema:url <http://el.dbpedia.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint71#this> a sd:Service ;
+	sd:endpoint "http://environment.data.gov.uk/sparql/bwq/query/" ;
+	rdfs:label "Defra Data Services" ;
+	schema:name "Defra Data Services" ;
+	schema:publisher <http://environment.data.gov.uk//bwq/query/#webid> ;
+	owl:sameAs <http://environment.data.gov.uk/sparql/bwq/query/#this> ;
+	schema:url <http://environment.data.gov.uk/sparql/bwq/query/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint72#this> a sd:Service ;
+	sd:endpoint "http://eprints.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://eprints.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://eprints.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://eprints.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint73#this> a sd:Service ;
+	sd:endpoint "http://epsrc.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://epsrc.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://epsrc.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://epsrc.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint74#this> a sd:Service ;
+	sd:endpoint "http://era.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://era.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://era.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://era.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint75#this> a sd:Service ;
+	sd:endpoint "http://es.dbpedia.org/sparql/" ;
+	schema:publisher <http://es.dbpedia.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://es.dbpedia.org/sparql/#this> ;
+	schema:url <http://es.dbpedia.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint76#this> a sd:Service ;
+	sd:endpoint "http://eu.dbpedia.org/sparql/" ;
+	schema:publisher <http://eu.dbpedia.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://eu.dbpedia.org/sparql/#this> ;
+	schema:url <http://eu.dbpedia.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint77#this> a sd:Service ;
+	sd:endpoint "http://eurecom.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://eurecom.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://eurecom.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://eurecom.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint78#this> a sd:Service ;
+	sd:endpoint "http://eventmedia.eurecom.fr/sparql/" ;
+	schema:publisher <http://eventmedia.eurecom.fr//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://eventmedia.eurecom.fr/sparql/#this> ;
+	schema:url <http://eventmedia.eurecom.fr/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint79#this> a sd:Service ;
+	sd:endpoint "http://extbi.lab.aau.dk/sparql/" ;
+	schema:publisher <http://extbi.lab.aau.dk//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://extbi.lab.aau.dk/sparql/#this> ;
+	schema:url <http://extbi.lab.aau.dk/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint80#this> a sd:Service ;
+	sd:endpoint "http://factforge.net/sparql/" ;
+	rdfs:label "FactForge)" ;
+	schema:name "FactForge)" ;
+	schema:publisher <http://factforge.net//#webid> ;
+	owl:sameAs <http://factforge.net/sparql/#this> ;
+	schema:url <http://factforge.net/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint81#this> a sd:Service ;
+	sd:endpoint "http://foodpedia.tk/sparql/" ;
+	rdfs:label "Foodpedia" ;
+	schema:name "Foodpedia" ;
+	schema:publisher <http://foodpedia.tk//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://foodpedia.tk/sparql/#this> ;
+	schema:url <http://foodpedia.tk/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint82#this> a sd:Service ;
+	sd:endpoint "http://foreign.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://foreign.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://foreign.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://foreign.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint83#this> a sd:Service ;
+	sd:endpoint "http://ft.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://ft.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://ft.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://ft.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint84#this> sd:endpoint "http://genage.bio2rdf.org/sparql/" ;
+	a sd:Service ;
+	schema:publisher <http://genage.bio2rdf.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://genage.bio2rdf.org/sparql/#this> ;
+	schema:url <http://genage.bio2rdf.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint85#this> a sd:Service ;
+	sd:endpoint "http://gendr.bio2rdf.org/sparql/" ;
+	schema:publisher <http://gendr.bio2rdf.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://gendr.bio2rdf.org/sparql/#this> ;
+	schema:url <http://gendr.bio2rdf.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint86#this> a sd:Service ;
+	sd:endpoint "http://genome.microbedb.jp/sparql" ;
+	rdfs:label "MIcrobeDB.jp" ;
+	void:triples "18280000"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "MIcrobeDB.jp" ;
+	schema:publisher <http://genome.microbedb.jp/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://genome.microbedb.jp/sparql#this> ;
+	schema:url <http://genome.microbedb.jp/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint87#this> a sd:Service ;
+	sd:endpoint "http://geo.linkeddata.es/sparql/" ;
+	schema:publisher <http://geo.linkeddata.es//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://geo.linkeddata.es/sparql/#this> ;
+	schema:url <http://geo.linkeddata.es/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint88#this> a sd:Service ;
+	sd:endpoint "http://geosparql.demo.openlinksw.com/sparql" ;
+	rdfs:label "OpenLink GeoSPARQL Demo" ;
+	schema:name "OpenLink GeoSPARQL Demo" ;
+	schema:publisher <http://geo.demo.openlinksw.com/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://geosparql.demo.openlinksw.com/sparql#this> ;
+	schema:url <http://geosparql.demo.openlinksw.com/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint89#this> a sd:Service ;
+	sd:endpoint "http://goa.bio2rdf.org/sparql/" ;
+	rdfs:label "Bio2RDF GOA" ;
+	void:triples "1377023536"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Bio2RDF GOA" ;
+	schema:publisher <http://goa.bio2rdf.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://goa.bio2rdf.org/sparql/#this> ;
+	schema:url <http://goa.bio2rdf.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint90#this> a sd:Service ;
+	sd:endpoint "http://heritagedata.org/live/sparql/" ;
+	rdfs:label "Heritage Data" ;
+	void:triples "330930"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Heritage Data" ;
+	schema:publisher <http://heritagedata.org/live//#webid> ;
+	owl:sameAs <http://heritagedata.org/live/sparql/#this> ;
+	schema:url <http://heritagedata.org/live/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint91#this> a sd:Service ;
+	sd:endpoint "http://hgnc.bio2rdf.org/sparql/" ;
+	schema:publisher <http://hgnc.bio2rdf.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://hgnc.bio2rdf.org/sparql/#this> ;
+	schema:url <http://hgnc.bio2rdf.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint92#this> a sd:Service ;
+	sd:endpoint "http://homologene.bio2rdf.org/sparql/" ;
+	schema:publisher <http://homologene.bio2rdf.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://homologene.bio2rdf.org/sparql/#this> ;
+	schema:url <http://homologene.bio2rdf.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint93#this> a sd:Service ;
+	sd:endpoint "http://host.geolink.org/sparql" ;
+	rdfs:label "GEOLink" ;
+	void:triples "16521244"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "GEOLink" ;
+	schema:publisher <http://host.geolink.org/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://host.geolink.org/sparql#this> ;
+	schema:url <http://host.geolink.org/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint94#this> a sd:Service ;
+	sd:endpoint "http://ibm.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://ibm.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://ibm.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://ibm.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint95#this> a sd:Service ;
+	sd:endpoint "http://id.nlm.nih.gov/mesh/sparql" ;
+	rdfs:label "NIH" ;
+	schema:name "NIH" ;
+	schema:publisher <http://id.nlm.nih.gov/mesh/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://id.nlm.nih.gov/mesh/sparql#this> ;
+	schema:url <http://id.nlm.nih.gov/mesh/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint96#this> a sd:Service ;
+	sd:endpoint "http://id.sgcb.mcu.es/sparql/" ;
+	schema:publisher <http://id.sgcb.mcu.es//#webid> ;
+	owl:sameAs <http://id.sgcb.mcu.es/sparql/#this> ;
+	schema:url <http://id.sgcb.mcu.es/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint97#this> sd:endpoint "http://ieee.rkbexplorer.com/sparql/" ;
+	a sd:Service ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://ieee.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://ieee.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://ieee.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint98#this> a sd:Service ;
+	sd:endpoint "http://integbio.jp/rdf/sparql" ;
+	schema:publisher <http://integbio.jp/rdf/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://integbio.jp/rdf/sparql#this> ;
+	schema:url <http://integbio.jp/rdf/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint99#this> a sd:Service ;
+	sd:endpoint "http://interpro.bio2rdf.org/sparql/" ;
+	schema:publisher <http://interpro.bio2rdf.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://interpro.bio2rdf.org/sparql/#this> ;
+	schema:url <http://interpro.bio2rdf.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint100#this> a sd:Service ;
+	sd:endpoint "http://irefindex.bio2rdf.org/sparql/" ;
+	schema:publisher <http://irefindex.bio2rdf.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://irefindex.bio2rdf.org/sparql/#this> ;
+	schema:url <http://irefindex.bio2rdf.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint101#this> a sd:Service ;
+	sd:endpoint "http://irit.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://irit.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://irit.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://irit.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint102#this> a sd:Service ;
+	sd:endpoint "http://italy.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://italy.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://italy.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://italy.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint103#this> a sd:Service ;
+	sd:endpoint "http://ja.dbpedia.org/sparql/" ;
+	schema:publisher <http://ja.dbpedia.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://ja.dbpedia.org/sparql/#this> ;
+	schema:url <http://ja.dbpedia.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint104#this> a sd:Service ;
+	sd:endpoint "http://jisc.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://jisc.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://jisc.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://jisc.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint105#this> a sd:Service ;
+	sd:endpoint "http://kaiko.getalp.org/sparql/" ;
+	schema:publisher <http://kaiko.getalp.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://kaiko.getalp.org/sparql/#this> ;
+	schema:url <http://kaiko.getalp.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint106#this> a sd:Service ;
+	sd:endpoint "http://kaunas.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://kaunas.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://kaunas.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://kaunas.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint107#this> a sd:Service ;
+	sd:endpoint "http://kdata.kr/sparql/endpoint.jsp/" ;
+	rdfs:label "Linked Data for Korea" ;
+	schema:name "Linked Data for Korea" ;
+	schema:publisher <http://kdata.kr//endpoint.jsp/#webid> ;
+	owl:sameAs <http://kdata.kr/sparql/endpoint.jsp/#this> ;
+	schema:url <http://kdata.kr/sparql/endpoint.jsp/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint108#this> a sd:Service ;
+	sd:endpoint "http://kegg.bio2rdf.org/sparql/" ;
+	schema:publisher <http://kegg.bio2rdf.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://kegg.bio2rdf.org/sparql/#this> ;
+	schema:url <http://kegg.bio2rdf.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint109#this> a sd:Service ;
+	sd:endpoint "http://kisti.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://kisti.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://kisti.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://kisti.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint110#this> a sd:Service ;
+	sd:endpoint "http://laas.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://laas.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://laas.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://laas.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint111#this> a sd:Service ;
+	sd:endpoint "http://ld.panlex.org/sparql/" ;
+	schema:publisher <http://ld.panlex.org//#webid> ;
+	owl:sameAs <http://ld.panlex.org/sparql/#this> ;
+	schema:url <http://ld.panlex.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint112#this> a sd:Service ;
+	sd:endpoint "http://libver.math.auth.gr/sparql/" ;
+	schema:publisher <http://libver.math.auth.gr//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://libver.math.auth.gr/sparql/#this> ;
+	schema:url <http://libver.math.auth.gr/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint113#this> a sd:Service ;
+	sd:endpoint "http://linguistic.linkeddata.es/sparql/" ;
+	schema:publisher <http://linguistic.linkeddata.es//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://linguistic.linkeddata.es/sparql/#this> ;
+	schema:url <http://linguistic.linkeddata.es/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint114#this> a sd:Service ;
+	sd:endpoint "http://linked-data.org/sparql/" ;
+	schema:publisher <http://linked-data.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://linked-data.org/sparql/#this> ;
+	schema:url <http://linked-data.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint115#this> a sd:Service ;
+	sd:endpoint "http://linked.opendata.cz/sparql/" ;
+	rdfs:label "Open Data CZ" ;
+	schema:name "Open Data CZ" ;
+	schema:publisher <http://linked.opendata.cz//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://linked.opendata.cz/sparql/#this> ;
+	schema:url <http://linked.opendata.cz/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint116#this> a sd:Service ;
+	sd:endpoint "http://linkeddata.ge.imati.cnr.it:8890/sparql/" ;
+	schema:publisher <http://linkeddata.ge.imati.cnr.it:8890//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://linkeddata.ge.imati.cnr.it:8890/sparql/#this> ;
+	schema:url <http://linkeddata.ge.imati.cnr.it:8890/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint117#this> a sd:Service ;
+	sd:endpoint "http://linkeddata.uriburner.com/sparql/" ;
+	rdfs:label "URIBurner Linked Data ETL Service" ;
+	schema:name "URIBurner Linked Data ETL Service" ;
+	schema:publisher <http://linkeddata.uriburner.com//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://linkeddata.uriburner.com/sparql/#this> ;
+	schema:url <http://linkeddata.uriburner.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint118#this> rdfs:label "LinkedGeoData" ;
+	sd:endpoint "http://linkedgeodata.org/sparql" ;
+	a sd:Service ;
+	void:triples "1385023596"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "LinkedGeoData" ;
+	schema:publisher <http://linkedgeodata.org/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://linkedgeodata.org/sparql#this> ;
+	schema:url <http://linkedgeodata.org/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint119#this> a sd:Service ;
+	sd:endpoint "http://linkedlifedata.com/sparql" ;
+	rdfs:label "Linked Life Data" ;
+	void:triples "10192505364"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Linked Life Data" ;
+	schema:publisher <http://linkedlifedata.com/#webid> ;
+	owl:sameAs <http://linkedlifedata.com/sparql#this> ;
+	schema:url <http://linkedlifedata.com/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint120#this> a sd:Service ;
+	sd:endpoint "http://linkedlifedata.com/sparql/" ;
+	rdfs:label "Linked Life Data" ;
+	schema:name "Linked Life Data" ;
+	schema:publisher <http://linkedlifedata.com//#webid> ;
+	owl:sameAs <http://linkedlifedata.com/sparql/#this> ;
+	schema:url <http://linkedlifedata.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint121#this> a sd:Service ;
+	sd:endpoint "http://linkedspending.aksw.org/sparql/" ;
+	schema:publisher <http://linkedspending.aksw.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://linkedspending.aksw.org/sparql/#this> ;
+	schema:url <http://linkedspending.aksw.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint122#this> schema:publisher <http://lisbon.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://lisbon.rkbexplorer.com/sparql/#this> ;
+	a sd:Service ;
+	sd:endpoint "http://lisbon.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:url <http://lisbon.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint123#this> a sd:Service ;
+	sd:endpoint "http://live.dbpedia.org/sparql/" ;
+	rdfs:label "DBpedia Live" ;
+	schema:name "DBpedia Live" ;
+	schema:publisher <http://live.dbpedia.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://live.dbpedia.org/sparql/#this> ;
+	schema:url <http://live.dbpedia.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint124#this> void:triples "326166801"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	a sd:Service ;
+	sd:endpoint "http://lod.kaist.ac.kr/sparql" ;
+	rdfs:label "KAIST" ;
+	schema:name "KAIST" ;
+	schema:publisher <http://lod.kaist.ac.kr/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://lod.kaist.ac.kr/sparql#this> ;
+	schema:url <http://lod.kaist.ac.kr/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint125#this> sd:endpoint "http://lod.knps.or.kr/main/sparql.do" ;
+	a sd:Service ;
+	rdfs:label "Korea National Park" ;
+	void:triples "2409465"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Korea National Park" ;
+	schema:publisher <http://lod.knps.or.kr/main/.do#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://lod.knps.or.kr/main/sparql.do#this> ;
+	schema:url <http://lod.knps.or.kr/main/sparql.do> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint126#this> a sd:Service ;
+	sd:endpoint "http://lod.knps.or.kr/main/sparql.do" ;
+	rdfs:label "Korea National Park" ;
+	schema:name "Korea National Park" ;
+	schema:publisher <http://lod.knps.or.kr/main/.do#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://lod.knps.or.kr/main/sparql.do#this> ;
+	schema:url <http://lod.knps.or.kr/main/sparql.do> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint127#this> a sd:Service ;
+	sd:endpoint "http://lod.openlinksw.com/sparql" ;
+	rdfs:label "LOD Cloud Cache" ;
+	void:triples "44954470108"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "LOD Cloud Cache" ;
+	schema:publisher <http://www.openlinksw.com/#this> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://lod.openlinksw.com/sparql#this> ;
+	schema:url <http://lod.openlinksw.com/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint128#this> a sd:Service ;
+	sd:endpoint "http://lod.sztaki.hu/sparql/" ;
+	schema:publisher <http://lod.sztaki.hu//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://lod.sztaki.hu/sparql/#this> ;
+	schema:url <http://lod.sztaki.hu/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint129#this> a sd:Service ;
+	sd:endpoint "http://lod.xdams.org/sparql/" ;
+	schema:publisher <http://lod.xdams.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://lod.xdams.org/sparql/#this> ;
+	schema:url <http://lod.xdams.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint130#this> a sd:Service ;
+	sd:endpoint "http://lsd.dbcls.jp/sparql" ;
+	rdfs:label "Life Science Dictionary" ;
+	void:triples "8735312"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Life Science Dictionary" ;
+	schema:publisher <http://lsd.dbcls.jp/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://lsd.dbcls.jp/sparql#this> ;
+	schema:url <http://lsd.dbcls.jp/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint131#this> a sd:Service ;
+	sd:endpoint "http://lsr.bio2rdf.org/sparql/" ;
+	schema:publisher <http://lsr.bio2rdf.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://lsr.bio2rdf.org/sparql/#this> ;
+	schema:url <http://lsr.bio2rdf.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint132#this> a sd:Service ;
+	sd:endpoint "http://ma-graph.org/sparql" ;
+	rdfs:label "Microsoft Academic Knowledge Graph" ;
+	void:triples "8272187254"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Microsoft Academic Knowledge Graph" ;
+	schema:publisher <http://ma-graph.org/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://ma-graph.org/sparql#this> ;
+	schema:url <http://ma-graph.org/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint133#this> a sd:Service ;
+	sd:endpoint "http://mesh.bio2rdf.org/sparql/" ;
+	schema:publisher <http://mesh.bio2rdf.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://mesh.bio2rdf.org/sparql/#this> ;
+	schema:url <http://mesh.bio2rdf.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint134#this> a sd:Service ;
+	sd:endpoint "http://metadb.riken.jp/sparql" ;
+	rdfs:label "RIKEN MetaDatabase" ;
+	void:triples "178320461"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "RIKEN MetaDatabase" ;
+	schema:publisher <http://metadb.riken.jp/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://metadb.riken.jp/sparql#this> ;
+	schema:url <http://metadb.riken.jp/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint135#this> a sd:Service ;
+	sd:endpoint "http://mgi.bio2rdf.org/sparql/" ;
+	schema:publisher <http://mgi.bio2rdf.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://mgi.bio2rdf.org/sparql/#this> ;
+	schema:url <http://mgi.bio2rdf.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint136#this> a sd:Service ;
+	sd:endpoint "http://miuras.inf.um.es/sparql/" ;
+	schema:publisher <http://miuras.inf.um.es//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://miuras.inf.um.es/sparql/#this> ;
+	schema:url <http://miuras.inf.um.es/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint137#this> a sd:Service ;
+	sd:endpoint "http://mlode.nlp2rdf.org/sparql/" ;
+	schema:publisher <http://mlode.nlp2rdf.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://mlode.nlp2rdf.org/sparql/#this> ;
+	schema:url <http://mlode.nlp2rdf.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint138#this> a sd:Service ;
+	sd:endpoint "http://ncbigene.bio2rdf.org/sparql/" ;
+	schema:publisher <http://ncbigene.bio2rdf.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://ncbigene.bio2rdf.org/sparql/#this> ;
+	schema:url <http://ncbigene.bio2rdf.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint139#this> a sd:Service ;
+	sd:endpoint "http://ndc.bio2rdf.org/sparql/" ;
+	schema:publisher <http://ndc.bio2rdf.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://ndc.bio2rdf.org/sparql/#this> ;
+	schema:url <http://ndc.bio2rdf.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint140#this> a sd:Service ;
+	sd:endpoint "http://newcastle.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://newcastle.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://newcastle.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://newcastle.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint141#this> a sd:Service ;
+	sd:endpoint "http://notube.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://notube.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://notube.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://notube.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint142#this> a sd:Service ;
+	sd:endpoint "http://nsf.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://nsf.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://nsf.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://nsf.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint143#this> a sd:Service ;
+	sd:endpoint "http://oai.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://oai.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://oai.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://oai.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint144#this> owl:sameAs <http://omim.bio2rdf.org/sparql/#this> ;
+	a sd:Service ;
+	sd:endpoint "http://omim.bio2rdf.org/sparql/" ;
+	schema:publisher <http://omim.bio2rdf.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	schema:url <http://omim.bio2rdf.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint145#this> owl:sameAs <http://opencitations.net/index/sparql#this> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	schema:publisher <http://opencitations.net/index/#webid> ;
+	schema:name "Open Citations" ;
+	a sd:Service ;
+	sd:endpoint "http://opencitations.net/index/sparql" ;
+	void:triples "526479413"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	rdfs:label "Open Citations" ;
+	schema:url <http://opencitations.net/index/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint146#this> sd:endpoint "http://opendatacommunities.org/sparql/" ;
+	a sd:Service ;
+	schema:publisher <http://opendatacommunities.org//#webid> ;
+	owl:sameAs <http://opendatacommunities.org/sparql/#this> ;
+	schema:url <http://opendatacommunities.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint147#this> a sd:Service ;
+	sd:endpoint "http://orphanet.bio2rdf.org/sparql/" ;
+	rdfs:label "Bio2RDF (OrphaNet)" ;
+	schema:name "Bio2RDF (OrphaNet)" ;
+	schema:publisher <http://orphanet.bio2rdf.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://orphanet.bio2rdf.org/sparql/#this> ;
+	schema:url <http://orphanet.bio2rdf.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint148#this> sd:endpoint "http://os.rkbexplorer.com/sparql/" ;
+	a sd:Service ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://os.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://os.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://os.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint149#this> a sd:Service ;
+	sd:endpoint "http://patho.phenomebrowser.net/sparql/" ;
+	rdfs:label "PathoPhenoDB" ;
+	void:triples "2152420"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "PathoPhenoDB" ;
+	schema:publisher <http://patho.phenomebrowser.net//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://patho.phenomebrowser.net/sparql/#this> ;
+	schema:url <http://patho.phenomebrowser.net/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint150#this> a sd:Service ;
+	sd:endpoint "http://patho.phenomebrowser.net/sparql/" ;
+	rdfs:label "PathoPhenoDB" ;
+	void:triples "2152420"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "PathoPhenoDB" ;
+	schema:publisher <http://patho.phenomebrowser.net//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://patho.phenomebrowser.net/sparql/#this> ;
+	schema:url <http://patho.phenomebrowser.net/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint151#this> a sd:Service ;
+	sd:endpoint "http://pharmgkb.bio2rdf.org/sparql/" ;
+	rdfs:label "Bio2RDF (PharmaKB)" ;
+	schema:name "Bio2RDF (PharmaKB)" ;
+	schema:publisher <http://pharmgkb.bio2rdf.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://pharmgkb.bio2rdf.org/sparql/#this> ;
+	schema:url <http://pharmgkb.bio2rdf.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint152#this> a sd:Service ;
+	sd:endpoint "http://photos.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://photos.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://photos.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://photos.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint153#this> a sd:Service ;
+	sd:endpoint "http://pisa.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://pisa.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://pisa.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://pisa.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint154#this> a sd:Service ;
+	sd:endpoint "http://pt.dbpedia.org/sparql/" ;
+	rdfs:label "DBpedia Portugese" ;
+	schema:name "DBpedia Portugese" ;
+	schema:publisher <http://pt.dbpedia.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://pt.dbpedia.org/sparql/#this> ;
+	schema:url <http://pt.dbpedia.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint155#this> a sd:Service ;
+	sd:endpoint "http://publications.europa.eu/webapi/rdf/sparql" ;
+	rdfs:label "Publications Office - European Commission" ;
+	void:triples "818406888"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Publications Office - European Commission" ;
+	owl:sameAs <http://publications.europa.eu/webapi/rdf/sparql#this> ;
+	schema:publisher <http://publications.europa.eu/webapi/rdf/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	schema:url <http://publications.europa.eu/webapi/rdf/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint156#this> a sd:Service ;
+	sd:endpoint "http://pubmed.bio2rdf.org/sparql/" ;
+	rdfs:label "Bio2RDF (Pubmed)" ;
+	schema:name "Bio2RDF (Pubmed)" ;
+	schema:publisher <http://pubmed.bio2rdf.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://pubmed.bio2rdf.org/sparql/#this> ;
+	schema:url <http://pubmed.bio2rdf.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint157#this> a sd:Service ;
+	sd:endpoint "http://query.wikidata.org/" ;
+	rdfs:label "DBTune" ;
+	void:triples "7910139919"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "DBTune" ;
+	schema:publisher <http://query.wikidata.org/#webid> ;
+	owl:sameAs <http://query.wikidata.org/#this> ;
+	schema:url <http://query.wikidata.org/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint158#this> a sd:Service ;
+	sd:endpoint "http://rae2001.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://rae2001.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://rae2001.rkbexplorer.com/sparql/#this> ;
+	schema:url <http://rae2001.rkbexplorer.com/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint159#this> a sd:Service ;
+	sd:endpoint "http://rdf.disgenet.org/sparql/" ;
+	rdfs:label "DisGeNET" ;
+	void:triples "52211463"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "DisGeNET" ;
+	schema:publisher <http://rdf.disgenet.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://rdf.disgenet.org/sparql/#this> ;
+	schema:url <http://rdf.disgenet.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint160#this> a sd:Service ;
+	sd:endpoint "http://rdf.disgenet.org/sparql/" ;
+	rdfs:label "DisGeNET database" ;
+	schema:name "DisGeNET database" ;
+	schema:publisher <http://rdf.disgenet.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://rdf.disgenet.org/sparql/#this> ;
+	schema:url <http://rdf.disgenet.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint161#this> a sd:Service ;
+	sd:endpoint "http://rdf.muninn-project.org/sparql/" ;
+	rdfs:label "DBTune" ;
+	schema:name "DBTune" ;
+	schema:publisher <http://rdf.muninn-project.org//#webid> ;
+	owl:sameAs <http://rdf.muninn-project.org/sparql/#this> ;
+	schema:url <http://rdf.muninn-project.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint162#this> a sd:Service ;
+	sd:endpoint "http://rdf.pathwaycommons.org/sparql/" ;
+	rdfs:label "Pathway Commons" ;
+	void:triples "175319055"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Pathway Commons" ;
+	schema:publisher <http://rdf.pathwaycommons.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://rdf.pathwaycommons.org/sparql/#this> ;
+	schema:url <http://rdf.pathwaycommons.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint163#this> a sd:Service ;
+	sd:endpoint "http://rdf.pathwaycommons.org/sparql/" ;
+	schema:publisher <http://rdf.pathwaycommons.org//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://rdf.pathwaycommons.org/sparql/#this> ;
+	schema:url <http://rdf.pathwaycommons.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint164#this> a sd:Service ;
+	sd:endpoint "http://rdf.pubannotation.org/sparql" ;
+	rdfs:label "PubAnnotation" ;
+	void:triples "1184460"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "PubAnnotation" ;
+	schema:publisher <http://rdf.pubannotation.org/#webid> ;
+	owl:sameAs <http://rdf.pubannotation.org/sparql#this> ;
+	schema:url <http://rdf.pubannotation.org/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint165#this> schema:url <http://resex.rkbexplorer.com/sparql/> ;
+	schema:name "DBTune" ;
+	schema:publisher <http://resex.rkbexplorer.com//#webid> ;
+	owl:sameAs <http://resex.rkbexplorer.com/sparql/#this> ;
+	a sd:Service ;
+	sd:endpoint "http://resex.rkbexplorer.com/sparql/" ;
+	rdfs:label "DBTune" .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint166#this> sd:endpoint "http://sparql.archives-ouvertes.fr/sparql" ;
+	a sd:Service ;
+	rdfs:label "HAL" ;
+	void:triples "131088959"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "HAL" ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://sparql.archives-ouvertes.fr/sparql#this> ;
+	schema:url <http://sparql.archives-ouvertes.fr/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint167#this> sd:endpoint "http://sparql.datao.net/sparql" ;
+	rdfs:label "Datao" ;
+	a sd:Service ;
+	schema:name "Datao" ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://sparql.datao.net/sparql#this> ;
+	schema:url <http://sparql.datao.net/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint168#this> a sd:Service ;
+	sd:endpoint "http://sparql.europeana.eu" ;
+	rdfs:label "Europeana" ;
+	void:triples "2349904875"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Europeana" ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://sparql.europeana.eu#this> ;
+	schema:url <http://sparql.europeana.eu> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint169#this> a sd:Service ;
+	sd:endpoint "http://sparql.hegroup.org/sparql/" ;
+	rdfs:label "OBO/OntoBee" ;
+	void:triples "90490660"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "OBO/OntoBee" ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://sparql.hegroup.org/sparql/#this> ;
+	schema:url <http://sparql.hegroup.org/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint170#this> a sd:Service ;
+	sd:endpoint "http://sparql.kupkb.org/sparql" ;
+	rdfs:label """
+The Kidney & Urinary Pathway Knowledge Base""" ;
+	schema:name """
+The Kidney & Urinary Pathway Knowledge Base""" ;
+	owl:sameAs <http://sparql.kupkb.org/sparql#this> ;
+	schema:url <http://sparql.kupkb.org/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint171#this> a sd:Service ;
+	sd:endpoint "http://sparql.lynx-project.eu/" ;
+	rdfs:label "Lynx" ;
+	void:triples "454707"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Lynx" ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://sparql.lynx-project.eu/#this> ;
+	schema:url <http://sparql.lynx-project.eu/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint172#this> a sd:Service ;
+	sd:endpoint "http://sparql.nibb.ac.jp/sparql" ;
+	rdfs:label "Microbial Genome Database for Comparative Analysis (MBGD)" ;
+	schema:name "Microbial Genome Database for Comparative Analysis (MBGD)" ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://sparql.nibb.ac.jp/sparql#this> ;
+	schema:url <http://sparql.nibb.ac.jp/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint173#this> a sd:Service ;
+	sd:endpoint "http://sparql.orthodb.org/sparql" ;
+	rdfs:label "OrthoDB @ sib.swiss" ;
+	void:triples "2246383760"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "OrthoDB @ sib.swiss" ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://sparql.orthodb.org/sparql#this> ;
+	schema:url <http://sparql.orthodb.org/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint174#this> a sd:Service ;
+	sd:endpoint "http://sparql.proconsortium.org/virtuoso/sparql" ;
+	rdfs:label "Protein Ontology" ;
+	void:triples "12404703"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Protein Ontology" ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://sparql.proconsortium.org/virtuoso/sparql#this> ;
+	schema:url <http://sparql.proconsortium.org/virtuoso/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint175#this> a sd:Service ;
+	sd:endpoint "http://sparql.southgreen.fr/" ;
+	rdfs:label "Agronomic Linked Data (AgroLD)" ;
+	void:triples "290170484"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Agronomic Linked Data (AgroLD)" ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://sparql.southgreen.fr/#this> ;
+	schema:url <http://sparql.southgreen.fr/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint176#this> a sd:Service ;
+	sd:endpoint "http://sparql.southgreen.fr/" ;
+	rdfs:label "SouthGreen" ;
+	void:triples "99294306"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "SouthGreen" ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://sparql.southgreen.fr/#this> ;
+	schema:url <http://sparql.southgreen.fr/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint177#this> a sd:Service ;
+	sd:endpoint "http://sparql.wikipathways.org" ;
+	rdfs:label "WikiPathways" ;
+	void:triples "16500158"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "WikiPathways" ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://sparql.wikipathways.org#this> ;
+	schema:url <http://sparql.wikipathways.org> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint178#this> a sd:Service ;
+	sd:endpoint "http://sparql.wikipathways.org/" ;
+	rdfs:label "WikiPathways" ;
+	schema:name "WikiPathways" ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://sparql.wikipathways.org/#this> ;
+	schema:url <http://sparql.wikipathways.org/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint179#this> sd:endpoint "http://sparql.wikipathways.org/" ;
+	rdfs:label "WikiPathways" ;
+	a sd:Service ;
+	schema:name "WikiPathways" ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://sparql.wikipathways.org/#this> ;
+	schema:url <http://sparql.wikipathways.org/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint180#this> a sd:Service ;
+	sd:endpoint "http://srvgal78.deri.ie:8004/sparql/" ;
+	rdfs:label "Sportal SPARQL Endpoint Discovery Service" ;
+	schema:name "Sportal SPARQL Endpoint Discovery Service" ;
+	schema:publisher <http://srvgal78.deri.ie:8004//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://srvgal78.deri.ie:8004/sparql/#this> ;
+	schema:url <http://srvgal78.deri.ie:8004/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint181#this> a sd:Service ;
+	sd:endpoint "http://statistics.gov.scot/sparql" ;
+	rdfs:label "Scottish Government " ;
+	schema:name "Scottish Government " ;
+	schema:publisher <http://statistics.gov.scot/#webid> ;
+	owl:sameAs <http://statistics.gov.scot/sparql#this> ;
+	schema:url <http://statistics.gov.scot/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint182#this> a sd:Service ;
+	sd:endpoint "http://uriburner.com/sparql" ;
+	rdfs:label "URIBurner Linked Data Transformation Service" ;
+	void:triples "168918011"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "URIBurner Linked Data Transformation Service" ;
+	schema:publisher <http://www.openlinksw.com/#this> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://uriburner.com/sparql#this> ;
+	schema:url <http://uriburner.com/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint183#this> a sd:Service ;
+	sd:endpoint "http://vt.mo-ld.org/sparql" ;
+	rdfs:label "MOLD" ;
+	void:triples "no response 2019-12-19"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "MOLD" ;
+	schema:publisher <http://vt.mo-ld.org/#webid> ;
+	owl:sameAs <http://vt.mo-ld.org/sparql#this> ;
+	schema:url <http://vt.mo-ld.org/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint184#this> a sd:Service ;
+	sd:endpoint "http://vulcan.cs.uga.edu/sparql" ;
+	rdfs:label "ProKinO" ;
+	void:triples "24915162"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "ProKinO" ;
+	schema:publisher <http://vulcan.cs.uga.edu/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://vulcan.cs.uga.edu/sparql#this> ;
+	schema:url <http://vulcan.cs.uga.edu/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint185#this> a sd:Service ;
+	sd:endpoint "http://wifo5-04.informatik.uni-mannheim.de/drugbank/sparql" ;
+	rdfs:label "DrugBank @ Universitat Mannheim" ;
+	void:triples "517885"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "DrugBank @ Universitat Mannheim" ;
+	schema:publisher <http://wifo5-04.informatik.uni-mannheim.de/drugbank/#webid> ;
+	owl:sameAs <http://wifo5-04.informatik.uni-mannheim.de/drugbank/sparql#this> ;
+	schema:url <http://wifo5-04.informatik.uni-mannheim.de/drugbank/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint186#this> a sd:Service ;
+	sd:endpoint "http://wikidata.demo.openlinksw.com/sparql " ;
+	rdfs:label "Wikidata by OpenLink " ;
+	void:triples "9318604288"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Wikidata by OpenLink " ;
+	schema:publisher <http://www.openlinksw.com/#this> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://data.openlinksw.com/oplweb/http%3A%2F%2Fwikidata.demo.openlinksw.com%2Fsparql+%23this> ;
+	schema:url <http://data.openlinksw.com/oplweb/http%3A%2F%2Fwikidata.demo.openlinksw.com%2Fsparql+> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint187#this> a sd:Service ;
+	sd:endpoint "http://www.ebi.ac.uk/rdf/services/sparql" ;
+	rdfs:label "Linked Open Data platform for EBI data" ;
+	void:triples "5804263957"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Linked Open Data platform for EBI data" ;
+	schema:publisher <http://www.ebi.ac.uk/rdf/services/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://www.ebi.ac.uk/rdf/services/sparql#this> ;
+	schema:url <http://www.ebi.ac.uk/rdf/services/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint188#this> owl:sameAs <http://www.genome.jp/sparql/linkdb#this> ;
+	sd:endpoint "http://www.genome.jp/sparql/linkdb" ;
+	rdfs:label "LinkDB" ;
+	void:triples "11424742384"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "LinkDB" ;
+	a sd:Service ;
+	schema:publisher <http://www.genome.jp//linkdb#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	schema:url <http://www.genome.jp/sparql/linkdb> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint189#this> schema:url <http://www.imagesnippets.com/sparql/images> ;
+	a sd:Service ;
+	sd:endpoint "http://www.imagesnippets.com/sparql/images" ;
+	rdfs:label "ImageSnippets" ;
+	schema:name "ImageSnippets" ;
+	schema:publisher <http://www.imagesnippets.com//images#webid> ;
+	owl:sameAs <http://www.imagesnippets.com/sparql/images#this> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint190#this> rdfs:label "OrphaData" ;
+	a sd:Service ;
+	sd:endpoint "http://www.orpha.net/sparql" ;
+	void:triples "2296871"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "OrphaData" ;
+	schema:publisher <http://www.orpha.net/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://www.orpha.net/sparql#this> ;
+	schema:url <http://www.orpha.net/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint191#this> a sd:Service ;
+	sd:endpoint "http://www.rechercheisidore.fr/sparql/" ;
+	rdfs:label "Isidore" ;
+	schema:name "Isidore" ;
+	schema:publisher <http://www.rechercheisidore.fr//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://www.rechercheisidore.fr/sparql/#this> ;
+	schema:url <http://www.rechercheisidore.fr/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint192#this> sd:endpoint "http://www.scholarlydata.org/sparql" ;
+	a sd:Service ;
+	rdfs:label "Scholarlydata" ;
+	schema:name "Scholarlydata" ;
+	schema:publisher <http://www.scholarlydata.org/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <http://www.scholarlydata.org/sparql#this> ;
+	schema:url <http://www.scholarlydata.org/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint193#this> a sd:Service ;
+	sd:endpoint "http://zhishi.me/sparql" ;
+	rdfs:label "Chinese Linking Open Data" ;
+	schema:name "Chinese Linking Open Data" ;
+	schema:publisher <http://zhishi.me/#webid> ;
+	owl:sameAs <http://zhishi.me/sparql#this> ;
+	schema:url <http://zhishi.me/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint194#this> a sd:Service ;
+	sd:endpoint "https://3cixty.eurecom.fr/sparql" ;
+	rdfs:label "EURECOM" ;
+	void:triples "19212999"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "EURECOM" ;
+	schema:publisher <https://3cixty.eurecom.fr/#webid> ;
+	owl:sameAs <https://3cixty.eurecom.fr/sparql#this> ;
+	schema:url <https://3cixty.eurecom.fr/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint195#this> a sd:Service ;
+	sd:endpoint "https://alaska.eagle-i.net/sparqler/sparql" ;
+	rdfs:label "University of Alaska Fairbanks" ;
+	void:triples "726162"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "University of Alaska Fairbanks" ;
+	schema:publisher <https://alaska.eagle-i.net/er/#webid> ;
+	owl:sameAs <https://alaska.eagle-i.net/sparqler/sparql#this> ;
+	schema:url <https://alaska.eagle-i.net/sparqler/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint196#this> sd:endpoint "https://api.aucklandmuseum.com/sparql" ;
+	rdfs:label "Auckland Museum" ;
+	a sd:Service ;
+	schema:name "Auckland Museum" ;
+	schema:publisher <https://api.aucklandmuseum.com/#webid> ;
+	owl:sameAs <https://api.aucklandmuseum.com/sparql#this> ;
+	schema:url <https://api.aucklandmuseum.com/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint197#this> a sd:Service ;
+	sd:endpoint "https://api.nextprot.org/sparql" ;
+	schema:publisher <https://api.nextprot.org/#webid> ;
+	owl:sameAs <https://api.nextprot.org/sparql#this> ;
+	schema:url <https://api.nextprot.org/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint198#this> a sd:Service ;
+	sd:endpoint "https://api.parliament.uk/sparql" ;
+	rdfs:label "UK Parliament" ;
+	schema:name "UK Parliament" ;
+	schema:publisher <https://api.parliament.uk/#webid> ;
+	owl:sameAs <https://api.parliament.uk/sparql#this> ;
+	schema:url <https://api.parliament.uk/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint199#this> schema:publisher <https://biogw-db.nt.ntnu.no:4333/#webid> ;
+	a sd:Service ;
+	sd:endpoint "https://biogw-db.nt.ntnu.no:4333/sparql" ;
+	rdfs:label "BioGateway" ;
+	void:triples "22550646"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "BioGateway" ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://biogw-db.nt.ntnu.no:4333/sparql#this> ;
+	schema:url <https://biogw-db.nt.ntnu.no:4333/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint200#this> a sd:Service ;
+	sd:endpoint "https://bmrbpub.pdbj.org/search/rdf" ;
+	rdfs:label "BMRB -- nuclear magnetic resonance (NMR) spectroscopic studies of biological molecules" ;
+	schema:name "BMRB -- nuclear magnetic resonance (NMR) spectroscopic studies of biological molecules" ;
+	schema:publisher <https://bmrbpub.pdbj.org/search/rdf#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://bmrbpub.pdbj.org/search/rdf#this> ;
+	schema:url <https://bmrbpub.pdbj.org/search/rdf> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint201#this> a sd:Service ;
+	sd:endpoint "https://cau.eagle-i.net/sparqler/sparql" ;
+	rdfs:label "Clark Atlanta University" ;
+	void:triples "715712"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Clark Atlanta University" ;
+	schema:publisher <https://cau.eagle-i.net/er/#webid> ;
+	owl:sameAs <https://cau.eagle-i.net/sparqler/sparql#this> ;
+	schema:url <https://cau.eagle-i.net/sparqler/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint202#this> a sd:Service ;
+	sd:endpoint "https://ccny-cuny.eagle-i.net/sparqler/sparql" ;
+	rdfs:label "City College of New York, CUNY" ;
+	void:triples "715323"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "City College of New York, CUNY" ;
+	schema:publisher <https://ccny-cuny.eagle-i.net/er/#webid> ;
+	owl:sameAs <https://ccny-cuny.eagle-i.net/sparqler/sparql#this> ;
+	schema:url <https://ccny-cuny.eagle-i.net/sparqler/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint203#this> sd:endpoint "https://cdrewu.eagle-i.net/sparqler/sparql" ;
+	a sd:Service ;
+	rdfs:label "Charles R. Drew University of Medicine and Science" ;
+	void:triples "717984"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Charles R. Drew University of Medicine and Science" ;
+	schema:publisher <https://cdrewu.eagle-i.net/er/#webid> ;
+	owl:sameAs <https://cdrewu.eagle-i.net/sparqler/sparql#this> ;
+	schema:url <https://cdrewu.eagle-i.net/sparqler/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint204#this> a sd:Service ;
+	sd:endpoint "https://data.bnf.fr/current/sparql.html" ;
+	rdfs:label "BNF" ;
+	void:triples "348404782"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "BNF" ;
+	schema:publisher <https://data.bnf.fr/current/.html#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://data.bnf.fr/current/sparql.html#this> ;
+	schema:url <https://data.bnf.fr/current/sparql.html> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint205#this> a sd:Service ;
+	sd:endpoint "https://data.gesis.org/claimskg/sparql" ;
+	rdfs:label "Claims KG " ;
+	schema:name "Claims KG " ;
+	schema:publisher <https://data.gesis.org/claimskg/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://data.gesis.org/claimskg/sparql#this> ;
+	schema:url <https://data.gesis.org/claimskg/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint206#this> a sd:Service ;
+	sd:endpoint "https://data.gov.cz/sparql" ;
+	rdfs:label "Czech Government" ;
+	void:triples "14037383"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Czech Government" ;
+	schema:publisher <https://data.gov.cz/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://data.gov.cz/sparql#this> ;
+	schema:url <https://data.gov.cz/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint207#this> a sd:Service ;
+	sd:endpoint "https://data.idref.fr/endpoint.html" ;
+	rdfs:label "IdRef" ;
+	void:triples "117327073"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "IdRef" ;
+	schema:publisher <https://data.idref.fr/endpoint.html#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://data.idref.fr/endpoint.html#this> ;
+	schema:url <https://data.idref.fr/endpoint.html> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint208#this> a sd:Service ;
+	sd:endpoint "https://datos.gob.es/en/sparql" ;
+	rdfs:label "Datos" ;
+	void:triples "1885404"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Datos" ;
+	schema:publisher <https://datos.gob.es/en/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://datos.gob.es/en/sparql#this> ;
+	schema:url <https://datos.gob.es/en/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint209#this> a sd:Service ;
+	sd:endpoint "https://dba-rdf.biosciencedbc.jp/sparql" ;
+	rdfs:label "LSDB Archive @ NBDC" ;
+	void:triples "1059234526"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "LSDB Archive @ NBDC" ;
+	schema:publisher <https://dba-rdf.biosciencedbc.jp/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://dba-rdf.biosciencedbc.jp/sparql#this> ;
+	schema:url <https://dba-rdf.biosciencedbc.jp/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint210#this> a sd:Service ;
+	sd:endpoint "https://dydra.com/markw/polyadenylation-sites-in-magnaporthe-oryza/sparql" ;
+	rdfs:label "polyadenylation-sites-in-magnaporthe-oryza" ;
+	void:triples "510508"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "polyadenylation-sites-in-magnaporthe-oryza" ;
+	schema:publisher <https://dydra.com/markw/polyadenylation-sites-in-magnaporthe-oryza/#webid> ;
+	owl:sameAs <https://dydra.com/markw/polyadenylation-sites-in-magnaporthe-oryza/sparql#this> ;
+	schema:url <https://dydra.com/markw/polyadenylation-sites-in-magnaporthe-oryza/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint211#this> a sd:Service ;
+	sd:endpoint "https://eagle-i.ctsi.msu.edu/sparqler/sparql" ;
+	rdfs:label "Michigan State University" ;
+	void:triples "no response 2019-12-19"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Michigan State University" ;
+	schema:publisher <https://eagle-i.ctsi.msu.edu/er/#webid> ;
+	owl:sameAs <https://eagle-i.ctsi.msu.edu/sparqler/sparql#this> ;
+	schema:url <https://eagle-i.ctsi.msu.edu/sparqler/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint212#this> a sd:Service ;
+	sd:endpoint "https://eagle-i.fredhutch.org/sparqler/sparql" ;
+	rdfs:label "Fred Hutchinson Cancer Research Center" ;
+	void:triples "no response 2019-12-19"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Fred Hutchinson Cancer Research Center" ;
+	schema:publisher <https://eagle-i.fredhutch.org/er/#webid> ;
+	owl:sameAs <https://eagle-i.fredhutch.org/sparqler/sparql#this> ;
+	schema:url <https://eagle-i.fredhutch.org/sparqler/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint213#this> a sd:Service ;
+	sd:endpoint "https://eagle-i.itmat.upenn.edu/sparqler/sparql" ;
+	rdfs:label "University of Pennsylvania" ;
+	void:triples "671444"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "University of Pennsylvania" ;
+	schema:publisher <https://eagle-i.itmat.upenn.edu/er/#webid> ;
+	owl:sameAs <https://eagle-i.itmat.upenn.edu/sparqler/sparql#this> ;
+	schema:url <https://eagle-i.itmat.upenn.edu/sparqler/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint214#this> a sd:Service ;
+	sd:endpoint "https://famu.eagle-i.net/sparqler/sparql" ;
+	rdfs:label "Florida Agricultural and Mechanical University" ;
+	void:triples "716979"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Florida Agricultural and Mechanical University" ;
+	schema:publisher <https://famu.eagle-i.net/er/#webid> ;
+	owl:sameAs <https://famu.eagle-i.net/sparqler/sparql#this> ;
+	schema:url <https://famu.eagle-i.net/sparqler/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint215#this> a sd:Service ;
+	sd:endpoint "https://global.eagle-i.net/sparqler/sparql" ;
+	rdfs:label "eagle-i Global Repository" ;
+	void:triples "751637"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "eagle-i Global Repository" ;
+	schema:publisher <https://global.eagle-i.net/er/#webid> ;
+	owl:sameAs <https://global.eagle-i.net/sparqler/sparql#this> ;
+	schema:url <https://global.eagle-i.net/sparqler/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint216#this> a sd:Service ;
+	sd:endpoint "https://harvard.eagle-i.net/sparqler/sparql" ;
+	rdfs:label "Harvard University" ;
+	void:triples "1072400"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Harvard University" ;
+	schema:publisher <https://harvard.eagle-i.net/er/#webid> ;
+	owl:sameAs <https://harvard.eagle-i.net/sparqler/sparql#this> ;
+	schema:url <https://harvard.eagle-i.net/sparqler/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint217#this> a sd:Service ;
+	sd:endpoint "https://hawaii.eagle-i.net/sparqler/sparql" ;
+	rdfs:label "University of Hawai'i Manoa" ;
+	void:triples "1055742"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "University of Hawai'i Manoa" ;
+	schema:publisher <https://hawaii.eagle-i.net/er/#webid> ;
+	owl:sameAs <https://hawaii.eagle-i.net/sparqler/sparql#this> ;
+	schema:url <https://hawaii.eagle-i.net/sparqler/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint218#this> a sd:Service ;
+	sd:endpoint "https://howard.eagle-i.net/sparqler/sparql" ;
+	rdfs:label "Howard University" ;
+	void:triples "717382"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Howard University" ;
+	schema:publisher <https://howard.eagle-i.net/er/#webid> ;
+	owl:sameAs <https://howard.eagle-i.net/sparqler/sparql#this> ;
+	schema:url <https://howard.eagle-i.net/sparqler/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint219#this> a sd:Service ;
+	sd:endpoint "https://hub-rnsr.idref.fr/sparql" ;
+	rdfs:label "IdRef" ;
+	void:triples "134589568"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "IdRef" ;
+	schema:publisher <https://hub-rnsr.idref.fr/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://hub-rnsr.idref.fr/sparql#this> ;
+	schema:url <https://hub-rnsr.idref.fr/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint220#this> a sd:Service ;
+	sd:endpoint "https://hunter-cuny.eagle-i.net/sparqler/sparql" ;
+	rdfs:label "Hunter College, CUNY" ;
+	void:triples "716220"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Hunter College, CUNY" ;
+	schema:publisher <https://hunter-cuny.eagle-i.net/er/#webid> ;
+	owl:sameAs <https://hunter-cuny.eagle-i.net/sparqler/sparql#this> ;
+	schema:url <https://hunter-cuny.eagle-i.net/sparqler/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint221#this> a sd:Service ;
+	sd:endpoint "https://id.nlm.nih.gov/mesh/sparql" ;
+	rdfs:label "Medical Subject Headings (MeSH) RDF Linked Data" ;
+	void:triples "94779442"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Medical Subject Headings (MeSH) RDF Linked Data" ;
+	schema:publisher <https://id.nlm.nih.gov/mesh/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://id.nlm.nih.gov/mesh/sparql#this> ;
+	schema:url <https://id.nlm.nih.gov/mesh/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint222#this> a sd:Service ;
+	rdfs:label "IDEAL" ;
+	sd:endpoint "https://ideal-rdf.dbcls.jp/sparql" ;
+	void:triples "2728635"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "IDEAL" ;
+	schema:publisher <https://ideal-rdf.dbcls.jp/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://ideal-rdf.dbcls.jp/sparql#this> ;
+	schema:url <https://ideal-rdf.dbcls.jp/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint223#this> a sd:Service ;
+	sd:endpoint "https://idsm.elixir-czech.cz/sparql/endpoint/idsm" ;
+	rdfs:label """
+Integrated Database of Small Molecules""" ;
+	void:triples "14669303865"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name """
+Integrated Database of Small Molecules""" ;
+	schema:publisher <https://idsm.elixir-czech.cz//endpoint/idsm#webid> ;
+	owl:sameAs <https://idsm.elixir-czech.cz/sparql/endpoint/idsm#this> ;
+	schema:url <https://idsm.elixir-czech.cz/sparql/endpoint/idsm> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint224#this> a sd:Service ;
+	sd:endpoint "https://immunology.harvard.eagle-i.net/sparqler/sparql" ;
+	rdfs:label "Harvard University Immunology Collection" ;
+	void:triples "no response 2019-12-19"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Harvard University Immunology Collection" ;
+	schema:publisher <https://immunology.harvard.eagle-i.net/er/#webid> ;
+	owl:sameAs <https://immunology.harvard.eagle-i.net/sparqler/sparql#this> ;
+	schema:url <https://immunology.harvard.eagle-i.net/sparqler/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint225#this> a sd:Service ;
+	sd:endpoint "https://io.datascience-paris-saclay.fr/sparql" ;
+	rdfs:label "IODS" ;
+	schema:name "IODS" ;
+	schema:publisher <https://io.datascience-paris-saclay.fr/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://io.datascience-paris-saclay.fr/sparql#this> ;
+	schema:url <https://io.datascience-paris-saclay.fr/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint226#this> a sd:Service ;
+	sd:endpoint "https://isidore.science/sparql" ;
+	rdfs:label "Isidore" ;
+	void:triples "381852145"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Isidore" ;
+	schema:publisher <https://isidore.science/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://isidore.science/sparql#this> ;
+	schema:url <https://isidore.science/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint227#this> a sd:Service ;
+	sd:endpoint "https://joinup.ec.europa.eu/sparql/" ;
+	rdfs:label "Join Up - European Commission" ;
+	void:triples "392192"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Join Up - European Commission" ;
+	schema:publisher <https://joinup.ec.europa.eu//#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://joinup.ec.europa.eu/sparql/#this> ;
+	schema:url <https://joinup.ec.europa.eu/sparql/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint228#this> rdfs:label "Search Japan" ;
+	a sd:Service ;
+	sd:endpoint "https://jpsearch.go.jp/rdf/sparql" ;
+	void:triples "708120580"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Search Japan" ;
+	schema:publisher <https://jpsearch.go.jp/rdf/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://jpsearch.go.jp/rdf/sparql#this> ;
+	schema:url <https://jpsearch.go.jp/rdf/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint229#this> a sd:Service ;
+	sd:endpoint "https://jsu.eagle-i.net/sparqler/sparql" ;
+	rdfs:label "Jackson State University" ;
+	void:triples "722705"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Jackson State University" ;
+	schema:publisher <https://jsu.eagle-i.net/er/#webid> ;
+	owl:sameAs <https://jsu.eagle-i.net/sparqler/sparql#this> ;
+	schema:url <https://jsu.eagle-i.net/sparqler/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint230#this> a sd:Service ;
+	sd:endpoint "https://landportal.org/sparql" ;
+	rdfs:label "Land Portal" ;
+	schema:name "Land Portal" ;
+	schema:publisher <https://landportal.org/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://landportal.org/sparql#this> ;
+	schema:url <https://landportal.org/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint231#this> a sd:Service ;
+	sd:endpoint "https://landportal.org/sparql" ;
+	rdfs:label "Land Portal" ;
+	schema:name "Land Portal" ;
+	schema:publisher <https://landportal.org/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://landportal.org/sparql#this> ;
+	schema:url <https://landportal.org/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint232#this> schema:url <https://lindas-data.ch/sparql-ui/> ;
+	a sd:Service ;
+	sd:endpoint "https://lindas-data.ch/sparql-ui/" ;
+	rdfs:label "LINDAS" ;
+	void:triples "57162995"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "LINDAS" ;
+	schema:publisher <https://lindas-data.ch/-ui/#webid> ;
+	owl:sameAs <https://lindas-data.ch/sparql-ui/#this> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint233#this> a sd:Service ;
+	sd:endpoint "https://linkeddata1.calcul.u-psud.fr/sparql" ;
+	rdfs:label "YAGO" ;
+	schema:name "YAGO" ;
+	schema:publisher <https://linkeddata1.calcul.u-psud.fr/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://linkeddata1.calcul.u-psud.fr/sparql#this> ;
+	schema:url <https://linkeddata1.calcul.u-psud.fr/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint234#this> a sd:Service ;
+	sd:endpoint "https://lov.linkeddata.es/dataset/lov/sparql" ;
+	rdfs:label "Linked Open Vocabulary (LOV)" ;
+	void:triples "859203"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Linked Open Vocabulary (LOV)" ;
+	schema:publisher <https://lov.linkeddata.es/dataset/lov/#webid> ;
+	owl:sameAs <https://lov.linkeddata.es/dataset/lov/sparql#this> ;
+	schema:url <https://lov.linkeddata.es/dataset/lov/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint235#this> a sd:Service ;
+	sd:endpoint "https://meharry.eagle-i.net/sparqler/sparql" ;
+	rdfs:label "Meharry Medical College" ;
+	void:triples "716505"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Meharry Medical College" ;
+	schema:publisher <https://meharry.eagle-i.net/er/#webid> ;
+	owl:sameAs <https://meharry.eagle-i.net/sparqler/sparql#this> ;
+	schema:url <https://meharry.eagle-i.net/sparqler/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint236#this> rdfs:label "Montana State University" ;
+	a sd:Service ;
+	sd:endpoint "https://montana.eagle-i.net/sparqler/sparql" ;
+	void:triples "733386"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Montana State University" ;
+	schema:publisher <https://montana.eagle-i.net/er/#webid> ;
+	owl:sameAs <https://montana.eagle-i.net/sparqler/sparql#this> ;
+	schema:url <https://montana.eagle-i.net/sparqler/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint237#this> a sd:Service ;
+	sd:endpoint "https://msm.eagle-i.net/sparqler/sparql" ;
+	rdfs:label "Morehouse School of Medicine" ;
+	void:triples "722264"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Morehouse School of Medicine" ;
+	schema:publisher <https://msm.eagle-i.net/er/#webid> ;
+	owl:sameAs <https://msm.eagle-i.net/sparqler/sparql#this> ;
+	schema:url <https://msm.eagle-i.net/sparqler/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint238#this> a sd:Service ;
+	sd:endpoint "https://ohsu.eagle-i.net/sparqler/sparql" ;
+	rdfs:label "Oregon Health and Science University" ;
+	void:triples "787330"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Oregon Health and Science University" ;
+	schema:publisher <https://ohsu.eagle-i.net/er/#webid> ;
+	owl:sameAs <https://ohsu.eagle-i.net/sparqler/sparql#this> ;
+	schema:url <https://ohsu.eagle-i.net/sparqler/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint239#this> a sd:Service ;
+	sd:endpoint "https://opendata.aragon.es/sparql" ;
+	rdfs:label "Aragon Open Data" ;
+	void:triples "466055095"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Aragon Open Data" ;
+	schema:publisher <https://opendata.aragon.es/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://opendata.aragon.es/sparql#this> ;
+	schema:url <https://opendata.aragon.es/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint240#this> a sd:Service ;
+	sd:endpoint "https://opendata1.opendata.u-psud.fr/sparql" ;
+	rdfs:label "Libraries of Paris-Saclay University" ;
+	schema:name "Libraries of Paris-Saclay University" ;
+	schema:publisher <https://opendata1.opendata.u-psud.fr/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://opendata1.opendata.u-psud.fr/sparql#this> ;
+	schema:url <https://opendata1.opendata.u-psud.fr/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint241#this> a sd:Service ;
+	sd:endpoint "https://openpark.jp/sparql" ;
+	rdfs:label "OpenParks Japan" ;
+	void:triples "26414"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "OpenParks Japan" ;
+	schema:publisher <https://openpark.jp/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://openpark.jp/sparql#this> ;
+	schema:url <https://openpark.jp/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint242#this> a sd:Service ;
+	sd:endpoint "https://psm.eagle-i.net/sparqler/sparql" ;
+	rdfs:label "Ponce School of Medicine and Health Sciences" ;
+	void:triples "716317"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Ponce School of Medicine and Health Sciences" ;
+	schema:publisher <https://psm.eagle-i.net/er/#webid> ;
+	owl:sameAs <https://psm.eagle-i.net/sparqler/sparql#this> ;
+	schema:url <https://psm.eagle-i.net/sparqler/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint243#this> rdfs:label "Publications Office - European Commission" ;
+	a sd:Service ;
+	sd:endpoint "https://publications.europa.eu/en/advanced-sparql-query-editor" ;
+	void:triples "818465485"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Publications Office - European Commission" ;
+	schema:publisher <https://publications.europa.eu/en/advanced--query-editor#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://publications.europa.eu/en/advanced-sparql-query-editor#this> ;
+	schema:url <https://publications.europa.eu/en/advanced-sparql-query-editor> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint244#this> a sd:Service ;
+	sd:endpoint "https://query.wikidata.org/sparql" ;
+	rdfs:label "Wikidata" ;
+	void:triples "9088203536"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Wikidata" ;
+	schema:publisher <https://query.wikidata.org/#webid> ;
+	owl:sameAs <https://query.wikidata.org/sparql#this> ;
+	schema:url <https://query.wikidata.org/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint245#this> schema:url <https://rdf.metanetx.org/sparql> ;
+	a sd:Service ;
+	sd:endpoint "https://rdf.metanetx.org/sparql" ;
+	rdfs:label "MetaNetX" ;
+	schema:publisher <https://rdf.metanetx.org/#webid> ;
+	void:triples "40120951"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "MetaNetX" ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://rdf.metanetx.org/sparql#this> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint246#this> a sd:Service ;
+	sd:endpoint "https://rdf.metanetx.org/sparql" ;
+	rdfs:label "Metanetx " ;
+	schema:name "Metanetx " ;
+	schema:publisher <https://rdf.metanetx.org/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://rdf.metanetx.org/sparql#this> ;
+	schema:url <https://rdf.metanetx.org/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint247#this> a sd:Service ;
+	sd:endpoint "https://semantic.eea.europa.eu/sparql" ;
+	rdfs:label "European Environment Agency" ;
+	schema:name "European Environment Agency" ;
+	schema:publisher <https://semantic.eea.europa.eu/#webid> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://semantic.eea.europa.eu/sparql#this> ;
+	schema:url <https://semantic.eea.europa.eu/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint248#this> a sd:Service ;
+	sd:endpoint "https://shared.eagle-i.net/sparqler/sparql" ;
+	rdfs:label "eagle-i Network Shared Resource Repository" ;
+	void:triples "2260449"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "eagle-i Network Shared Resource Repository" ;
+	schema:publisher <https://shared.eagle-i.net/er/#webid> ;
+	owl:sameAs <https://shared.eagle-i.net/sparqler/sparql#this> ;
+	schema:url <https://shared.eagle-i.net/sparqler/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint249#this> a sd:Service ;
+	sd:endpoint "https://sparql.geo.admin.ch/sparql" ;
+	rdfs:label "Federal GeoPortal for Swiss Federal Administration" ;
+	void:triples "675757"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Federal GeoPortal for Swiss Federal Administration" ;
+	schema:publisher <https://sparql.geo.admin.ch#this> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://sparql.geo.admin.ch/sparql#this> ;
+	schema:url <https://sparql.geo.admin.ch/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint250#this> a sd:Service ;
+	sd:endpoint "https://sparql.lri.fr/sparql" ;
+	rdfs:label "LRI Information System" ;
+	schema:name "LRI Information System" ;
+	schema:publisher <https://sparql.lri.fr#this> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://sparql.lri.fr/sparql#this> ;
+	schema:url <https://sparql.lri.fr/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint251#this> a sd:Service ;
+	sd:endpoint "https://sparql.nextprot.org/" ;
+	rdfs:label "neXtProt" ;
+	void:triples "1003720686"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "neXtProt" ;
+	schema:publisher <https://sparql.nextprot.org#this> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://sparql.nextprot.org/#this> ;
+	schema:url <https://sparql.nextprot.org/> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint252#this> a sd:Service ;
+	sd:endpoint "https://sparql.omabrowser.org/sparql" ;
+	rdfs:label "OMA Browser" ;
+	void:triples "258558513"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "OMA Browser" ;
+	schema:publisher <https://sparql.omabrowser.org#this> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://sparql.omabrowser.org/sparql#this> ;
+	schema:url <https://sparql.omabrowser.org/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint253#this> a sd:Service ;
+	sd:endpoint "https://sparql.omabrowser.org/sparql" ;
+	rdfs:label "OMA Orthology database" ;
+	void:triples "258558584"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "OMA Orthology database" ;
+	schema:publisher <https://sparql.omabrowser.org#this> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://sparql.omabrowser.org/sparql#this> ;
+	schema:url <https://sparql.omabrowser.org/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint254#this> a sd:Service ;
+	sd:endpoint "https://sparql.rhea-db.org/sparql" ;
+	rdfs:label "RHEA" ;
+	void:triples "2945510"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "RHEA" ;
+	schema:publisher <https://sparql.rhea-db.org#this> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://sparql.rhea-db.org/sparql#this> ;
+	schema:url <https://sparql.rhea-db.org/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint255#this> a sd:Service ;
+	sd:endpoint "https://sparql.rhea-db.org/sparql" ;
+	rdfs:label "Rhea" ;
+	void:triples "3009379"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Rhea" ;
+	schema:publisher <https://sparql.rhea-db.org#this> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://sparql.rhea-db.org/sparql#this> ;
+	schema:url <https://sparql.rhea-db.org/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint256#this> a sd:Service ;
+	sd:endpoint "https://sparql.uniprot.org/sparql" ;
+	rdfs:label "Uniprot" ;
+	void:triples "55343596553"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Uniprot" ;
+	schema:publisher <https://sparql.uniprot.org#this> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://sparql.uniprot.org/sparql#this> ;
+	schema:url <https://sparql.uniprot.org/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint257#this> a sd:Service ;
+	sd:endpoint "https://tsu.eagle-i.net/sparqler/sparql" ;
+	rdfs:label "Texas Southern University" ;
+	void:triples "717036"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Texas Southern University" ;
+	schema:publisher <https://tsu.eagle-i.net#this> ;
+	owl:sameAs <https://tsu.eagle-i.net/sparqler/sparql#this> ;
+	schema:url <https://tsu.eagle-i.net/sparqler/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint258#this> rdfs:label "Tuskegee University" ;
+	a sd:Service ;
+	sd:endpoint "https://tuskegee.eagle-i.net/sparqler/sparql" ;
+	void:triples "715734"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Tuskegee University" ;
+	schema:publisher <https://tuskegee.eagle-i.net#this> ;
+	owl:sameAs <https://tuskegee.eagle-i.net/sparqler/sparql#this> ;
+	schema:url <https://tuskegee.eagle-i.net/sparqler/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint259#this> a sd:Service ;
+	sd:endpoint "https://uccaribe.eagle-i.net/sparqler/sparql" ;
+	rdfs:label "Universidad Central del Caribe" ;
+	void:triples "718265"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Universidad Central del Caribe" ;
+	schema:publisher <https://uccaribe.eagle-i.net#this> ;
+	owl:sameAs <https://uccaribe.eagle-i.net/sparqler/sparql#this> ;
+	schema:url <https://uccaribe.eagle-i.net/sparqler/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint260#this> a sd:Service ;
+	sd:endpoint "https://upr.eagle-i.net/sparqler/sparql" ;
+	rdfs:label "University of Puerto Rico" ;
+	void:triples "750260"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "University of Puerto Rico" ;
+	schema:publisher <https://upr.eagle-i.net#this> ;
+	owl:sameAs <https://upr.eagle-i.net/sparqler/sparql#this> ;
+	schema:url <https://upr.eagle-i.net/sparqler/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint261#this> a sd:Service ;
+	sd:endpoint "https://utep.eagle-i.net/sparqler/sparql" ;
+	rdfs:label "University of Texas at El Paso" ;
+	void:triples "716858"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "University of Texas at El Paso" ;
+	schema:publisher <https://utep.eagle-i.net#this> ;
+	owl:sameAs <https://utep.eagle-i.net/sparqler/sparql#this> ;
+	schema:url <https://utep.eagle-i.net/sparqler/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint262#this> a sd:Service ;
+	sd:endpoint "https://utsa.eagle-i.net/sparqler/sparql" ;
+	rdfs:label "University of Texas at San Antonio" ;
+	void:triples "718729"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "University of Texas at San Antonio" ;
+	schema:publisher <https://utsa.eagle-i.net#this> ;
+	owl:sameAs <https://utsa.eagle-i.net/sparqler/sparql#this> ;
+	schema:url <https://utsa.eagle-i.net/sparqler/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint263#this> sd:endpoint "https://www.ebi.ac.uk/rdf/services/sparql" ;
+	rdfs:label "EMBL-EBI resources" ;
+	a sd:Service ;
+	schema:name "EMBL-EBI resources" ;
+	schema:publisher <https://www.ebi.ac.uk#this> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://www.ebi.ac.uk/rdf/services/sparql#this> ;
+	schema:url <https://www.ebi.ac.uk/rdf/services/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint264#this> a sd:Service ;
+	sd:endpoint "https://www.europeandataportal.eu/sparql" ;
+	rdfs:label "EU Data Portal" ;
+	void:triples "158580849"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "EU Data Portal" ;
+	schema:publisher <https://www.europeandataportal.eu#this> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://www.europeandataportal.eu/sparql#this> ;
+	schema:url <https://www.europeandataportal.eu/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint265#this> a sd:Service ;
+	sd:endpoint "https://www.foodie-cloud.org/sparql" ;
+	rdfs:label "Foodie-Cloud" ;
+	void:triples "1733183058"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Foodie-Cloud" ;
+	schema:publisher <https://www.foodie-cloud.org#this> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://www.foodie-cloud.org/sparql#this> ;
+	schema:url <https://www.foodie-cloud.org/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint266#this> a sd:Service ;
+	sd:endpoint "https://www.nakala.fr/sparql" ;
+	rdfs:label "Nakala" ;
+	void:triples "7458743"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Nakala" ;
+	schema:publisher <https://www.nakala.fr#this> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://www.nakala.fr/sparql#this> ;
+	schema:url <https://www.nakala.fr/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint267#this> a sd:Service ;
+	sd:endpoint "https://www.orpha.net/sparql" ;
+	rdfs:label "Orphanet" ;
+	void:triples "2296871"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	schema:name "Orphanet" ;
+	schema:publisher <https://www.orpha.net#this> ;
+	prov:component <http://data.openlinksw.com/oplweb/product/Virtuoso#this> ;
+	owl:sameAs <https://www.orpha.net/sparql#this> ;
+	schema:url <https://www.orpha.net/sparql> .
+
+<http://data.openlinksw.com/oplweb/sparql-endpoint268#this> void:triples "721587"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	a sd:Service ;
+	sd:endpoint "https://xula.eagle-i.net/sparqler/sparql" ;
+	rdfs:label "Xavier University of Louisiana" ;
+	schema:name "Xavier University of Louisiana" ;
+	schema:publisher <https://xula.eagle-i.net#this> ;
+	owl:sameAs <https://xula.eagle-i.net/sparqler/sparql#this> ;
+	schema:url <https://xula.eagle-i.net/sparqler/sparql> .
