@@ -4,10 +4,11 @@
 // TODO: remove all console.dir
 
 class SourceInterface {
-  constructor (shortName, description) {
+  constructor (shortName, description, uiComponent) {
     console.warn('SourceInterface - to be implemented');
     this.shortName = shortName;
     this.description = description;
+    this.uiComponent = uiComponent;
   }
   
   // TODO: define base interface
@@ -62,19 +63,23 @@ class WebInterface extends SourceInterface {
   }
 }
 
+import RdfUI from "./RdfUI.svelte";
+
 // TODO: LDP
 // TODO: SPARQL
 class RdfInterface extends SourceInterface {
   constructor (shortName, description) {
-    super(shortName, description);
+    super(shortName, description, RdfUI);
     console.warn('RdfInterface - to be implemented');
   }
 }
 
+import JsonUI from "./JsonUI.svelte";
+
 // TODO: JSON - initially just {nodes: [], links []}
 class JsonInterface extends SourceInterface {
   constructor (shortName, description) {
-    super(shortName, description);
+    super(shortName, description, JsonUI);
     console.warn('JsonInterface - to be implemented');
   }
 }
