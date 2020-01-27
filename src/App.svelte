@@ -9,7 +9,6 @@ import DataViewUI from './dataviews/DataViewUI.svelte';
 import {resultDataStore} from './stores.js';
 import {graph} from './stores.js';
 
-$graph = {nodes: [], links: []};
 </script>
 
 <style>
@@ -26,7 +25,6 @@ RDF data sources. Built using Sveltejs and D3js to be extendable. Code on <a hre
 <SourceUI resultDataStore={resultDataStore}/>
 DataViewUI maps the RDF to objects for visualisation,
 </p>
-<!-- <p>resultDataStore: {JSON.stringify($resultDataStore)}</p> -->
 
 <p><DataViewUI resultDataStore={resultDataStore}/>
 NetworkGraphCanvas uses d3-force to display the graph.</p>
