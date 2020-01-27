@@ -7,6 +7,8 @@ import { SourceInterfaceManager } from "./SourceInterface.js";
 
 import TestUI from "./RdfUI.svelte";
 
+export let resultDataStore; // Output SourceResult
+
 // TODO: pass an initial set of sources to constructor as a JSON array (see SourceInterfaceManager)
 const interfaceManager = new SourceInterfaceManager();
 let currentInterface;
@@ -36,5 +38,9 @@ let currentInterface;
     {/each}
   </select>
   <p><b>Current interface:</b> {currentInterface ? currentInterface.description : 'none'}</p>
-  <svelte:component this={currentInterface ? currentInterface.uiComponent : undefined}/>
+  <svelte:component 
+    this={currentInterface ? currentInterface.uiComponent : undefined}
+    sourceInterface={currentInterface}
+    sourceResultStore={resultDataStore}
+  />
 </div>

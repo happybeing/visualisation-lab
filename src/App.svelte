@@ -1,13 +1,15 @@
 <script>
-  import NetworkGraphD3SVG from './NetworkGraphD3SVG.svelte';
-  // import GraphSvelteSVG from './NetworkGraphSvelteSVG.svelte';
-  import NetworkGraphCanvas from './NetworkGraphCanvas.svelte';
-  // import DataSourceUI from './DataSourceUI.svelte';
-  import SourceUI from './interfaces/SourceUI.svelte';
-  import DataViewUI from './DataViewUI.svelte';
+import NetworkGraphD3SVG from './NetworkGraphD3SVG.svelte';
+// import GraphSvelteSVG from './NetworkGraphSvelteSVG.svelte';
+import NetworkGraphCanvas from './NetworkGraphCanvas.svelte';
+// import DataSourceUI from './DataSourceUI.svelte';
+import SourceUI from './interfaces/SourceUI.svelte';
+import DataViewUI from './dataviews/DataViewUI.svelte';
 
-  import {graph} from './stores.js';
+import {resultDataStore} from './stores.js';
+import {graph} from './stores.js';
 
+$graph = {nodes: [], links: []};
 </script>
 
 <style>
@@ -21,8 +23,12 @@
 RDF data sources. Built using Sveltejs and D3js to be extendable. Code on <a href='https://github.com/theWebalyst/visualisation-lab'>github</a>.
 </p>
 <p>SourceUI handles interaction with data sources,  
-<SourceUI/>
+<SourceUI resultDataStore={resultDataStore}/>
 DataViewUI maps the RDF to objects for visualisation,
-<DataViewUI/>
+</p>
+<!-- <p>resultDataStore: {JSON.stringify($resultDataStore)}</p> -->
+
+<p><DataViewUI resultDataStore={resultDataStore}/>
 NetworkGraphCanvas uses d3-force to display the graph.</p>
+<p>TODO: wrap NetworkGraphCanvas & co. in View (or ViewUI?)</p>
 <NetworkGraphCanvas {graph} />

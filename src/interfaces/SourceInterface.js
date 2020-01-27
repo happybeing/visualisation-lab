@@ -9,9 +9,14 @@ class SourceInterface {
     this.shortName = shortName;
     this.description = description;
     this.uiComponent = uiComponent;
+
+    this.sourceResult = undefined;  // A subclass of SourceResult
   }
   
-  // TODO: define base interface
+  // Base interface:
+  setSourceResult (sourceResult) {this.sourceResult = sourceResult;}
+  getSourceResult () {return this.sourceResult;}
+  // Subclass can define it's own getter with typed name for clarity, e.g getResultRdfDataset()
 
   // TODO: maintain named, id'd list of all SourceInterface objects for SourceUI
   // TODO: start with four fixed interfaces: 
@@ -48,11 +53,13 @@ export class SourceInterfaceManager {
 }
 
 class SourceResult {
-  constructor () {
+  constructor (sourceInterface) {
     console.warn('SourceResult - to be implemented');
+    this.sourceInterface = sourceInterface;
   }
-  // TODO: define base interface, or if none needed eliminate this class
 
+  // Base interface:
+  getInterface () {return this.sourceInterface;}
 }
 
 // TODO: extract generic web stuff from RdfInterface
@@ -64,6 +71,18 @@ class WebInterface extends SourceInterface {
 }
 
 import RdfUI from "./RdfUI.svelte";
+const readTtl = require('@graphy/content.ttl.read');
+const RdfDataset = require('@graphy/memory.dataset.fast');
+import lodCloudRdf from '../data/LODCloud_SPARQL_Endpoints.ttl';
+
+class RdfSourceResult extends SourceResult {
+  constructor (rdfInterface, rdfDataset) {
+    super(rdfInterface);
+    this.rdfDataset = rdfDataset;
+  }
+
+  getRdfDataset () {return this.rdfDataset;}
+}
 
 // TODO: LDP
 // TODO: SPARQL
@@ -71,6 +90,49 @@ class RdfInterface extends SourceInterface {
   constructor (shortName, description) {
     super(shortName, description, RdfUI);
     console.warn('RdfInterface - to be implemented');
+  }
+
+  // import fetch from '@rdfjs/fetch';
+  
+  // const label = 'http://www.w3.org/2000/01/rdf-schema#label'
+  
+  // fetch('http://www.w3.org/2000/01/rdf-schema')
+  //   .then(res => res.dataset())
+  //   .then(dataset => {
+  //     for (const quad of dataset) {
+  //       if (quad.predicate.value === label) {
+  //         console.log(`${quad.subject.value}: ${quad.object.value}`)
+  //       }
+  //     }
+  //   }).catch(err => console.error(err));
+  
+  loadTestRdf (sourceResultStore) {
+    this.setSourceResult(undefined);
+    this.sourceResultStore = sourceResultStore;
+
+    try {
+      let rdfDataset = RdfDataset();
+      let self = this;
+      readTtl(lodCloudRdf, {
+        data(y_quad) {
+          console.log(JSON.stringify(y_quad));
+          rdfDataset.add(y_quad);
+          console.log('rdfDataset size: ', rdfDataset.size);
+        },
+  
+        eof(h_prefixes) {
+          console.log('done!');
+          console.log('rdfDataset size: ', rdfDataset.size);
+          let sourceResult = new RdfSourceResult(this, rdfDataset);
+          self.setSourceResult(sourceResult);
+          self.sourceResultStore.update(v => sourceResult);
+
+          console.log('loadTestRdf() results: ');
+          console.dir(self.$sourceResultStore);
+        },
+      })
+    } catch (err) { console.error(err); } 
+
   }
 }
 
