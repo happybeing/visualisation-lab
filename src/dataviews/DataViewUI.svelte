@@ -15,16 +15,12 @@ import {RdfDataView} from './DataView.js';
 import {resultDataStore} from "../stores.js";
 import {graph} from "../stores.js";
 
-// $: graph.update(() => rdfToVis(newDataResult));
-
 let rdfDataView;
-let rdsValue;
-
+let showViewDebug = false;
 
 const unsubscribe = resultDataStore.subscribe(rds => {
   console.log('DataViewUI rds update:');
   console.dir(rds);
-  rdsValue = rds;
 
   // Generate/update view model
   console.dir(rdfDataView);
@@ -41,27 +37,27 @@ onMount(() => {
 </script>
 
 <div>
-<h2>DataViewUI test...</h2>
-<!-- <p>{resultDataStore !== undefined && $resultDataStore !== undefined ? JSON.stringify($resultDataStore) : "no data"}</p> -->
-<h2>rdsValue: {rdsValue}</h2>
+<h2>&lt;DataViewUI&gt;</h2>
+  <label>
+	  <input type=checkbox bind:checked={showViewDebug}>
+    Show DataViewUI debug
+  </label>
+
+{#if showViewDebug}
+  <h2>ViewUI debug...</h2>
+
+  <h3>nodes</h3>
+  <ul>
+  {#each $graph.nodes as node}
+  <li>{node.id}</li>
+  {/each}
+  </ul>
+  <h3>links</h3>
+  <ul>
+  {#each $graph.links as link}
+  <li>{JSON.stringify(link)}:<br/>{link.source} -&gt; {link.target}</li>
+  {/each}
+  </ul>
+{/if}
+
 </div>
-
-<!-- <div>
-  <RdfDataView {newDataResult}/>
-</div> -->
-
-<!-- <div>
-<h2>ViewUI debug...</h2>
-<h3>nodes</h3>
-<ul>
-{#each $graph.nodes as node}
-<li>{node.id}</li>
-{/each}
-</ul>
-<h3>links</h3>
-<ul>
-{#each $graph.links as link}
-<li>{JSON.stringify(link)}:<br/>{link.source} -&gt; {link.target}</li>
-{/each}
-</ul>
-</div> -->
