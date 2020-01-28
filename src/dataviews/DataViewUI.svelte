@@ -10,6 +10,8 @@ Provides
 <script>
 import {onMount} from 'svelte';
 
+import FiltersUI from './FiltersUI.svelte'
+
 import {RdfDataView} from './DataView.js';
 
 import {resultDataStore} from "../stores.js";
@@ -35,13 +37,26 @@ onMount(() => {
 });
 
 </script>
+<style>
+.main { 
+  background: rgba(241, 203, 152, 0.582);
+  border: 1px solid;
+  border-radius: 1cm;
+  padding-left: 1cm;
+}
+</style>
 
-<div>
+<div class="main">
 <h2>&lt;DataViewUI&gt;</h2>
-  <label>
-	  <input type=checkbox bind:checked={showViewDebug}>
-    Show DataViewUI debug
-  </label>
+<p>The DataViewUI provides control over the view model, and 
+provides filters that are applied to the model to show/hide 
+elements in the View.</p>
+<FiltersUI/>
+
+<label>
+  <input type=checkbox bind:checked={showViewDebug}>
+  Show DataViewUI debug
+</label>
 
 {#if showViewDebug}
   <h2>ViewUI debug...</h2>
