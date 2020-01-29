@@ -1,4 +1,7 @@
 <script>
+export let sourceInterface;
+export let sourceResultStore;
+
 </script>
 
 <style>
@@ -11,5 +14,12 @@
 </style>
 
 <div class="main">
-<h3>&lt;JsonUI&gt;</h3>
+<p>
+  <b>&lt;JsonUI&gt;</b>
+  <button 
+    enabled={sourceInterface !== undefined} 
+    on:click={() => sourceInterface.loadTestJson(sourceResultStore)}>
+    Load 'Les Miserables'
+  </button>
+</p>
 </div>

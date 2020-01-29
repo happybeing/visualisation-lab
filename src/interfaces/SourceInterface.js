@@ -137,12 +137,28 @@ class RdfInterface extends SourceInterface {
 }
 
 import JsonUI from "./JsonUI.svelte";
+import lesMisData from '../data/data-les-miserables.js';
 
 // TODO: JSON - initially just {nodes: [], links []}
+class JsonSourceResult extends SourceResult {
+  constructor (jsonInterface, jsonDataset) {
+    super(jsonInterface);
+    this.jsonDataset = jsonDataset;
+  }
+
+  getJsonDataset () {return this.jsonDataset;}
+}
+
 class JsonInterface extends SourceInterface {
   constructor (shortName, description) {
     super(shortName, description, JsonUI);
     console.warn('JsonInterface - to be implemented');
+  }
+
+  loadTestJson (sourceResultStore) {
+    let sourceResult = new JsonSourceResult(this, lesMisData);
+    this.setSourceResult(sourceResult);
+      sourceResultStore.update(v => sourceResult);
   }
 }
 

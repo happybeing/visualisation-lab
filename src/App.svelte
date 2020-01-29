@@ -3,7 +3,7 @@ import NetworkGraphD3SVG from './NetworkGraphD3SVG.svelte';
 // import GraphSvelteSVG from './NetworkGraphSvelteSVG.svelte';
 import NetworkGraphCanvas from './NetworkGraphCanvas.svelte';
 import SourceUI from './interfaces/SourceUI.svelte';
-import DataViewUI from './dataviews/DataViewUI.svelte';
+import ViewModelUI from './viewmodels/ViewModelUI.svelte';
 
 import {resultDataStore} from './stores.js';
 import {graph} from './stores.js';
@@ -24,9 +24,9 @@ RDF data sources. Built using Sveltejs and D3js to be extendable. Code on <a hre
 <SourceUI resultDataStore={resultDataStore}/>
 </p>
 
-<p>DataViewUI maps the RDF to objects for visualisation:
+<p>ViewModelUI maps the RDF to objects for visualisation:
 </p>
-<DataViewUI resultDataStore={resultDataStore}/>
+<ViewModelUI resultDataStore={resultDataStore}/>
 <h2>&lt;NetworkGraphCanvas&gt;</h2>
 <p>NetworkGraphCanvas uses d3-force to display the graph.</p>
 <p>TODO: wrap NetworkGraphCanvas & co. in View (or ViewUI?)</p>

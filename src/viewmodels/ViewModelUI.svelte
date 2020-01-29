@@ -12,28 +12,37 @@ import {onMount} from 'svelte';
 
 import FiltersUI from './FiltersUI.svelte'
 
-import {RdfDataView} from './DataView.js';
+import {RdfViewModel} from './ViewModel.js';
 
 import {resultDataStore} from "../stores.js";
 import {graph} from "../stores.js";
 
-let rdfDataView;
+// TODO: add support for jsonViewModel
+// - enumerate a set of SourceResultTypes for SourceResult.resultData
+// - note TODO: create ViewModel handler for each SourceResultType
+// - implement ViewModel.getViewModelForSourceResult(sourceResult)
+// - implement ViewModel.getView
+// - ??? add SourceResult.getSourceResultType()
+// - how are these selected? 
+// - should this just follow the SourceInterface?
+
+let rdfViewModel;
 let showViewDebug = false;
 
 const unsubscribe = resultDataStore.subscribe(rds => {
-  console.log('DataViewUI rds update:');
+  console.log('ViewModelUI rds update:');
   console.dir(rds);
 
   // Generate/update view model
-  console.dir(rdfDataView);
-  if (rdfDataView !== undefined) {
-    $graph = rdfDataView.rdfToVis(rds.getRdfDataset())
+  console.dir(rdfViewModel);
+  if (rdfViewModel !== undefined) {
+    $graph = rdfViewModel.consumeRdfDataset(rds, rds.getRdfDataset())
   }
 });
 
 onMount(() => {
   $graph = {nodes: [], links: []}
-  rdfDataView = new RdfDataView;
+  rdfViewModel = new RdfViewModel;
 });
 
 </script>
@@ -47,15 +56,15 @@ onMount(() => {
 </style>
 
 <div class="main">
-<h2>&lt;DataViewUI&gt;</h2>
-<p>The DataViewUI provides control over the view model, and 
+<h2>&lt;ViewModelUI&gt;</h2>
+<p>The ViewModelUI provides control over the view model, and 
 provides filters that are applied to the model to show/hide 
 elements in the View.</p>
 <FiltersUI/>
 
 <label>
   <input type=checkbox bind:checked={showViewDebug}>
-  Show DataViewUI debug
+  Show ViewModelUI debug
 </label>
 
 {#if showViewDebug}
