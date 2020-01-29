@@ -12,7 +12,8 @@ import {onMount} from 'svelte';
 
 import FiltersUI from './FiltersUI.svelte'
 
-import {RdfViewModel} from './ViewModel.js';
+import {sourceResultTypes, sourceResultTypeMap} from '../interfaces/SourceInterface.js'
+import {RdfViewModel, JsonViewModel} from './ViewModel.js';
 
 import {resultDataStore} from "../stores.js";
 import {graph} from "../stores.js";
@@ -29,14 +30,39 @@ import {graph} from "../stores.js";
 let rdfViewModel;
 let showViewDebug = false;
 
+// Available ViewModel subclasses per SourceResults type
+// TODO: construct this dynamically using SourceInterface.js and ViewModel.js helpers
+// TODO: offer choice of view model type where more than one is available for the current SourceResult
+const availableViewModels = new Map([
+  [sourceResultTypes.RDFJS_DATASET, [RdfViewModel]],  // TODO: later handle multiple models per SourceResultType
+  [sourceResultTypes.JSON_ARRAY, [JsonViewModel]],
+]);
+
+// Active view models by SourceResult type
+const resultsModelMap = new Map;  // Map of SourceResults types to a ViewModel (that consumes the result type)
+
 const unsubscribe = resultDataStore.subscribe(rds => {
   console.log('ViewModelUI rds update:');
   console.dir(rds);
+  if (rds === undefined || rds === 0) {return;}
 
-  // Generate/update view model
-  console.dir(rdfViewModel);
-  if (rdfViewModel !== undefined) {
-    $graph = rdfViewModel.consumeRdfDataset(rds, rds.getRdfDataset())
+  try {
+    let resultType = rds.getSourceResultType();
+    let viewModel = resultsModelMap.get(resultType);
+    if (viewModel === undefined) {
+      let modelClass = availableViewModels.get(resultType)[0]; 
+      viewModel = new modelClass;   // TODO: later handle multiple models per SourceResultType
+      resultsModelMap.set(resultType, viewModel);
+    }
+
+    // Generate/update view model
+    console.dir(viewModel);
+    if (viewModel !== undefined) {
+      $graph = viewModel.consumeSourceResult(rds);
+    }
+  } catch(e) {
+    console.log('ViewModelUI - failed to consume results (SourceResult)');
+    console.error(e);
   }
 });
 

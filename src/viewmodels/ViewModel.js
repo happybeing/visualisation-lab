@@ -6,11 +6,21 @@ TODO:  RdfViewModel implements mapping(s) of RdfSourceResult to a view model
 
 */
 
+import {sourceResultTypes, RdfSourceResult, JsonSourceResult} from '../interfaces/SourceInterface.js';
+
+export const sourceResultTypeMap = new Map([
+  [sourceResultTypes.RDFJS_DATASET, {friendlyName: 'RDF/JS Dataset', resultClass: RdfSourceResult, categoryName: 'RDF'}],
+  [sourceResultTypes.JSON_ARRAY, {friendlyName: 'JSON', resultClass: JsonSourceResult, categoryName: 'JSON'}],
+]);
+
 class ViewModel {
   constructor () {
     console.warn('ViewModel - to be implemented');
     this.viewModel = undefined;
   }
+
+  consumeSourceResult (sourceResult) {throw Error('ViewModel.consumeSourceResult() not implemented');}
+  getViewModeltType () {throw Error('ViewModel - no viewModelType');}
 
   // TODO: Base interface: 
   // - list subclasses of SourceResult I consume
@@ -25,6 +35,8 @@ export class RdfViewModel extends ViewModel {
   constructor () {
     super();
   }
+
+  getViewModelType () {return viewModelTypes.FROM_RDF;}
 
   // Methods to consume RDF in different forms:
   // Currently just RDF/JS Dataset
@@ -47,8 +59,9 @@ export class RdfViewModel extends ViewModel {
   - TODO: allow the application to modify or select the visual representation programmatically
   */
 
-  consumeRdfDataset (rdfResult, rdfDataset) {
-    console.log('RdfViewModel.consumeRdfDataset()', rdfDataset)
+  consumeSourceResult (rdfResult) {
+    let rdfDataset = rdfResult.getRdfDataset();
+    console.log('RdfViewModel.consumeSourceResult()', rdfDataset)
     let graphMap = {nodes: new Map(), links: new Map() };
     self = this;
     try {
@@ -77,6 +90,8 @@ export class JsonViewModel extends ViewModel {
     super();
   }
 
+  getViewModelType () {return viewModelTypes.FROM_JSON;}
+
   // 
   /** consume JsonSourceResult, create/overwrite viewModel 
   input:
@@ -92,13 +107,14 @@ export class JsonViewModel extends ViewModel {
   - TODO: allow the application to modify or select the visual representation programmatically
   */
 
-  consumeJsonSourceResult (jsonResult, jsonData) {
-    console.log('RdfViewModel.consumeRdfDataset()', rdfDataset)
+  consumeSourceResult (jsonResult) {
+    let jsonArray = jsonResult.getJsonResult();
+      console.log('JsonViewModel.consumeSourceResult()', jsonArray)
     let graphMap = {nodes: new Map(), links: new Map() };
     self = this;
     try {
         // Create nodes and links from triples
-        self.setViewModel({nodes: [...jsonData.nodes], links: [...jsonData.links]});
+        self.setViewModel({nodes: [...jsonArray.nodes], links: [...jsonArray.links]});
         self.viewModel.sourceResult = jsonResult;
         return self.viewModel;
       } catch (err) {
@@ -106,3 +122,14 @@ export class JsonViewModel extends ViewModel {
       }
   }
 }
+
+// View model types
+export const viewModelTypes = {
+  FROM_RDF: 'FROM_RDF',
+  FROM_JSON: 'FROM_JSON',
+}
+
+export const viewModelTypeMap = new Map([
+  [viewModelTypes.FROM_RDF, {friendlyName: 'RDF', modelClass: RdfViewModel, category: 'RDF'}],
+  [viewModelTypes.FROM_JSON, {friendlyName: 'JSON', modelClass: JsonViewModel, category: 'JSON ???'}],
+])

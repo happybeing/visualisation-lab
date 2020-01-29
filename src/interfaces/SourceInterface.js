@@ -29,26 +29,27 @@ class SourceInterface {
 
 }
 
+
 export class SourceInterfaceManager {
   constructor (interfaceDefinitions) {
     console.warn('SourceInterfaceManager - to be implemented');
-
-     this.initialiseInterfaces(interfaceDefinitions !== undefined ? interfaceDefinitions : testInterfaces);
-  }
     
+    this.initialiseInterfaces(interfaceDefinitions !== undefined ? interfaceDefinitions : testInterfaces);
+  }
+  
   ////////////////////////////////
-
+  
   initialiseInterfaces (interfaceDefinitions) {
     console.log('SourceInterfaceManager.initialiseInterfaces()...');
     this.sourceInterfaces = new Map;
-
+    
     interfaceDefinitions.forEach(def => {
       try {
         let newInterface = new def.iClass(def.shortName, def.description);
         this.sourceInterfaces.set(def.shortName, newInterface);
         console.dir(newInterface);
       } catch(e) {console.warn(e);}
-    });
+    });    
   }
 }
 
@@ -58,8 +59,10 @@ class SourceResult {
     this.sourceInterface = sourceInterface;
   }
 
-  // Base interface:
   getInterface () {return this.sourceInterface;}
+  
+  // Base interface:
+  getSourceResultType () {throw Error('SourceResult - no SourceResult type');}
 }
 
 // TODO: extract generic web stuff from RdfInterface
@@ -75,12 +78,13 @@ const readTtl = require('@graphy/content.ttl.read');
 const RdfDataset = require('@graphy/memory.dataset.fast');
 import lodCloudRdf from '../data/LODCloud_SPARQL_Endpoints.ttl';
 
-class RdfSourceResult extends SourceResult {
+export class RdfSourceResult extends SourceResult {
   constructor (rdfInterface, rdfDataset) {
     super(rdfInterface);
     this.rdfDataset = rdfDataset;
   }
 
+  getSourceResultType () { return sourceResultTypes.RDFJS_DATASET;}
   getRdfDataset () {return this.rdfDataset;}
 }
 
@@ -140,13 +144,14 @@ import JsonUI from "./JsonUI.svelte";
 import lesMisData from '../data/data-les-miserables.js';
 
 // TODO: JSON - initially just {nodes: [], links []}
-class JsonSourceResult extends SourceResult {
-  constructor (jsonInterface, jsonDataset) {
+export class JsonSourceResult extends SourceResult {
+  constructor (jsonInterface, jsonResult) {
     super(jsonInterface);
-    this.jsonDataset = jsonDataset;
+    this.jsonResult = jsonResult;
   }
 
-  getJsonDataset () {return this.jsonDataset;}
+  getSourceResultType () { return sourceResultTypes.JSON_ARRAY;}
+  getJsonResult () {return this.jsonResult;}
 }
 
 class JsonInterface extends SourceInterface {
@@ -200,3 +205,20 @@ const testInterfaces = [
   {iClass: GeneratorInterface, shortName:  "generator-test", description: "Generator (mrh)", options: {}},
   ];
   
+  // Source result types
+
+export const sourceResultTypes = {
+  RDFJS_DATASET: 'RDFJS_DATASET',
+  JSON_ARRAY: 'JSON_ARRAY',
+};
+
+// const sourceResultDataTypeList = [
+//   {resultType: RDFJS_DATASET, friendlyName: 'RDF/JS Dataset', resultClass: RdfSourceResult, categoryName: 'RDF'},
+//   {resultType: JSON_ARRAY, friendlyName: 'JSON', resultClass: JsonSourceResult, categoryName: 'JSON'},
+// ];
+ 
+export const sourceResultTypeMap = new Map([
+  [sourceResultTypes.RDFJS_DATASET, {friendlyName: 'RDF/JS Dataset', resultClass: RdfSourceResult, categoryName: 'RDF'}],
+  [sourceResultTypes.JSON_ARRAY, {friendlyName: 'JSON', resultClass: JsonSourceResult, categoryName: 'JSON'}],
+]);
+
