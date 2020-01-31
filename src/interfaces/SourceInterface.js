@@ -5,7 +5,6 @@
 
 class SourceInterface {
   constructor (shortName, description, uiComponent) {
-    console.warn('SourceInterface - to be implemented');
     this.shortName = shortName;
     this.description = description;
     this.uiComponent = uiComponent;
@@ -31,12 +30,12 @@ class SourceInterface {
 
 
 export class SourceInterfaceManager {
-  constructor (interfaceDefinitions) {
-    console.warn('SourceInterfaceManager - to be implemented');
-    
+  constructor (interfaceDefinitions) {    
     this.initialiseInterfaces(interfaceDefinitions !== undefined ? interfaceDefinitions : testInterfaces);
   }
-  
+
+  // TODO: add ability to add/remove/edit/enumerate SourceInterfaces
+
   ////////////////////////////////
   
   initialiseInterfaces (interfaceDefinitions) {
@@ -55,7 +54,6 @@ export class SourceInterfaceManager {
 
 class SourceResult {
   constructor (sourceInterface) {
-    console.warn('SourceResult - to be implemented');
     this.sourceInterface = sourceInterface;
   }
 
@@ -65,15 +63,7 @@ class SourceResult {
   getSourceResultType () {throw Error('SourceResult - no SourceResult type');}
 }
 
-// TODO: extract generic web stuff from RdfInterface
-class WebInterface extends SourceInterface {
-  constructor (shortName, description) {
-    super(shortName, description);
-    console.warn('WebInterface - to be implemented');
-  }
-}
-
-import RdfUI from "./RdfUI.svelte";
+import TestRdfUI from "./TestRdfUI.svelte";
 const ttlReader = require('@graphy/content.ttl.read');
 const RdfDataset = require('@graphy/memory.dataset.fast');
 
@@ -113,8 +103,7 @@ fetch('http://www.w3.org/2000/01/rdf-schema')
 // TODO: SPARQL
 class RdfInterface extends SourceInterface {
   constructor (shortName, description, uiComponent) {
-    super(shortName, description, uiComponent ? uiComponent : RdfUI);
-    console.warn('RdfInterface - to be implemented');
+    super(shortName, description, uiComponent ? uiComponent : TestRdfUI);
   }
 
   // import fetch from '@rdfjs/fetch';
@@ -131,9 +120,11 @@ class RdfInterface extends SourceInterface {
   //     }
   //   }).catch(err => console.error(err));
   
-  consumeRdfFile (sourceResultStore, file) {
+  // TODO: Unify data consumption and move to ViewModel:
+  // TODO: - extend MIME type support using graphy reader based on mimeType
+  consumeRdfStream (sourceResultStore, stream, mimeType) {
     console.log('RdfInterface.consumeRdfFile()');
-    console.dir(file);
+    console.dir(stream);
     this.setSourceResult(undefined);
     this.sourceResultStore = sourceResultStore;
 
@@ -157,7 +148,7 @@ class RdfInterface extends SourceInterface {
           console.dir(self.$sourceResultStore);
           }
         });
-        readableStreamToGraphyReader(file.stream(), graphyReader);
+        readableStreamToGraphyReader(stream, graphyReader);
 
       // The above code allows me to use whatwg (browser) streams with graphy.
       // When graphy adds whatwg streams the following can be used instead (issue #20).
@@ -212,6 +203,35 @@ class RdfInterface extends SourceInterface {
   }
 }
 
+// Web fetch interface for LDP (TODO: SPARQL)
+//
+import WebUI from "./WebUI.svelte";
+class WebInterface extends RdfInterface {
+  constructor (shortName, description, uiComponent) {
+    super(shortName, description, uiComponent ? uiComponent : WebUI);
+  }
+
+  /** Fetch RDF from a web URI and parse the result 
+   * 
+   * @param {Writeable<SourceResult>} sourceResultStore 
+   * @param {String} URI 
+   */
+  loadUri(sourceResultStore, uri) {
+    console.log('WebInterface.loadUri()');
+
+    // TODO: load multiple URIs into same store
+    // TODO: consider loading multiple URIs into separate stores/views
+    // TODO: fix error handling to return error for display in UI
+    fetch(uri)
+    .then(response => this.consumeRdfStream(sourceResultStore, response.body))
+    .catch(e => {
+      console.error('Failed to fetch and parse URI:', uri);
+      consoel.error(e);
+      return e;
+    });
+  }
+}
+
 // File system interface (for loading local files)
 //
 // Uses FileAPI: https://w3c.github.io/FileAPI
@@ -239,7 +259,7 @@ class FileInterface extends RdfInterface {
     if (file !== undefined) {
       try {
         console.log('Loading ', file.size, ' bytes from ', file);
-        this.consumeRdfFile(sourceResultStore, file);
+        this.consumeRdfStream(sourceResultStore, file.stream(), file.type);
       } catch(e) {
         console.warn('File load error');
         console.error(e);
@@ -300,13 +320,13 @@ class GeneratorInterface extends ManualInterface {
 // TODO: change iClass to String and use a 'factory' so I can serialise (research ways to serialise first)
 const testInterfaces = [
   // {className: "", shortName: "", description: "", options: {}},
-  {iClass: RdfInterface, shortName: "ldp-test", description: "LDP (RDF/Turtle)", options: {}},
-  {iClass: RdfInterface, shortName: "sparql-test", description: "SPARQL (RDF/Turtle) - TBD", options: {}},
+  {iClass: RdfInterface, shortName: "rdf-test", description: "Load a test RDF/Turtle example", options: {}},
   {iClass: JsonInterface, shortName: "json-test", description: "File (JSON)", options: {}},
   {iClass: ManualInterface, shortName:  "manual-test", description: "Manual (mrh)", options: {}},
   {iClass: GeneratorInterface, shortName:  "generator-test", description: "Generator (mrh)", options: {}},
     
   // Application interface UIs
+  {iClass: WebInterface, shortName: "rdf-ldp", description: "Web LDP resource (RDF/Turtle)", options: {}},
   {iClass: FileInterface, shortName: "rdf-file", description: "Load from file (RDF/Turtle)", options: {}},
   ];
   

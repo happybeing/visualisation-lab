@@ -17,7 +17,7 @@ import lodCloudRdf from '../data/LODCloud_SPARQL_Endpoints.ttl';
 
 <div class="main">
 <p>
-  <b>&lt;RdfUI&gt;</b>
+  <b>&lt;TestRdfUI&gt;</b>
   <button 
     enabled={sourceInterface !== undefined} 
     on:click={() => sourceInterface.consumeRdfTextTtl(sourceResultStore, lodCloudRdf)}>

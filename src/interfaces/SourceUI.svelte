@@ -5,7 +5,7 @@
  <script>
 import { SourceInterfaceManager } from "./SourceInterface.js";
 
-import TestUI from "./RdfUI.svelte";
+import TestUI from "./TestRdfUI.svelte";
 
 export let resultDataStore; // Output SourceResult
 
@@ -27,10 +27,8 @@ let currentInterface;
 <div class="main">
   <h3>&lt;SourceUI&gt;</h3>
   <p>
-  <br/>TODO: add LDP fetching
   <br/>TODO: use store to add status text in SourceInterface (loading / building model (with nodes + links counts))
   <br/>TODO: add a fixed SPARQL query
-  <br/>TODO: add load from .ttl file
   </p>
 
   <label>Data Source:</label>

@@ -1,0 +1,22 @@
+@prefix n: <http://rdfs.org/sioc/ns#>.
+@prefix terms: <http://purl.org/dc/terms/>.
+@prefix XML: <http://www.w3.org/2001/XMLSchema#>.
+@prefix n0: <safe://plumeteststore/posts/1521803020108-tickled-turtles.ttl#>.
+@prefix c: <safe://happybeing/card#>.
+@prefix n1: <http://xmlns.com/foaf/0.1/>.
+
+<safe://plumeteststore/posts/1521803020108-tickled-turtles.ttl>
+	a n:Post;
+	terms:created "2018-03-23T11:03:40+00:00"^^XML:dateTime;
+	terms:modified "2018-03-23T11:03:40+00:00"^^XML:dateTime;
+	terms:title "Tickled Turtles";
+	n:content
+		"""Did you know that Galapagos tortoises are *tickled* by finches.
+
+I&#039;ll be tickled if this puts turtle on SAFE network! :-)""";
+	n:has_creator n0:author.
+n0:author
+	a n:UserAccount;
+	n:account_of c:me;
+	n:avatar <safe://plumetest/mugshot-hb.jpg>;
+	n1:name "happybeing".
