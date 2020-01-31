@@ -74,9 +74,8 @@ class WebInterface extends SourceInterface {
 }
 
 import RdfUI from "./RdfUI.svelte";
-const readTtl = require('@graphy/content.ttl.read');
+const ttlReader = require('@graphy/content.ttl.read');
 const RdfDataset = require('@graphy/memory.dataset.fast');
-import lodCloudRdf from '../data/LODCloud_SPARQL_Endpoints.ttl';
 
 export class RdfSourceResult extends SourceResult {
   constructor (rdfInterface, rdfDataset) {
@@ -88,11 +87,33 @@ export class RdfSourceResult extends SourceResult {
   getRdfDataset () {return this.rdfDataset;}
 }
 
+function readableStreamToGraphyReader(readableStream, graphyReader) {
+  const bodyReader = readableStream.getReader();
+
+  function next () {
+    bodyReader.read().then(readChunk);
+  }
+
+  function readChunk ({value, done}) {
+    if (done) {
+      graphyReader.end();
+      return;
+    }
+
+    graphyReader.write(value);
+    next();
+  }
+
+  next();
+}
+
+fetch('http://www.w3.org/2000/01/rdf-schema')
+
 // TODO: LDP
 // TODO: SPARQL
 class RdfInterface extends SourceInterface {
-  constructor (shortName, description) {
-    super(shortName, description, RdfUI);
+  constructor (shortName, description, uiComponent) {
+    super(shortName, description, uiComponent ? uiComponent : RdfUI);
     console.warn('RdfInterface - to be implemented');
   }
 
@@ -110,14 +131,65 @@ class RdfInterface extends SourceInterface {
   //     }
   //   }).catch(err => console.error(err));
   
-  loadTestRdf (sourceResultStore) {
+  consumeRdfFile (sourceResultStore, file) {
+    console.log('RdfInterface.consumeRdfFile()');
+    console.dir(file);
+    this.setSourceResult(undefined);
+    this.sourceResultStore = sourceResultStore;
+
+    try {
+      const rdfDataset = RdfDataset();
+      const self = this;
+      const graphyReader = ttlReader({
+        data (y_quad) {
+          console.log(JSON.stringify(y_quad));
+          rdfDataset.add(y_quad);
+          console.log('rdfDataset size: ', rdfDataset.size);
+        },
+        eof () {
+          console.log('done!');
+          console.log('rdfDataset size: ', rdfDataset.size);
+          let sourceResult = new RdfSourceResult(this, rdfDataset);
+          self.setSourceResult(sourceResult);
+          self.sourceResultStore.update(v => sourceResult);
+          
+          console.log('loadTestRdf() results: ');
+          console.dir(self.$sourceResultStore);
+          }
+        });
+        readableStreamToGraphyReader(file.stream(), graphyReader);
+
+      // The above code allows me to use whatwg (browser) streams with graphy.
+      // When graphy adds whatwg streams the following can be used instead (issue #20).
+      // let rdfDataset = RdfDataset(); 
+      // let self = this;
+      // file.stream().pipeTo(ttlReader())
+      // .on('data', (y_quad) => {
+      //     console.log(JSON.stringify(y_quad));
+      //     rdfDataset.add(y_quad);
+      //     console.log('rdfDataset size: ', rdfDataset.size);
+      //   })
+      //   .on('eof', () => {
+      //     console.log('done!');
+      //     console.log('rdfDataset size: ', rdfDataset.size);
+      //     let sourceResult = new RdfSourceResult(this, rdfDataset);
+      //     self.setSourceResult(sourceResult);
+      //     self.sourceResultStore.update(v => sourceResult);
+
+      //     console.log('loadTestRdf() results: ');
+      //     console.dir(self.$sourceResultStore);
+      // });
+    } catch(e) {console.error(e);}
+  }
+
+  consumeRdfTextTtl (sourceResultStore, textTtl) {
     this.setSourceResult(undefined);
     this.sourceResultStore = sourceResultStore;
 
     try {
       let rdfDataset = RdfDataset();
       let self = this;
-      readTtl(lodCloudRdf, {
+      ttlReader(textTtl, {
         data(y_quad) {
           console.log(JSON.stringify(y_quad));
           rdfDataset.add(y_quad);
@@ -131,7 +203,7 @@ class RdfInterface extends SourceInterface {
           self.setSourceResult(sourceResult);
           self.sourceResultStore.update(v => sourceResult);
 
-          console.log('loadTestRdf() results: ');
+          console.log('consumeRdfTextTtl() results: ');
           console.dir(self.$sourceResultStore);
         },
       })
@@ -139,6 +211,45 @@ class RdfInterface extends SourceInterface {
 
   }
 }
+
+// File system interface (for loading local files)
+//
+// Uses FileAPI: https://w3c.github.io/FileAPI
+// Examples: https://www.javascripture.com/FileReader
+//
+import FileUI from "./FileUI.svelte";
+class FileInterface extends RdfInterface {
+  constructor (shortName, description, uiComponent) {
+    super(shortName, description, uiComponent ? uiComponent : FileUI);
+    console.warn('FileInterface - to be implemented');
+  }
+  // TODO: LATER: provide file selection with optional default file extensions (use 'options' in the interfaces list)
+
+  /** Load and parse RDF files into a SourceResult store 
+   * 
+   * @param {Writeable<SourceResult>} sourceResultStore 
+   * @param {FileList} fileList 
+   */
+  loadFiles(sourceResultStore, fileList) {
+    console.log('FileInterface.loadFiles()');
+
+    // TODO: load multiple files into same store
+    // TODO: consider loading multiple files into separate stores/views
+    const file = fileList[0]
+    if (file !== undefined) {
+      try {
+        console.log('Loading ', file.size, ' bytes from ', file);
+        this.consumeRdfFile(sourceResultStore, file);
+      } catch(e) {
+        console.warn('File load error');
+        console.error(e);
+      }
+    } else {
+      console.warn('No file selected.');
+    }
+  }
+}
+
 
 import JsonUI from "./JsonUI.svelte";
 import lesMisData from '../data/data-les-miserables.js';
@@ -167,15 +278,6 @@ class JsonInterface extends SourceInterface {
   }
 }
 
-// TODO: file system interface
-class FileInterface extends SourceInterface {
-  constructor (shortName, description) {
-    super(shortName, description);
-    console.warn('FileInterface - to be implemented');
-  }
-  // TODO: NOW: just load a fixed local file system, passes to RdfInterface or JSON interface based on extension
-  // TODO: LATER: provide file selection with optional default file exenstions
-}
 
 // TODO: manual input interface
 class ManualInterface extends SourceInterface {
@@ -203,6 +305,9 @@ const testInterfaces = [
   {iClass: JsonInterface, shortName: "json-test", description: "File (JSON)", options: {}},
   {iClass: ManualInterface, shortName:  "manual-test", description: "Manual (mrh)", options: {}},
   {iClass: GeneratorInterface, shortName:  "generator-test", description: "Generator (mrh)", options: {}},
+    
+  // Application interface UIs
+  {iClass: FileInterface, shortName: "rdf-file", description: "Load from file (RDF/Turtle)", options: {}},
   ];
   
   // Source result types

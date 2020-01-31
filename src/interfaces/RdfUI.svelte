@@ -1,9 +1,10 @@
 <script>
 export let sourceInterface;
 export let sourceResultStore;
-</script>
 
-$sourceResultStore.subscribe(() => {console.log('<RdfUI> sourceResultStore.subscribe()')});
+import lodCloudRdf from '../data/LODCloud_SPARQL_Endpoints.ttl';
+//import lodCloudRdf from '../data/1521803020108-tickled-turtles.ttl';
+</script>
 
 <style>
 .main { 
@@ -19,7 +20,7 @@ $sourceResultStore.subscribe(() => {console.log('<RdfUI> sourceResultStore.subsc
   <b>&lt;RdfUI&gt;</b>
   <button 
     enabled={sourceInterface !== undefined} 
-    on:click={() => sourceInterface.loadTestRdf(sourceResultStore)}>
+    on:click={() => sourceInterface.consumeRdfTextTtl(sourceResultStore, lodCloudRdf)}>
     Load lodCloud
   </button>
 </p>
