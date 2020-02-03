@@ -97,8 +97,6 @@ function readableStreamToGraphyReader(readableStream, graphyReader) {
   next();
 }
 
-fetch('http://www.w3.org/2000/01/rdf-schema')
-
 // TODO: LDP
 // TODO: SPARQL
 class RdfInterface extends SourceInterface {
@@ -108,9 +106,9 @@ class RdfInterface extends SourceInterface {
 
   // import fetch from '@rdfjs/fetch';
   
-  // const label = 'http://www.w3.org/2000/01/rdf-schema#label'
+  // const label = 'https://www.w3.org/2000/01/rdf-schema#label'
   
-  // fetch('http://www.w3.org/2000/01/rdf-schema')
+  // fetch('https://www.w3.org/2000/01/rdf-schema')
   //   .then(res => res.dataset())
   //   .then(dataset => {
   //     for (const quad of dataset) {
@@ -226,7 +224,7 @@ class WebInterface extends RdfInterface {
     .then(response => this.consumeRdfStream(sourceResultStore, response.body))
     .catch(e => {
       console.error('Failed to fetch and parse URI:', uri);
-      consoel.error(e);
+      console.error(e);
       return e;
     });
   }
@@ -319,16 +317,17 @@ class GeneratorInterface extends ManualInterface {
 // TODO: replace fixed interfaces with an initial set
 // TODO: change iClass to String and use a 'factory' so I can serialise (research ways to serialise first)
 const testInterfaces = [
-  // {className: "", shortName: "", description: "", options: {}},
-  {iClass: RdfInterface, shortName: "rdf-test", description: "Load a test RDF/Turtle example", options: {}},
-  {iClass: JsonInterface, shortName: "json-test", description: "File (JSON)", options: {}},
-  {iClass: ManualInterface, shortName:  "manual-test", description: "Manual (mrh)", options: {}},
-  {iClass: GeneratorInterface, shortName:  "generator-test", description: "Generator (mrh)", options: {}},
-    
   // Application interface UIs
   {iClass: WebInterface, shortName: "rdf-ldp", description: "Web LDP resource (RDF/Turtle)", options: {}},
   {iClass: FileInterface, shortName: "rdf-file", description: "Load from file (RDF/Turtle)", options: {}},
-  ];
+ 
+  // Test UIs
+  {iClass: JsonInterface, shortName: "json-test", description: "File (JSON)", options: {}},
+  {iClass: RdfInterface, shortName: "rdf-test", description: "Load a test RDF/Turtle example", options: {}},
+  {iClass: ManualInterface, shortName:  "manual-test", description: "Manual (mrh)", options: {}},
+  {iClass: GeneratorInterface, shortName:  "generator-test", description: "Generator (mrh)", options: {}},
+    
+ ];
   
   // Source result types
 
