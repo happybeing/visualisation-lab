@@ -220,6 +220,8 @@ class WebInterface extends RdfInterface {
     // TODO: load multiple URIs into same store
     // TODO: consider loading multiple URIs into separate stores/views
     // TODO: fix error handling to return error for display in UI
+    
+    // Note: firefox with Privacy Badger gives CORS errors when fetching different origin (URI)
     fetch(uri)
     .then(response => this.consumeRdfStream(sourceResultStore, response.body))
     .catch(e => {
@@ -228,6 +230,7 @@ class WebInterface extends RdfInterface {
       return e;
     });
   }
+
 }
 
 // File system interface (for loading local files)
