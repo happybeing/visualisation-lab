@@ -27,11 +27,9 @@ let currentInterface;
 <div class="main">
   <h3>&lt;SourceUI&gt;</h3>
   <p>
-  <br/>TODO: implement error handling / status messages in the interface UIs (investigate Svelte error handling)
-  <br/>TODO: implement a SPARQL query as fixed URI
-  <br/>TODO: add some UI for typing in a SPARQL query plus suggested URIs (see d3sparql.js)
+  <br/>TODO: error handling / status messages in the interface UIs (investigate Svelte error handling)
+  <br/>TODO: ability to load example query for each preset endpoint (see d3sparql.js)
   <br/>TODO: use store to add status text in SourceInterface (loading / building model (with nodes + links counts))
-  <br/>TODO: add a fixed SPARQL query
   </p>
 
   <label>Data Source:</label>

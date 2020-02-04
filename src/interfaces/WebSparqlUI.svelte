@@ -6,7 +6,7 @@ export let sourceResultStore;
 
 let uri;
 let lastError;
-let endpoint = 'http://dbpedia.org/sparql';
+let endpoint = 'https://dbpedia.org/sparql';
 let sparqlText = `# https://en.wikipedia.org/wiki/History_of_programming_languages
 # https://en.wikipedia.org/wiki/Perl
 # http://dbpedia.org/page/Perl
