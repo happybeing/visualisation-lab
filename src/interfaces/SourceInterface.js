@@ -150,8 +150,8 @@ class RdfInterface extends SourceInterface {
 
       // The above code allows me to use whatwg (browser) streams with graphy.
       // When graphy adds whatwg streams the following can be used instead (issue #20).
-      // let rdfDataset = RdfDataset(); 
-      // let self = this;
+      // const rdfDataset = RdfDataset(); 
+      // const self = this;
       // file.stream().pipeTo(ttlReader())
       // .on('data', (y_quad) => {
       //     console.log(JSON.stringify(y_quad));
@@ -176,8 +176,8 @@ class RdfInterface extends SourceInterface {
     this.sourceResultStore = sourceResultStore;
 
     try {
-      let rdfDataset = RdfDataset();
-      let self = this;
+      const rdfDataset = RdfDataset();
+      const self = this;
       ttlReader(textTtl, {
         data(y_quad) {
           console.log(JSON.stringify(y_quad));
@@ -220,15 +220,44 @@ class WebInterface extends RdfInterface {
     // TODO: load multiple URIs into same store
     // TODO: consider loading multiple URIs into separate stores/views
     // TODO: fix error handling to return error for display in UI
-    
+      
     // Note: firefox with Privacy Badger gives CORS errors when fetching different origin (URI)
-    fetch(uri)
-    .then(response => this.consumeRdfStream(sourceResultStore, response.body))
+    fetch(uri, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/sparql-query',
+        'Accept': 'text/turtle',
+      }})
+    .then(response => {this.consumeRdfStream(sourceResultStore, response.body)})
     .catch(e => {
       console.error('Failed to fetch and parse URI:', uri);
       console.error(e);
       return e;
     });
+  }
+
+  test (response) {
+    response.text().then(result => {
+      console.log('response.responseText: ', result);
+    });
+  }
+
+}
+
+
+// Web fetch interface for LDP (TODO: SPARQL)
+//
+import WebSparqlUI from "./WebSparqlUI.svelte";
+class WebSparqlInterface extends WebInterface {
+  constructor (shortName, description, uiComponent) {
+    super(shortName, description, uiComponent ? uiComponent : WebSparqlUI);
+  }
+
+  loadSparqlQuery(sourceResultStore, endpoint, sparqlText) {
+    var url = endpoint + "?query=" + encodeURIComponent(sparqlText) + "&type='text/turtle'";
+    console.log('loadSparqlQuery()');
+    console.log(url);
+    return this.loadUri(sourceResultStore, url);
   }
 
 }
@@ -321,6 +350,7 @@ class GeneratorInterface extends ManualInterface {
 // TODO: change iClass to String and use a 'factory' so I can serialise (research ways to serialise first)
 const testInterfaces = [
   // Application interface UIs
+  {iClass: WebSparqlInterface, shortName: "rdf-sparql", description: "Web SPARQL endpoint (RDF/Turtle)", options: {}},
   {iClass: WebInterface, shortName: "rdf-ldp", description: "Web LDP resource (RDF/Turtle)", options: {}},
   {iClass: FileInterface, shortName: "rdf-file", description: "Load from file (RDF/Turtle)", options: {}},
  
