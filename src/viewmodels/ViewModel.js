@@ -63,7 +63,7 @@ export class RdfViewModel extends ViewModel {
     let rdfDataset = rdfResult.getRdfDataset();
     console.log('RdfViewModel.consumeSourceResult()', rdfDataset)
     let graphMap = {nodes: new Map(), links: new Map() };
-    self = this;
+    const self = this;
     try {
         for (const quad of rdfDataset) {
           console.log('Mapping quad: ', quad)
