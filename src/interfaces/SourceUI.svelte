@@ -30,7 +30,6 @@ let currentInterface;
   <h3>&lt;SourceUI&gt;</h3>
   <p>
   <br/>TODO: error handling / status messages in the interface UIs (investigate Svelte error handling)
-  <br/>TODO: ability to load example query for each preset endpoint (see d3sparql.js)
   <br/>TODO: use store to add status text in SourceInterface (loading / building model (with nodes + links counts))
   </p>
 
