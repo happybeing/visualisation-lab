@@ -21,6 +21,8 @@ let currentInterface;
   border: 1px solid;
   border-radius: 1cm;
   padding-left: 1cm;
+  padding-right: 1cm;
+  padding-bottom: 1cm;
 }
 </style>
 
