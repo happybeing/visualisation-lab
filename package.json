@@ -40,6 +40,7 @@
     "d3-scale-chromatic": "^1.5.0",
     "d3-selection": "^1.4.1",
     "d3-zoom": "^1.8.3",
-    "graphy": "^4.0.3"
+    "graphy": "^4.0.3",
+    "svelte-notifications": "^0.9.9"
   }
 }
