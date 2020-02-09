@@ -1,6 +1,7 @@
 <script>
 export let sourceInterface;
 export let sourceResultStore;
+export let statusTextStore;
 
 let uri;
 let lastError;
@@ -31,7 +32,7 @@ let lastError;
   <div>
     <button 
       enabled={sourceInterface !== undefined} 
-      on:click={() => sourceInterface.loadUri(sourceResultStore, uri)}>
+      on:click={() => sourceInterface.loadUri(sourceResultStore, statusTextStore, uri)}>
       Load RDF
     </button>
     <text enabled={lastError !== undefined}></text>

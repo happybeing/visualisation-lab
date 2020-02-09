@@ -123,9 +123,10 @@ class RdfInterface extends SourceInterface {
   
   // TODO: Unify data consumption and move to ViewModel:
   // TODO: - extend MIME type support using graphy reader based on mimeType
-  consumeRdfStream (sourceResultStore, stream, mimeType) {
+  consumeRdfStream (sourceResultStore, statusTextStore, stream, {mimeType, size}) {
     console.log('RdfInterface.consumeRdfFile()');
     console.dir(stream);
+    console.log('Size: ', size);
     this.setSourceResult(undefined);
     this.sourceResultStore = sourceResultStore;
 
@@ -134,9 +135,8 @@ class RdfInterface extends SourceInterface {
       const self = this;
       const graphyReader = ttlReader({
         data (y_quad) {
-          console.log(JSON.stringify(y_quad));
           rdfDataset.add(y_quad);
-          console.log('rdfDataset size: ', rdfDataset.size);
+          statusTextStore.set(rdfDataset.size + ' triples loaded');
         },
         eof () {
           console.log('done!');
@@ -223,7 +223,7 @@ class WebInterface extends RdfInterface {
    * @param {Writeable<SourceResult>} sourceResultStore 
    * @param {String} URI 
    */
-  loadUri(sourceResultStore, uri) {
+  loadUri(sourceResultStore, statusTextStore, uri) {
     console.log('WebInterface.loadUri()');
 
     // TODO: load multiple URIs into same store
@@ -231,6 +231,7 @@ class WebInterface extends RdfInterface {
     // TODO: fix error handling to return error for display in UI
       
     // Note: firefox with Privacy Badger gives CORS errors when fetching different origin (URI)
+    statusTextStore.set('loading data');
     fetch(uri, {
       method: 'GET',
       headers: {
@@ -239,16 +240,18 @@ class WebInterface extends RdfInterface {
       }})
     .then(response => {
       if (response.ok ) {
-        this.consumeRdfStream(sourceResultStore, response.body)
+        const contentLength = (response.headers.get('Content-Length'));
+        this.consumeRdfStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
       } else {
         const warning = 'Failed to load URI: ' + uri + '\n' + response.statusText;
         window.notifications.notifyWarning(warning);
       }
+      statusTextStore.set('');
     })
     .catch(e => {
       window.notifications.notifyWarning('Query failed. ' + response.statusText);
       console.error(e);
-      return e;
+      statusTextStore.set('');
     });
   }
 
@@ -268,7 +271,7 @@ class WebSparqlInterface extends WebInterface {
     super(shortName, description, uiComponent ? uiComponent : WebSparqlUI);
   }
 
-  loadSparqlQuery(sourceResultStore, endpoint, sparqlText) {
+  loadSparqlQuery(sourceResultStore, statusTextStore, endpoint, sparqlText) {
     if (endpoint === '') {
       window.notifications.notifyWarning('Please provide an endpoint');
       return;
@@ -276,7 +279,7 @@ class WebSparqlInterface extends WebInterface {
     var url = endpoint + "?query=" + encodeURIComponent(sparqlText) + "&type='text/turtle'";
     console.log('loadSparqlQuery()');
     console.log(url);
-    return this.loadUri(sourceResultStore, url);
+    return this.loadUri(sourceResultStore, statusTextStore, url);
   }
 
 }
@@ -299,16 +302,17 @@ class FileInterface extends RdfInterface {
    * @param {Writeable<SourceResult>} sourceResultStore 
    * @param {FileList} fileList 
    */
-  loadFiles(sourceResultStore, fileList) {
+  loadFiles(sourceResultStore, statusTextStore, fileList) {
     console.log('FileInterface.loadFiles()');
 
     // TODO: load multiple files into same store
     // TODO: consider loading multiple files into separate stores/views
     const file = fileList[0]
     if (file !== undefined) {
+      statusTextStore.set('loading file(s)');
       try {
         console.log('Loading ', file.size, ' bytes from ', file);
-        this.consumeRdfStream(sourceResultStore, file.stream(), file.type);
+        this.consumeRdfStream(sourceResultStore, statusTextStore, file.stream(), {mimeType: file.type, size: file.size});
       } catch(e) {
         windows.notifications.notifyWarning('File load error');
         console.warn(e);
@@ -316,6 +320,7 @@ class FileInterface extends RdfInterface {
     } else {
       console.warn('No file selected.');
     }
+    statusTextStore.set('');
   }
 }
 

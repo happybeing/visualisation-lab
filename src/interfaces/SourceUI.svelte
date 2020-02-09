@@ -14,6 +14,9 @@ export let resultDataStore; // Output SourceResult
 // TODO: pass an initial set of sources to constructor as a JSON array (see SourceInterfaceManager)
 const interfaceManager = new SourceInterfaceManager();
 let currentInterface;
+import {statusTextStore} from '../stores.js';
+
+function handleChange(e) { statusTextStore.set('');}
 </script>
 
 <style>
@@ -29,22 +32,22 @@ let currentInterface;
 <Notifications>
 <div class="main">
   <h3>&lt;SourceUI&gt;</h3>
-  <p>
-  <br/>TODO: use store to add status text in SourceInterface (loading / building model (with nodes + links counts))
-  </p>
-  <label>Data Source:</label>
-  <select bind:value={currentInterface} title='Data Source'>
+  <p><b>Data Source:</b> <select bind:value={currentInterface} title='Data Source' on:change={handleChange}>
     {#each [...interfaceManager.sourceInterfaces] as source}
       <option value={source[1]}>
         {source[0]} : {source[1].description}
       </option>
     {/each}
   </select>
-  <p><b>Current interface:</b> {currentInterface ? currentInterface.description : 'none'}</p>
+  </p>
+  <p><b>Current interface:</b> {currentInterface ? currentInterface.description : 'none'}
+  <b>&nbsp;&nbsp;&nbsp;&nbsp;Status:</b> {$statusTextStore && $statusTextStore != '' ? $statusTextStore : 'idle'}
+  </p>
   <svelte:component 
     this={currentInterface ? currentInterface.uiComponent : undefined}
     sourceInterface={currentInterface}
     sourceResultStore={resultDataStore}
+    statusTextStore={statusTextStore}
   />
 </div>
 </Notifications>

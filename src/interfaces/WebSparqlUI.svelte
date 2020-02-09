@@ -1,6 +1,7 @@
 <script>
 export let sourceInterface;
 export let sourceResultStore;
+export let statusTextStore;
   // { description: '', endpoint: '', options: {}, sparqlText: ``},
 
 import {sparqlExamples} from '../data/examples-sparql.js';
@@ -14,7 +15,6 @@ let selected = sparqlExamples[0];
 let sparql = selected;
 let endpoint;
 let endpointCheckbox = false;
-
 </script>
 
 <style>
@@ -52,7 +52,7 @@ div.query {max-width:1000px;padding-right: 1cm;}
   <div>
     <button 
       enabled={sourceInterface !== undefined} 
-      on:click={() => sourceInterface.loadSparqlQuery(sourceResultStore, sparql.endpoint, sparql.sparqlText)}>
+      on:click={() => sourceInterface.loadSparqlQuery(sourceResultStore, statusTextStore, sparql.endpoint, sparql.sparqlText)}>
       Run Query
     </button>
     <text enabled={lastError !== undefined}>{lastError}</text>

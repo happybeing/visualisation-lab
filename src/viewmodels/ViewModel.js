@@ -66,7 +66,7 @@ export class RdfViewModel extends ViewModel {
     const self = this;
     try {
         for (const quad of rdfDataset) {
-          console.log('Mapping quad: ', quad)
+          // console.log('Mapping quad: ', quad);
           // TODO: implement better mapping to nodes and links
           graphMap.nodes.set(quad.subject.value, {id: quad.subject.value, group: 1});
           graphMap.links.set(quad.subject.value + '--LINK--' + quad.object.value, {source: quad.subject.value, target:quad.object.value, value: 1});
