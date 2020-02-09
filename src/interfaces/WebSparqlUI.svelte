@@ -55,7 +55,7 @@ div.query {max-width:1000px;padding-right: 1cm;}
       on:click={() => sourceInterface.loadSparqlQuery(sourceResultStore, sparql.endpoint, sparql.sparqlText)}>
       Run Query
     </button>
-    <text enabled={lastError !== undefined}></text>
+    <text enabled={lastError !== undefined}>{lastError}</text>
   </div>
 
 </div>

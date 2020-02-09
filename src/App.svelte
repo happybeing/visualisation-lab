@@ -1,4 +1,7 @@
 <script>
+import Notifications from 'svelte-notifications';
+import { notifications } from './notifications.js';
+  
 import NetworkGraphD3SVG from './NetworkGraphD3SVG.svelte';
 // import GraphSvelteSVG from './NetworkGraphSvelteSVG.svelte';
 import NetworkGraphCanvas from './NetworkGraphCanvas.svelte';
@@ -16,6 +19,7 @@ import {graph} from './stores.js';
 	}
 </style>
 
+<Notifications>
 <h1>Visualisation Lab</h1>
 <p>Prototype visualisation workspace, initially for visualisation of 
 RDF data sources. Built using Sveltejs and D3js to be extendable. Code on <a href='https://github.com/theWebalyst/visualisation-lab'>github</a>.
@@ -31,3 +35,4 @@ RDF data sources. Built using Sveltejs and D3js to be extendable. Code on <a hre
 <p>NetworkGraphCanvas uses d3-force to display the graph.</p>
 <p>TODO: wrap NetworkGraphCanvas & co. in View (or ViewUI?)</p>
 <NetworkGraphCanvas {graph} />
+</Notifications>

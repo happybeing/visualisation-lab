@@ -28,7 +28,6 @@ class SourceInterface {
 
 }
 
-
 export class SourceInterfaceManager {
   constructor (interfaceDefinitions) {    
     this.initialiseInterfaces(interfaceDefinitions !== undefined ? interfaceDefinitions : testInterfaces);
@@ -47,9 +46,13 @@ export class SourceInterfaceManager {
         let newInterface = new def.iClass(def.shortName, def.description);
         this.sourceInterfaces.set(def.shortName, newInterface);
         console.dir(newInterface);
-      } catch(e) {console.warn(e);}
+      } catch(e) {
+        windows.notifications.notifyWarning(e);
+        console.warn(e);
+      }
     });    
   }
+
 }
 
 class SourceResult {
@@ -168,7 +171,10 @@ class RdfInterface extends SourceInterface {
       //     console.log('loadTestRdf() results: ');
       //     console.dir(self.$sourceResultStore);
       // });
-    } catch(e) {console.error(e);}
+    } catch(e) {
+      window.notifications.notifyWarning('Failed to parse RDF result.')
+      console.error(e);
+    }
   }
 
   consumeRdfTextTtl (sourceResultStore, textTtl) {
@@ -228,9 +234,16 @@ class WebInterface extends RdfInterface {
         'Content-Type': 'application/sparql-query',
         'Accept': 'text/turtle',
       }})
-    .then(response => {this.consumeRdfStream(sourceResultStore, response.body)})
+    .then(response => {
+      if (response.ok ) {
+        this.consumeRdfStream(sourceResultStore, response.body)
+      } else {
+        const warning = 'Failed to load URI: ' + uri + '\n' + response.statusText;
+        window.notifications.notifyWarning(warning);
+      }
+    })
     .catch(e => {
-      console.error('Failed to fetch and parse URI:', uri);
+      window.notifications.notifyWarning('Query failed - URI not valid.');
       console.error(e);
       return e;
     });
@@ -244,7 +257,6 @@ class WebInterface extends RdfInterface {
 
 }
 
-
 // Web fetch interface for LDP (TODO: SPARQL)
 //
 import WebSparqlUI from "./WebSparqlUI.svelte";
@@ -254,6 +266,10 @@ class WebSparqlInterface extends WebInterface {
   }
 
   loadSparqlQuery(sourceResultStore, endpoint, sparqlText) {
+    if (endpoint === '') {
+      window.notifications.notifyWarning('Please provide an endpoint');
+      return;
+    }
     var url = endpoint + "?query=" + encodeURIComponent(sparqlText) + "&type='text/turtle'";
     console.log('loadSparqlQuery()');
     console.log(url);

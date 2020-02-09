@@ -1,19 +1,20 @@
 <!-- Top level UI for data source interaction
 
  -->
- 
- <script>
-import { SourceInterfaceManager } from "./SourceInterface.js";
 
-import TestUI from "./TestRdfUI.svelte";
+<script>
+import { SourceInterfaceManager } from "./SourceInterface.js";
+import Notifications from 'svelte-notifications';
+
+import {getNotificationsContext} from 'svelte-notifications';
+window.notifications.setNotificationsContext(getNotificationsContext);
 
 export let resultDataStore; // Output SourceResult
 
 // TODO: pass an initial set of sources to constructor as a JSON array (see SourceInterfaceManager)
 const interfaceManager = new SourceInterfaceManager();
 let currentInterface;
-
- </script>
+</script>
 
 <style>
 
@@ -25,14 +26,13 @@ let currentInterface;
   padding-bottom: 1cm;
 }
 </style>
-
+<Notifications>
 <div class="main">
   <h3>&lt;SourceUI&gt;</h3>
   <p>
   <br/>TODO: error handling / status messages in the interface UIs (investigate Svelte error handling)
   <br/>TODO: use store to add status text in SourceInterface (loading / building model (with nodes + links counts))
   </p>
-
   <label>Data Source:</label>
   <select bind:value={currentInterface} title='Data Source'>
     {#each [...interfaceManager.sourceInterfaces] as source}
@@ -48,3 +48,4 @@ let currentInterface;
     sourceResultStore={resultDataStore}
   />
 </div>
+</Notifications>
