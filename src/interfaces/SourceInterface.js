@@ -202,7 +202,10 @@ class RdfInterface extends SourceInterface {
           console.dir(self.$sourceResultStore);
         },
       })
-    } catch (err) { console.error(err); } 
+    } catch (e) { 
+      windows.notifications.notifyWarning(e);
+      console.error(e); 
+    } 
 
   }
 }
@@ -243,7 +246,7 @@ class WebInterface extends RdfInterface {
       }
     })
     .catch(e => {
-      window.notifications.notifyWarning('Query failed - URI not valid.');
+      window.notifications.notifyWarning('Query failed. ' + response.statusText);
       console.error(e);
       return e;
     });
@@ -307,8 +310,8 @@ class FileInterface extends RdfInterface {
         console.log('Loading ', file.size, ' bytes from ', file);
         this.consumeRdfStream(sourceResultStore, file.stream(), file.type);
       } catch(e) {
-        console.warn('File load error');
-        console.error(e);
+        windows.notifications.notifyWarning('File load error');
+        console.warn(e);
       }
     } else {
       console.warn('No file selected.');
