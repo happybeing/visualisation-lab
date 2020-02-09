@@ -30,7 +30,6 @@ let currentInterface;
 <div class="main">
   <h3>&lt;SourceUI&gt;</h3>
   <p>
-  <br/>TODO: error handling / status messages in the interface UIs (investigate Svelte error handling)
   <br/>TODO: use store to add status text in SourceInterface (loading / building model (with nodes + links counts))
   </p>
   <label>Data Source:</label>
