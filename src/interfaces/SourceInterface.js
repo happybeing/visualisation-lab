@@ -249,7 +249,8 @@ class WebInterface extends RdfInterface {
       statusTextStore.set('');
     })
     .catch(e => {
-      window.notifications.notifyWarning('Query failed. ' + response.statusText);
+      window.notifications.notifyWarning('Query failed.');
+      window.notifications.notifyError(e.message);
       console.error(e);
       statusTextStore.set('');
     });
