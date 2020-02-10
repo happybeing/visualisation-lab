@@ -19,8 +19,9 @@ class SourceInterface {
 
   // TODO: maintain named, id'd list of all SourceInterface objects for SourceUI
   // TODO: start with four fixed interfaces: 
-  // TODO:  - RDF (fixed LDP access)
-  // TODO:  - File (a fixed file)
+  // DONE:  - RDF (fixed LDP access)
+  // DONE:  - SPARQL (specify endpoint and create query with some presets)
+  // DONE:  - File (a fixed file)
   // TODO:  - Manual (fixed user)
   // TODO:  - Generated (ngraph)
   // TODO: add serialisation (file save/load and incorporate in app-wide project/template serialisation)
@@ -100,8 +101,6 @@ function readableStreamToGraphyReader(readableStream, graphyReader) {
   next();
 }
 
-// TODO: LDP
-// TODO: SPARQL
 class RdfInterface extends SourceInterface {
   constructor (shortName, description, uiComponent) {
     super(shortName, description, uiComponent ? uiComponent : TestRdfUI);
@@ -228,7 +227,6 @@ class WebInterface extends RdfInterface {
 
     // TODO: load multiple URIs into same store
     // TODO: consider loading multiple URIs into separate stores/views
-    // TODO: fix error handling to return error for display in UI
       
     // Note: firefox with Privacy Badger gives CORS errors when fetching different origin (URI)
     statusTextStore.set('loading data');
@@ -328,7 +326,7 @@ class FileInterface extends RdfInterface {
 import JsonUI from "./JsonUI.svelte";
 import lesMisData from '../data/data-les-miserables.js';
 
-// TODO: JSON - initially just {nodes: [], links []}
+// JSON - initially just {nodes: [], links []}
 export class JsonSourceResult extends SourceResult {
   constructor (jsonInterface, jsonResult) {
     super(jsonInterface);
