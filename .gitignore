@@ -2,6 +2,7 @@
 node_modules
 public/bundle.*
 package-lock.json
+scripts/vlab.ncftp
 yarn.lock
 .history
 
