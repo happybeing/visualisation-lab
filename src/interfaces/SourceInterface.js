@@ -242,7 +242,7 @@ class WebInterface extends RdfInterface {
         const contentLength = (response.headers.get('Content-Length'));
         this.consumeRdfStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
       } else {
-        const warning = 'Failed to load URI: ' + uri + '\n' + response.statusText;
+        const warning = 'Failed to load URI.\n' + response.statusText;
         window.notifications.notifyWarning(warning);
       }
       statusTextStore.set('');
