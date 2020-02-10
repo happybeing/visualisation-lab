@@ -130,10 +130,8 @@ WHERE {
   FILTER (lang(?paradigm) = 'en')
 }
 LIMIT 1`},
-];
 
-export const brokenExamples = [
-{ description: 'Chart Scatterplot ()', endpoint: 'http://togostanza.org/sparql', options: {}, sparqlText: `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+{ description: 'Chart Scatterplot (disable CORS)', endpoint: 'http://togostanza.org/sparql', options: {}, sparqlText: `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX id_tax:<http://identifiers.org/taxonomy/>
 PREFIX tax: <http://ddbj.nig.ac.jp/ontologies/taxonomy/>
 PREFIX stats:  <http://togogenome.org/stats/>
@@ -163,7 +161,7 @@ SELECT DISTINCT ?organism ?label ?length ?genes (COUNT(DISTINCT ?protein) AS ?hk
 } GROUP BY ?organism ?label ?length ?genes ORDER BY ?length
 `},
 
-{ description: 'Tree Map ()', endpoint: 'http://togostanza.org/sparql', options: {}, sparqlText: `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+{ description: 'Tree Map (disable CORS)', endpoint: 'http://togostanza.org/sparql', options: {}, sparqlText: `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX tax: <http://ddbj.nig.ac.jp/ontologies/taxonomy/>
 
 SELECT DISTINCT ?root_name ?parent_name ?child_name
@@ -179,7 +177,7 @@ WHERE
 }
 `},
 
-{ description: 'Tree Map zoom ()', endpoint: 'http://togostanza.org/sparql', options: {}, sparqlText: `PREFIX up: <http://purl.uniprot.org/core/>
+{ description: 'Tree Map zoom (disable CORS)', endpoint: 'http://togostanza.org/sparql', options: {}, sparqlText: `PREFIX up: <http://purl.uniprot.org/core/>
 PREFIX ec: <http://purl.uniprot.org/enzyme/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
@@ -203,7 +201,7 @@ WHERE
 GROUP BY ?root ?parent ?enzyme ORDER BY ?enzyme
 `},
 
-{ description: 'Tree Sunburst ()', endpoint: 'http://togostanza.org/sparql', options: {}, sparqlText: `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+{ description: 'Tree Sunburst (disable CORS)', endpoint: 'http://togostanza.org/sparql', options: {}, sparqlText: `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX tax: <http://ddbj.nig.ac.jp/ontologies/taxonomy/>
 
 SELECT DISTINCT ?root_name ?parent_name ?child_name
@@ -219,7 +217,7 @@ WHERE
 }
 `},
 
-{ description: 'Tree Round ()', endpoint: 'http://togostanza.org/sparql', options: {}, sparqlText: `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+{ description: 'Tree Round (disable CORS)', endpoint: 'http://togostanza.org/sparql', options: {}, sparqlText: `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX tax: <http://ddbj.nig.ac.jp/ontologies/taxonomy/>
 
 SELECT DISTINCT ?root_name ?parent_name ?child_name
@@ -235,7 +233,7 @@ WHERE
 }
 `},
   
-{ description: 'Tree Dendogram ()', endpoint: 'http://togostanza.org/sparql', options: {}, sparqlText: `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+{ description: 'Tree Dendogram (disable CORS)', endpoint: 'http://togostanza.org/sparql', options: {}, sparqlText: `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX tax: <http://ddbj.nig.ac.jp/ontologies/taxonomy/>
 
 SELECT DISTINCT ?root_name ?parent_name ?child_name
@@ -250,7 +248,7 @@ WHERE
   ?parent tax:scientificName ?parent_name .
 }`},
 
-{ description: 'Tree Circlepack (biohackathon/Tardigrada)', endpoint: 'https://togostanza.org/sparql', options: {}, sparqlText: `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+{ description: 'Tree Circlepack (biohackathon/Tardigrada)', endpoint: 'http://togostanza.org/sparql', options: {}, sparqlText: `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX tax: <http://ddbj.nig.ac.jp/ontologies/taxonomy/>
 
 SELECT DISTINCT ?root_name ?parent_name ?child_name
@@ -263,31 +261,9 @@ WHERE
   ?child rdfs:subClassOf ?parent .
   ?child tax:scientificName ?child_name .
   ?parent tax:scientificName ?parent_name .
-`},
+}`},
 
-{ description: 'No Turtle? Map Coord ()', endpoint: 'http://www.ebi.ac.uk/rdf/services/sparql', options: {}, sparqlText: `PREFIX dc: <http://purl.org/dc/elements/1.1/>
-PREFIX biosd-terms: <http://rdf.ebi.ac.uk/terms/biosd/>
-PREFIX sio: <http://semanticscience.org/resource/>
-
-# Samples reporting latitude and longitude
-SELECT DISTINCT ?item ?lat ?lng
-WHERE {
-  ?item biosd-terms:has-sample-attribute ?lat_value, ?lng_value .
-
-  ?lat_value
-    dc:type ?lat_label;
-    sio:SIO_000300 ?lat . # sio:has value
-
-  FILTER ( LCASE ( STR ( ?lat_label ) ) = "latitude" ) .
-
-  ?lng_value
-    dc:type ?lng_label;
-    sio:SIO_000300 ?lng . # sio:has value
-
-  FILTER ( LCASE ( STR ( ?lng_label ) ) = "longitude" ) .
-} LIMIT 1000`},
-
-{ description: 'Table HTML ()', endpoint: 'http://togostanza.org/sparql', options: {}, sparqlText: `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+{ description: 'Table HTML (disable CORS)', endpoint: 'http://togostanza.org/sparql', options: {}, sparqlText: `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX id_tax:<http://identifiers.org/taxonomy/>
 PREFIX tax: <http://ddbj.nig.ac.jp/ontologies/taxonomy/>
 PREFIX stats:  <http://togogenome.org/stats/>
@@ -314,7 +290,31 @@ SELECT DISTINCT ?organism ?label ?length ?genes (COUNT(DISTINCT ?protein) AS ?hk
     a up:Protein .
   # Signal transduction histidine kinase (IPR005467)
   ?protein rdfs:seeAlso ipr:IPR005467 .
-} GROUP BY ?organism ?label ?length ?genes ORDER BY ?length
-`},
+} GROUP BY ?organism ?label ?length ?genes ORDER BY ?length`},
+];
+
+export const brokenExamples = [
+
+{ description: 'No Turtle? Map Coord ()', endpoint: 'http://www.ebi.ac.uk/rdf/services/sparql', options: {}, sparqlText: `PREFIX dc: <http://purl.org/dc/elements/1.1/>
+PREFIX biosd-terms: <http://rdf.ebi.ac.uk/terms/biosd/>
+PREFIX sio: <http://semanticscience.org/resource/>
+
+# Samples reporting latitude and longitude
+SELECT DISTINCT ?item ?lat ?lng
+WHERE {
+  ?item biosd-terms:has-sample-attribute ?lat_value, ?lng_value .
+
+  ?lat_value
+    dc:type ?lat_label;
+    sio:SIO_000300 ?lat . # sio:has value
+
+  FILTER ( LCASE ( STR ( ?lat_label ) ) = "latitude" ) .
+
+  ?lng_value
+    dc:type ?lng_label;
+    sio:SIO_000300 ?lng . # sio:has value
+
+  FILTER ( LCASE ( STR ( ?lng_label ) ) = "longitude" ) .
+} LIMIT 1000`},
 
 ];
