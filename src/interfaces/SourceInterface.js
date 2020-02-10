@@ -293,7 +293,6 @@ import FileUI from "./FileUI.svelte";
 class FileInterface extends RdfInterface {
   constructor (shortName, description, uiComponent) {
     super(shortName, description, uiComponent ? uiComponent : FileUI);
-    console.warn('FileInterface - to be implemented');
   }
   // TODO: LATER: provide file selection with optional default file extensions (use 'options' in the interfaces list)
 
@@ -342,7 +341,6 @@ export class JsonSourceResult extends SourceResult {
 class JsonInterface extends SourceInterface {
   constructor (shortName, description) {
     super(shortName, description, JsonUI);
-    console.warn('JsonInterface - to be implemented');
   }
 
   loadTestJson (sourceResultStore) {
