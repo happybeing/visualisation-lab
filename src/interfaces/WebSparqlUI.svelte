@@ -5,6 +5,12 @@ export let statusTextStore;
   // { description: '', endpoint: '', options: {}, sparqlText: ``},
 
 import {sparqlExamples} from '../data/examples-sparql.js';
+
+// Note re brokenExamples:
+// Source http://togostanza.org/
+// - queries work to http: from http: (but togostanza.org refuses connection from https)
+// - results for sparql.js using this are requested in JSON format
+//
 // import {brokenExamples} from '../data/examples-sparql.js';
 // let sparqlExamples = brokenExamples;
 
