@@ -9,7 +9,9 @@ import {sparqlExamples} from '../data/examples-sparql.js';
 // Note re brokenExamples:
 // Source http://togostanza.org/
 // - queries work to http: from http: (but togostanza.org refuses connection from https)
-// - results for sparql.js using this are requested in JSON format
+// -> I can access from localhost with CORS checks bypassed in Firefox 
+//    using CORS Everywhere add-on. sparql.js requests results in JSON format 
+//    but text/turtle also available.
 //
 // import {brokenExamples} from '../data/examples-sparql.js';
 // let sparqlExamples = brokenExamples;

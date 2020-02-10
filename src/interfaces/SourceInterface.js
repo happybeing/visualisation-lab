@@ -235,6 +235,7 @@ class WebInterface extends RdfInterface {
       headers: {
         'Content-Type': 'application/sparql-query',
         'Accept': 'text/turtle',
+        // 'Accept': 'application/sparql-results+json',
       }})
     .then(response => {
       if (response.ok ) {
