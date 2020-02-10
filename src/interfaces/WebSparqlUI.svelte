@@ -46,7 +46,7 @@ div.query {max-width:1000px;padding-right: 1cm;}
         {/each}
         </select><br/></div>
         Endpoint: <input bind:value={sparql.endpoint} placeholder="endpoint"><br/>
-        <textarea class="sparqlText" value={sparql.sparqlText} placeholder="SPARQL query" rows="15"/><br/>
+        <textarea class="sparqlText" bind:value={sparql.sparqlText} placeholder="SPARQL query" rows="15"/><br/>
     </div>
   </div>
   <div>
