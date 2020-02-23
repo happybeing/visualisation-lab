@@ -145,7 +145,6 @@ class RdfInterface extends SourceInterface {
           self.sourceResultStore.update(v => sourceResult);
           
           console.log('loadTestRdf() results: ');
-          console.dir(self.$sourceResultStore);
           }
         });
         readableStreamToGraphyReader(stream, graphyReader);
@@ -198,7 +197,6 @@ class RdfInterface extends SourceInterface {
           self.sourceResultStore.update(v => sourceResult);
 
           console.log('consumeRdfTextTtl() results: ');
-          console.dir(self.$sourceResultStore);
         },
       })
     } catch (e) { 

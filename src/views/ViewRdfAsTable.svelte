@@ -126,6 +126,7 @@ const unsubscribe = resultDataStore.subscribe(rds => {
 
   try {
     rdfTable = new RdfTabulator(rds.getRdfDataset());
+    console.log('RDF as a Table:')
     console.dir(rdfTable.Table());
   } catch(e) {
     console.log('ViewRdfAsTable - failed to consume results (SourceResult)');
