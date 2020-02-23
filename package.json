@@ -33,6 +33,7 @@
     "dev": "webpack-dev-server --content-base public"
   },
   "dependencies": {
+    "@graphy/core.data.factory": "^4.0.5",
     "@rdfjs/fetch": "^2.0.0",
     "d3-drag": "^1.2.5",
     "d3-force": "^2.0.1",
@@ -41,6 +42,7 @@
     "d3-selection": "^1.4.1",
     "d3-zoom": "^1.8.3",
     "graphy": "^4.0.3",
-    "svelte-notifications": "^0.9.9"
+    "svelte-notifications": "^0.9.9",
+    "svelte-table": "^0.1.7"
   }
 }

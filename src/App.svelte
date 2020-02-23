@@ -2,11 +2,14 @@
 import Notifications from 'svelte-notifications';
 import { notifications } from './notifications.js';
   
-import NetworkGraphD3SVG from './NetworkGraphD3SVG.svelte';
-// import GraphSvelteSVG from './NetworkGraphSvelteSVG.svelte';
-import NetworkGraphCanvas from './NetworkGraphCanvas.svelte';
 import SourceUI from './interfaces/SourceUI.svelte';
 import ViewModelUI from './viewmodels/ViewModelUI.svelte';
+
+import NetworkGraphD3SVG from './views/NetworkGraphD3SVG.svelte';
+// import GraphSvelteSVG from './views/NetworkGraphSvelteSVG.svelte';
+import NetworkGraphCanvas from './views/NetworkGraphCanvas.svelte';
+import ViewRdfAsTableUI from './views/ViewRdfAsTable.svelte';
+
 
 import {resultDataStore} from './stores.js';
 import {graph} from './stores.js';
@@ -27,6 +30,8 @@ RDF data sources. Built using Sveltejs and D3js to be extendable. Code on <a hre
 <p>SourceUI handles interaction with data sources:
 <SourceUI resultDataStore={resultDataStore}/>
 </p>
+<p>ViewRdfAsTableUI provides a tabular summary of the current RDF dataset</p>
+<ViewRdfAsTableUI/>
 
 <p>ViewModelUI maps the RDF to objects for visualisation:
 </p>
