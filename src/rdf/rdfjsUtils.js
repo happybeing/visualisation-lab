@@ -47,14 +47,14 @@ export class RdfTabulator {
   Table (options) {
     if (this.table) return this.table;
     this.touch(); // Clear any metadata
-    const table = { column: ["Subject", "Predicate", "Object", "Object Type"], row: [] };
+    const table = { columns: ["Subject", "Predicate", "Object", "Object Type"], rows: [] };
 
     if (this.rdf === undefined) {
       console.warn('RdfTabulation.calculateTabulation() - RDF dataset undefined');
       window.notify.warn('No RDF loaded');
       return;
     }
-    this.rdf.canonicalize();
+    // this.rdf.canonicalize(); // Causes stack space error with moderate sized Dataset 
 
     // Default metadata
     this.metadata.ontologies = new Map;  // TODO accumulate ontologies used
@@ -64,7 +64,7 @@ export class RdfTabulator {
     let res = this.rdf.match(null, rdfjs.namedNode('http://www.w3.org/2003/01/geo/wgs84_pos#lat'))
     console.dir(res);
     for (let quad of this.rdf) {
-      table.row.push({"Subject": quad.subject.value, "Predicate": quad.predicate.value, "Object": quad.object.value, "Object Type": quad.object.termType})
+      table.rows.push({"Subject": quad.subject.value, "Predicate": quad.predicate.value, "Object": quad.object.value, "ObjectType": quad.object.termType})
       
       const subjectOntology = extractOntology(quad.subject.value);
       const predicateOntology = extractOntology(quad.predicate.value);
