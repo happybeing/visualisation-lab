@@ -24,7 +24,7 @@ let columns = [
           filterArray.push({name: row.Subject, value: row.Subject});
         }
       });
-      filterArray.sort();
+      // filterArray.sort((v1, v2) => v1.name.localeCompare(v2.name));
       return filterArray;
     },
   },
@@ -42,7 +42,7 @@ let columns = [
           filterArray.push({name: row.Predicate, value: row.Predicate});
         }
       });
-      filterArray.sort();
+      // filterArray.sort((v1, v2) => v1.name.localeCompare(v2.name));
       return filterArray;
     },
   },
@@ -60,7 +60,7 @@ let columns = [
           filterArray.push({name: row.Object, value: row.Object});
         }
       });
-      filterArray.sort();
+      // filterArray.sort((v1, v2) => v1.name.localeCompare(v2.name));
       return filterArray;
     },
   },
@@ -78,7 +78,7 @@ let columns = [
           filterArray.push({name: row.ObjectType, value: row.ObjectType});
         }
       });
-      filterArray.sort();
+      filterArray.sort((v1, v2) => v1.name.localeCompare(v2.name));
       return filterArray;
     },
   }
