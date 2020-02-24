@@ -30,14 +30,12 @@ RDF data sources. Built using Sveltejs and D3js to be extendable. Code on <a hre
 <p>SourceUI handles interaction with data sources:
 <SourceUI resultDataStore={resultDataStore}/>
 </p>
-<p>ViewRdfAsTableUI provides a tabular summary of the current RDF dataset</p>
-<ViewRdfAsTableUI/>
-
 <p>ViewModelUI maps the RDF to objects for visualisation:
 </p>
 <ViewModelUI resultDataStore={resultDataStore}/>
-<h2>&lt;NetworkGraphCanvas&gt;</h2>
-<p>NetworkGraphCanvas uses d3-force to display the graph.</p>
-<p>TODO: wrap NetworkGraphCanvas & co. in View (or ViewUI?)</p>
 <NetworkGraphCanvas {graph} />
+
+<p>ViewRdfAsTableUI provides a tabular summary of the current RDF dataset</p>
+<ViewRdfAsTableUI/>
+
 </Notifications>

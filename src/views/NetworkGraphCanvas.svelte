@@ -140,18 +140,32 @@
 
     function resize() {
         ({ width, height } = canvas);
-    }
+  }
 
 </script>
 
 <svelte:window on:resize='{resize}'/>
 
-<div class='container'>
-    <canvas bind:this={canvas} width='{width}' height='{height}'/>
-</div>
-
-    <style>
-    canvas {
-        float: left;
-    }
+<style>
+.main { 
+  background: rgba(134, 174, 212, 0.185);
+  border: 1px solid;
+  border-radius: 1cm;
+  padding-left: 1cm;
+  padding-right: 1cm;
+  padding-bottom: 1cm;
+}
+canvas {
+    float: left;
+}
 </style>
+
+<div class='main' >
+  <h2>&lt;NetworkGraphCanvas&gt;</h2>
+  <p>NetworkGraphCanvas uses d3-force to display the graph.</p>
+  <p>TODO: wrap NetworkGraphCanvas & co. in View (or ViewUI?) and size canvas to its div</p>
+
+  <div class='container' style='width: {width}px; height: {height}px'>
+    <canvas bind:this={canvas} width='{width}' height='{height}'/>
+  </div>
+</div>

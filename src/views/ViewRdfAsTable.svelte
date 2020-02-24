@@ -119,8 +119,8 @@ const unsubscribe = resultDataStore.subscribe(rds => {
 <h2>&lt;ViewRdfAsTableUI&gt;</h2>
 <p>
 TODO: add ontologies<br/>
-TODO: add filtering<br/>
-TODO: ??? clear views (including table) on start of query<br/>
+TODO: maybe allow text entry on filters<br/>
+TODO: clear views (including table) on start of query<br/>
 </p>
 <p>Triples: {$resultDataStore && $resultDataStore.getRdfDataset() ? $resultDataStore.getRdfDataset().size : 'none'}<br/>
 <br/>
