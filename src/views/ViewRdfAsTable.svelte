@@ -24,7 +24,7 @@ let columns = [
           filterArray.push({name: row.Subject, value: row.Subject});
         }
       });
-      filterArray.sort();
+      // filterArray.sort((v1, v2) => v1.name.localeCompare(v2.name));
       return filterArray;
     },
   },
@@ -42,7 +42,7 @@ let columns = [
           filterArray.push({name: row.Predicate, value: row.Predicate});
         }
       });
-      filterArray.sort();
+      // filterArray.sort((v1, v2) => v1.name.localeCompare(v2.name));
       return filterArray;
     },
   },
@@ -60,7 +60,7 @@ let columns = [
           filterArray.push({name: row.Object, value: row.Object});
         }
       });
-      filterArray.sort();
+      // filterArray.sort((v1, v2) => v1.name.localeCompare(v2.name));
       return filterArray;
     },
   },
@@ -78,7 +78,7 @@ let columns = [
           filterArray.push({name: row.ObjectType, value: row.ObjectType});
         }
       });
-      filterArray.sort();
+      filterArray.sort((v1, v2) => v1.name.localeCompare(v2.name));
       return filterArray;
     },
   }
@@ -119,6 +119,8 @@ const unsubscribe = resultDataStore.subscribe(rds => {
 <h2>&lt;ViewRdfAsTableUI&gt;</h2>
 <p>
 TODO: add ontologies<br/>
+TODO: maybe allow text entry on filters<br/>
+TODO: clear views (including table) on start of query<br/>
 </p>
 <p>Triples: {$resultDataStore && $resultDataStore.getRdfDataset() ? $resultDataStore.getRdfDataset().size : 'none'}<br/>
 <br/>
