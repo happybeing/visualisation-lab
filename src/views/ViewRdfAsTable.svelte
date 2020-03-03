@@ -13,25 +13,74 @@ let columns = [
     key: "Subject",
     title: "Subject",
     value: v => v.Subject,
-    sortable: true
+    sortable: true,
+    filterValue: v => v.Subject,
+    filterOptions: rows => {
+      let filterMap = new Map;
+      let filterArray = [];
+      rows.forEach(row => {
+        if (!filterMap.has(row.Subject)) {
+          filterMap.set(row.Subject);
+          filterArray.push({name: row.Subject, value: row.Subject});
+        }
+      });
+      filterArray.sort();
+      return filterArray;
+    },
   },
   {
     key: "Predicate",
     title: "Predicate",
     value: v => v.Predicate,
-    sortable: true
+    sortable: true,
+    filterOptions: rows => {
+      let filterMap = new Map;
+      let filterArray = [];
+      rows.forEach(row => {
+        if (!filterMap.has(row.Predicate)) {
+          filterMap.set(row.Predicate);
+          filterArray.push({name: row.Predicate, value: row.Predicate});
+        }
+      });
+      filterArray.sort();
+      return filterArray;
+    },
   },
   {
     key: "Object",
     title: "Object",
     value: v => v.Object,
-    sortable: true
+    sortable: true,
+    filterOptions: rows => {
+      let filterMap = new Map;
+      let filterArray = [];
+      rows.forEach(row => {
+        if (!filterMap.has(row.Object)) {
+          filterMap.set(row.Object);
+          filterArray.push({name: row.Object, value: row.Object});
+        }
+      });
+      filterArray.sort();
+      return filterArray;
+    },
   },
   {
     key: "Object Type",
     title: "Object Type",
     value: v => v.ObjectType,
-    sortable: true
+    sortable: true,
+    filterOptions: rows => {
+      let filterMap = new Map;
+      let filterArray = [];
+      rows.forEach(row => {
+        if (!filterMap.has(row.ObjectType)) {
+          filterMap.set(row.ObjectType);
+          filterArray.push({name: row.ObjectType, value: row.ObjectType});
+        }
+      });
+      filterArray.sort();
+      return filterArray;
+    },
   }
 ];
 
@@ -47,6 +96,7 @@ const unsubscribe = resultDataStore.subscribe(rds => {
     console.log('RDF as a Table:')
     console.dir(table);
     rows = table.rows;
+    columns = columns;
   } catch(e) {
     console.log('ViewRdfAsTable - failed to consume results (SourceResult)');
     console.error(e);
@@ -69,7 +119,6 @@ const unsubscribe = resultDataStore.subscribe(rds => {
 <h2>&lt;ViewRdfAsTableUI&gt;</h2>
 <p>
 TODO: add ontologies<br/>
-TODO: ??? clear views (including table) on start of query<br/>
 </p>
 <p>Triples: {$resultDataStore && $resultDataStore.getRdfDataset() ? $resultDataStore.getRdfDataset().size : 'none'}<br/>
 <br/>
