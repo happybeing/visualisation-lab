@@ -26,7 +26,7 @@ if [ "$1" = "web" -o "$1" = "" ]; then
   ncftpput -R -f scripts/vlab.ncftp $FTP_DIR $SOURCE/*
 fi
 
-if [ "$1" = "safe" -o "$1" = "" ]; then
+#if [ "$1" = "safe" -o "$1" = "" ]; then
   # TODO modify the following to use the SAFE-CLI
   #
   # Deploy via SAFE Drive to an existing SAFE Network public name (website)
@@ -42,4 +42,4 @@ if [ "$1" = "safe" -o "$1" = "" ]; then
   # rsync -rc --delete $SOURCE/ $UPLOAD/ && \
   # cp -ruv $UPLOAD/* $SAFE_DIR/ && \
   # rsync -ru --delete $UPLOAD/ $SAFE_DIR/
-fi
+#fi
