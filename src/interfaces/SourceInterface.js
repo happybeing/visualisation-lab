@@ -1,7 +1,12 @@
 // Base class for managing a data source
 //
+// TODO: update set of SourceResult types in line with ViewModel refactor (e.g. RDF graph, RDF table, JSON graph, JSON table)
+// TODO: separate the SourceResult types from SourceResult (naming) into "ModelTypes" for use by SourceInterface and ViewModel
+// TODO:
 // TODO: move subclasses to separate files and export from this file
 // TODO: remove all console.dir
+
+import {modelFormats} from '../modelTypes.js';
 
 class SourceInterface {
   constructor (shortName, description, uiComponent) {
@@ -64,7 +69,7 @@ class SourceResult {
   getInterface () {return this.sourceInterface;}
   
   // Base interface:
-  getSourceResultType () {throw Error('SourceResult - no SourceResult type');}
+  getModelFormat () {throw Error('SourceResult - no SourceResult type');}
 }
 
 import TestRdfUI from "./TestRdfUI.svelte";
@@ -77,7 +82,7 @@ export class RdfSourceResult extends SourceResult {
     this.rdfDataset = rdfDataset;
   }
 
-  getSourceResultType () { return sourceResultTypes.RDFJS_DATASET;}
+  getModelFormat () { return modelFormats.RDFJS_DATASET;}
   getRdfDataset () {return this.rdfDataset;}
 }
 
@@ -332,7 +337,7 @@ export class JsonSourceResult extends SourceResult {
     this.jsonResult = jsonResult;
   }
 
-  getSourceResultType () { return sourceResultTypes.JSON_ARRAY;}
+  getModelFormat () { return modelFormats.JSON_ARRAY;}
   getJsonResult () {return this.jsonResult;}
 }
 
@@ -379,23 +384,5 @@ const testInterfaces = [
   {iClass: RdfInterface, shortName: "rdf-test", description: "Load a test RDF/Turtle example", options: {}},
   {iClass: ManualInterface, shortName:  "manual-test", description: "Manual (mrh)", options: {}},
   {iClass: GeneratorInterface, shortName:  "generator-test", description: "Generator (mrh)", options: {}},
-    
  ];
-  
-  // Source result types
-
-export const sourceResultTypes = {
-  RDFJS_DATASET: 'RDFJS_DATASET',
-  JSON_ARRAY: 'JSON_ARRAY',
-};
-
-// const sourceResultDataTypeList = [
-//   {resultType: RDFJS_DATASET, friendlyName: 'RDF/JS Dataset', resultClass: RdfSourceResult, categoryName: 'RDF'},
-//   {resultType: JSON_ARRAY, friendlyName: 'JSON', resultClass: JsonSourceResult, categoryName: 'JSON'},
-// ];
- 
-export const sourceResultTypeMap = new Map([
-  [sourceResultTypes.RDFJS_DATASET, {friendlyName: 'RDF/JS Dataset', resultClass: RdfSourceResult, categoryName: 'RDF'}],
-  [sourceResultTypes.JSON_ARRAY, {friendlyName: 'JSON', resultClass: JsonSourceResult, categoryName: 'JSON'}],
-]);
 

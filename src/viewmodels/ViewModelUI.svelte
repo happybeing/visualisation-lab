@@ -12,18 +12,18 @@ import {onMount} from 'svelte';
 
 import FiltersUI from './FiltersUI.svelte'
 
-import {sourceResultTypes, sourceResultTypeMap} from '../interfaces/SourceInterface.js'
+import {modelFormats, modelTypeMap} from '../modelTypes.js';
 import {RdfViewModel, JsonViewModel} from './ViewModel.js';
 
 import {resultDataStore} from "../stores.js";
 import {graph} from "../stores.js";
 
 // TODO: add support for jsonViewModel
-// - enumerate a set of SourceResultTypes for SourceResult.resultData
+// - enumerate a set of modelFormats for SourceResult.resultData
 // - note TODO: create ViewModel handler for each SourceResultType
 // - implement ViewModel.getViewModelForSourceResult(sourceResult)
 // - implement ViewModel.getView
-// - ??? add SourceResult.getSourceResultType()
+// - ??? add SourceResult.getModelFormat()
 // - how are these selected? 
 // - should this just follow the SourceInterface?
 
@@ -34,8 +34,8 @@ let showViewDebug = false;
 // TODO: construct this dynamically using SourceInterface.js and ViewModel.js helpers
 // TODO: offer choice of view model type where more than one is available for the current SourceResult
 const availableViewModels = new Map([
-  [sourceResultTypes.RDFJS_DATASET, [RdfViewModel]],  // TODO: later handle multiple models per SourceResultType
-  [sourceResultTypes.JSON_ARRAY, [JsonViewModel]],
+  [modelFormats.RDFJS_DATASET, [RdfViewModel]],  // TODO: later handle multiple models per SourceResultType
+  [modelFormats.JSON_ARRAY, [JsonViewModel]],
 ]);
 
 // Active view models by SourceResult type
@@ -47,7 +47,7 @@ const unsubscribe = resultDataStore.subscribe(rds => {
   if (rds === undefined || rds === 0) {return;}
 
   try {
-    let resultType = rds.getSourceResultType();
+    let resultType = rds.getModelFormat();
     let viewModel = resultsModelMap.get(resultType);
     if (viewModel === undefined) {
       let modelClass = availableViewModels.get(resultType)[0]; 

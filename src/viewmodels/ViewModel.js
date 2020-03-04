@@ -1,17 +1,20 @@
-/* ViewModelUI implementation classes 
+/** ViewModel implementation classes 
 
+TODO: ViewModel - a base class which defines the ViewModel API, as used by SourceInterface and View classes
+TODO: A template subclass for each type of ViewModel, named VM<Type> (e.g. VMTable, VMGraph etc)
+TODO: - VMTable rework to consumeRdf and consumeJSON and make/define VMTable model based on ViewRdfAsTable
+TODO: - VMGraph rework to consumeRdf and consumeJSON and make/define VMGraph based on { nodes: [], links: [] }
+TODO: Include VM<Type> templates for other view models, with ability to consume RDF and/or JSON and
+TODO:  use these to define ModelTypes, a set of SourceResult and ViewModel types that will be declared/offered by 
+TODO:  each ViewModel and each SourceInterface (and in sourceResultTypeMap)
+TODO: Export viewModelTypeMap, an object which enumerates the available VM<Type> classes
+
+Maybe... (these need review)
 TODO: class Filters - filters which can be applied to a viewModel 
 TODO: RdfViewModel / JsonViewModel / etc where:
 TODO:  RdfViewModel implements mapping(s) of RdfSourceResult to a view model
 
 */
-
-import {sourceResultTypes, RdfSourceResult, JsonSourceResult} from '../interfaces/SourceInterface.js';
-
-export const sourceResultTypeMap = new Map([
-  [sourceResultTypes.RDFJS_DATASET, {friendlyName: 'RDF/JS Dataset', resultClass: RdfSourceResult, categoryName: 'RDF'}],
-  [sourceResultTypes.JSON_ARRAY, {friendlyName: 'JSON', resultClass: JsonSourceResult, categoryName: 'JSON'}],
-]);
 
 class ViewModel {
   constructor () {
