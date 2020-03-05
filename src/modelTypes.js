@@ -5,13 +5,10 @@
  */
 
 export const modelFormats = {
-  // Raw inputs (consumed by SourceInterface classes to create a SourceResult object)
-  // RAW_ARRAY_JSON: 'raw-array-json',
-
-  // SourceResult outputs / ViewModel inputs
+  // Types for SourceResult output / ViewModel input:
   RAW_GRAPH_RDFDATASET: 'raw-graph-rdfdataset',
 
-  // ViewModel outputs
+  // Types for ViewModel output:
   VM_TABULAR_JSON: 'vm-tabular-json',
   VM_GRAPH_JSON: 'vm-graph-json',
   VM_TREE_JSON: 'vm-tree-json',
@@ -21,6 +18,5 @@ export const modelFormats = {
 
 export const modelTypeMap = new Map([
   [modelFormats.RAW_GRAPH_RDFDATASET, {friendlyName: 'RDF/JS Dataset', categoryName: 'RDF'}],
-  //[modelFormats.RAW_ARRAY_JSON, {friendlyName: 'JSON', categoryName: 'JSON'}],
 ]);
 
