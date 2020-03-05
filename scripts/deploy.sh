@@ -20,7 +20,7 @@ set +v  # Don't echo output
 SOURCE='./public'  # Directory holding production website
 FTP_DIR='/'   # Upload directory on ftp account
 
-#yarn build
+yarn build
 if [ "$1" = "web" -o "$1" = "" ]; then
   echo FTP upload...
   ncftpput -R -f scripts/vlab.ncftp $FTP_DIR $SOURCE/*
