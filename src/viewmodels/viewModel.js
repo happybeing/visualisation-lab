@@ -149,7 +149,9 @@ export class VMGraph extends ViewModel {
   }
 }
 
-class VMTable extends ViewModel {
+import {RdfTabulator} from '../rdf/rdfjsUtils.js';
+
+export class VMTable extends ViewModel {
   constructor () {
     super();
   }
@@ -175,53 +177,14 @@ class VMTable extends ViewModel {
   - TODO: support addition of custom representations per the application or the data source
   - TODO: allow the application to modify or select the visual representation programmatically
   */
- consumeRdfSourceResult (rdfResult) {
-  let rdfDataset = rdfResult.getRdfDataset();
-  console.log('RdfViewModel.consumeSourceResult()', rdfDataset)
-  let graphMap = {nodes: new Map(), links: new Map() };
-  const self = this;
-  try {
-      for (const quad of rdfDataset) {
-        // console.log('Mapping quad: ', quad);
-        // TODO: implement better mapping to nodes and links
-        graphMap.nodes.set(quad.subject.value, {id: quad.subject.value, group: 1});
-        graphMap.links.set(quad.subject.value + '--LINK--' + quad.object.value, {source: quad.subject.value, target:quad.object.value, value: 1});
-
-        // TODO: Don't treat all values as nodes as here:
-        graphMap.nodes.set(quad.object.value, {id: quad.object.value, group: 1});
-      }
-      // Create nodes and links from triples
-      self.setValues({nodes: [...graphMap.nodes.values()], links: [...graphMap.links.values()]});
-      self.values.sourceResult = rdfResult;
-      return self.values;
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
-  /** consume JsonSourceResult, create/overwrite viewModel 
-  input:
-  @param JsonSourceResult jsonResult as {nodes: [], links: []}  jsonData
-
-  output:
-  @param {Object}           graph {nodes: [], links: []}
-
-  - TODO: apply filters
-  - TODO: provides default representations for different visualisation types/components
-  - TODO: support addition of custom representations per the application or the data source
-  - TODO: allow the application to modify or select the visual representation programmatically
-  */
-
-  consumeJsonSourceResult (jsonResult) {
-    let jsonArray = jsonResult.getJsonResult();
-    console.log('JsonViewModel.consumeSourceResult()', jsonArray)
-    let graphMap = {nodes: new Map(), links: new Map() };
-    self = this;
+  consumeRdfSourceResult (rdfResult) {
     try {
-      // Create nodes and links from triples
-      self.setValues({nodes: [...jsonArray.nodes], links: [...jsonArray.links]});
-      self.values.sourceResult = jsonResult;
-      return self.values;
+      const rdfTable = new RdfTabulator(rdfResult.getRdfDataset());
+      const table = rdfTable.Table();
+      this.setValues(table);
+      console.log('VMTable.values:')
+      console.dir(this.values);
+      return this.values;
     } catch (err) {
       console.log(err);
     }

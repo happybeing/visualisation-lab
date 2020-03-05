@@ -1,8 +1,10 @@
 const rdfjs = require('@graphy/core.data.factory');
 
 /**
- * Generate a tabulated structure (rows and columns) from an RDFJS DatasetCore
+ * Consumes an RDFJS DatasetCore to create vm-tabular-json (see JSON ViewModel)
+ * 
  */
+
 export class RdfTabulator {
   constructor (rdfDataset) {
     this.rdf = rdfDataset;
@@ -47,7 +49,7 @@ export class RdfTabulator {
   Table (options) {
     if (this.table) return this.table;
     this.touch(); // Clear any metadata
-    const table = { columns: ["Subject", "Predicate", "Object", "Object Type"], rows: [] };
+    const table = { header: ["Subject", "Predicate", "Object", "Object Type"], rows: [] };
 
     if (this.rdf === undefined) {
       console.warn('RdfTabulation.calculateTabulation() - RDF dataset undefined');

@@ -5,7 +5,8 @@
 import SvelteTable from 'svelte-table';
 
 import {resultDataStore} from "../stores.js";
-import {RdfTabulator} from '../rdf/rdfjsUtils.js';
+import {modelFormats} from '../modelTypes.js';
+import {VMTable} from '../viewmodels/viewModel.js';
 
 let rows = [];
 let columns = [
@@ -84,19 +85,37 @@ let columns = [
   }
 ];
 
-let rdfTable;
+// Available ViewModel subclasses per SourceResults type
+// TODO: construct this dynamically using SourceInterface.js and ViewModel.js helpers
+// TODO: offer choice of view model type where more than one is available for the current SourceResult
+const availableViewModels = new Map([
+  [modelFormats.RDFJS_DATASET, [VMTable]],
+]);
+
+// Active view models by SourceResult type
+const resultsModelMap = new Map;  // Map of SourceResults types to a ViewModel (that consumes the result type)
+
 const unsubscribe = resultDataStore.subscribe(rds => {
   console.log('ViewRdfAsTable rds update:');
   console.dir(rds);
   if (rds === undefined || rds === 0) {return;}
 
   try {
-    rdfTable = new RdfTabulator(rds.getRdfDataset());
-    const table = rdfTable.Table();
-    console.log('RDF as a Table:')
-    console.dir(table);
-    rows = table.rows;
-    columns = columns;
+    let resultType = rds.getModelFormat();
+    let viewModel = resultsModelMap.get(resultType);
+    if (viewModel === undefined) {
+      let modelClass = availableViewModels.get(resultType)[0]; 
+      viewModel = new modelClass;   // TODO: later handle multiple models per SourceResultType
+      resultsModelMap.set(resultType, viewModel);
+    }
+
+    // Generate/update view model
+    console.dir(viewModel);
+    if (viewModel !== undefined) {
+      const table = viewModel.consumeSourceResult(rds);
+      rows = table.rows;
+      columns = columns;
+    }
   } catch(e) {
     console.log('ViewRdfAsTable - failed to consume results (SourceResult)');
     console.error(e);
