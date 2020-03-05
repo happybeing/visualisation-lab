@@ -8,7 +8,7 @@ import ViewModelUI from './viewmodels/ViewModelUI.svelte';
 import NetworkGraphD3SVG from './views/NetworkGraphD3SVG.svelte';
 // import GraphSvelteSVG from './views/NetworkGraphSvelteSVG.svelte';
 import NetworkGraphCanvas from './views/NetworkGraphCanvas.svelte';
-import ViewRdfAsTableUI from './views/ViewRdfAsTable.svelte';
+import ViewRdfAsTableUI from './views/ViewRdfInSvelteTable.svelte';
 
 
 import {resultDataStore} from './stores.js';
