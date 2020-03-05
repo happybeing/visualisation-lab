@@ -13,7 +13,7 @@ import {onMount} from 'svelte';
 import FiltersUI from './FiltersUI.svelte'
 
 import {modelFormats, modelTypeMap} from '../modelTypes.js';
-import {VMGraph} from './ViewModel.js';
+import {VMGraph} from './viewModel.js';
 
 import {resultDataStore} from "../stores.js";
 import {graph} from "../stores.js";

@@ -152,6 +152,76 @@ class VMTable extends ViewModel {
 
   // TODO: implement consume CSV
   // TODO: implement consume VMGraph model (JSON)
+  
+  //// Methods to generate the view model from different inputs
+
+  /** consume RDF
+  input:
+    @param RdfSourceResult rdfResult as RDF/JS Dataset
+
+  output:
+    @param {Object}           graph {nodes: [], links: []} (./stores.js) 
+
+  This separates the raw RDF from data which is made available to a 
+  visualisation component, such that:
+  - TODO: apply filters
+  - TODO: maps between triples (Rdfjs dataset) and visualisation (JSON)
+  - TODO: it isolates RDF and and application specific modelling from the visualisation and app
+  - TODO: provides default representations for different visualisation types/components
+  - TODO: support addition of custom representations per the application or the data source
+  - TODO: allow the application to modify or select the visual representation programmatically
+  */
+ consumeRdfSourceResult (rdfResult) {
+  let rdfDataset = rdfResult.getRdfDataset();
+  console.log('RdfViewModel.consumeSourceResult()', rdfDataset)
+  let graphMap = {nodes: new Map(), links: new Map() };
+  const self = this;
+  try {
+      for (const quad of rdfDataset) {
+        // console.log('Mapping quad: ', quad);
+        // TODO: implement better mapping to nodes and links
+        graphMap.nodes.set(quad.subject.value, {id: quad.subject.value, group: 1});
+        graphMap.links.set(quad.subject.value + '--LINK--' + quad.object.value, {source: quad.subject.value, target:quad.object.value, value: 1});
+
+        // TODO: Don't treat all values as nodes as here:
+        graphMap.nodes.set(quad.object.value, {id: quad.object.value, group: 1});
+      }
+      // Create nodes and links from triples
+      self.setViewModel({nodes: [...graphMap.nodes.values()], links: [...graphMap.links.values()]});
+      self.viewModel.sourceResult = rdfResult;
+      return self.viewModel;
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  /** consume JsonSourceResult, create/overwrite viewModel 
+  input:
+  @param JsonSourceResult jsonResult as {nodes: [], links: []}  jsonData
+
+  output:
+  @param {Object}           graph {nodes: [], links: []}
+
+  - TODO: apply filters
+  - TODO: provides default representations for different visualisation types/components
+  - TODO: support addition of custom representations per the application or the data source
+  - TODO: allow the application to modify or select the visual representation programmatically
+  */
+
+  consumeJsonSourceResult (jsonResult) {
+    let jsonArray = jsonResult.getJsonResult();
+    console.log('JsonViewModel.consumeSourceResult()', jsonArray)
+    let graphMap = {nodes: new Map(), links: new Map() };
+    self = this;
+    try {
+      // Create nodes and links from triples
+      self.setViewModel({nodes: [...jsonArray.nodes], links: [...jsonArray.links]});
+      self.viewModel.sourceResult = jsonResult;
+      return self.viewModel;
+    } catch (err) {
+      console.log(err);
+    }
+  }
 }
 
 class VMTree extends ViewModel {
