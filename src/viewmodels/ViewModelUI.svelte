@@ -13,7 +13,7 @@ import {onMount} from 'svelte';
 import FiltersUI from './FiltersUI.svelte'
 
 import {modelFormats, modelTypeMap} from '../modelTypes.js';
-import {RdfViewModel, JsonViewModel} from './ViewModel.js';
+import {VMGraph} from './ViewModel.js';
 
 import {resultDataStore} from "../stores.js";
 import {graph} from "../stores.js";
@@ -34,8 +34,8 @@ let showViewDebug = false;
 // TODO: construct this dynamically using SourceInterface.js and ViewModel.js helpers
 // TODO: offer choice of view model type where more than one is available for the current SourceResult
 const availableViewModels = new Map([
-  [modelFormats.RDFJS_DATASET, [RdfViewModel]],  // TODO: later handle multiple models per SourceResultType
-  [modelFormats.JSON_ARRAY, [JsonViewModel]],
+  [modelFormats.RDFJS_DATASET, [VMGraph]],
+  [modelFormats.JSON_ARRAY, [VMGraph]],
 ]);
 
 // Active view models by SourceResult type
@@ -68,7 +68,7 @@ const unsubscribe = resultDataStore.subscribe(rds => {
 
 onMount(() => {
   $graph = {nodes: [], links: []}
-  rdfViewModel = new RdfViewModel;
+  rdfViewModel = new VMGraph;
 });
 
 </script>

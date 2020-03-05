@@ -1,8 +1,7 @@
 // Base class for managing a data source
 //
 // TODO: update set of SourceResult types in line with ViewModel refactor (e.g. RDF graph, RDF table, JSON graph, JSON table)
-// TODO: separate the SourceResult types from SourceResult (naming) into "ModelTypes" for use by SourceInterface and ViewModel
-// TODO:
+// DONE: separate the SourceResult types from SourceResult (naming) into modelTypes.js for use by SourceInterface and ViewModel
 // TODO: move subclasses to separate files and export from this file
 // TODO: remove all console.dir
 
