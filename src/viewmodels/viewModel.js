@@ -1,5 +1,9 @@
 /** ViewModel implementation classes 
 
+A ViewModel consumes one or more SourceResults or ViewModel formats (see modelTypes.js)
+and transforms these inputs into a new model which is exposed as a 'values' property,
+and other optional properties in accordance with the JSON ViewModel spec.
+
 TODO: ViewModel - a base class which defines the ViewModel API, as used by SourceInterface and View classes
 TODO: A template subclass for each type of ViewModel, named VM<Type> (e.g. VMTable, VMGraph etc)
 TODO: - VMTable rework to consumeRdf and consumeJSON and make/define VMTable model based on ViewRdfAsTable
@@ -21,19 +25,19 @@ import {modelFormats} from '../modelTypes.js';
 class ViewModel {
   constructor () {
     console.warn('ViewModel - to be implemented');
-    this.viewModel = undefined;
+    this.values = undefined;
   }
 
   consumeSourceResult (sourceResult) {throw Error('ViewModel.consumeSourceResult() not implemented');}
-  getViewModelType () {throw Error('ViewModel - no viewModelType');}
+  getValuesType () {throw Error('ViewModel - no viewModelType');}
 
   // TODO: Base interface: 
   // - list subclasses of SourceResult I consume
   // - list the available models for a given SourceResult subclasses
   // - generate/update view model based on Filters, SourceResult and chosen view model
 
-  setViewModel (viewModel) {this.viewModel = viewModel;}
-  getViewModel () {return this.viewModel;}
+  setValues (viewModel) {this.values = viewModel;}
+  getValues () {return this.values;}
 
   //// Methods to generate the view model from different inputs
 
@@ -46,7 +50,7 @@ class ViewModel {
         return this.consumeJsonSourceResult(sourceResult);
       }
       default: {
-        console.error(this.constructor.name + '.consumeSourceResult() - does not accept ViewModel type: ', sourceResult.getViewModelType())
+        console.error(this.constructor.name + '.consumeSourceResult() - does not accept ViewModel type: ', sourceResult.getValuesType())
         return undefined;
       }
     }
@@ -108,9 +112,9 @@ export class VMGraph extends ViewModel {
         graphMap.nodes.set(quad.object.value, {id: quad.object.value, group: 1});
       }
       // Create nodes and links from triples
-      self.setViewModel({nodes: [...graphMap.nodes.values()], links: [...graphMap.links.values()]});
-      self.viewModel.sourceResult = rdfResult;
-      return self.viewModel;
+      self.setValues({nodes: [...graphMap.nodes.values()], links: [...graphMap.links.values()]});
+      self.values.sourceResult = rdfResult;
+      return self.values;
     } catch (err) {
       console.log(err);
     }
@@ -136,9 +140,9 @@ export class VMGraph extends ViewModel {
     self = this;
     try {
       // Create nodes and links from triples
-      self.setViewModel({nodes: [...jsonArray.nodes], links: [...jsonArray.links]});
-      self.viewModel.sourceResult = jsonResult;
-      return self.viewModel;
+      self.setValues({nodes: [...jsonArray.nodes], links: [...jsonArray.links]});
+      self.values.sourceResult = jsonResult;
+      return self.values;
     } catch (err) {
       console.log(err);
     }
@@ -187,9 +191,9 @@ class VMTable extends ViewModel {
         graphMap.nodes.set(quad.object.value, {id: quad.object.value, group: 1});
       }
       // Create nodes and links from triples
-      self.setViewModel({nodes: [...graphMap.nodes.values()], links: [...graphMap.links.values()]});
-      self.viewModel.sourceResult = rdfResult;
-      return self.viewModel;
+      self.setValues({nodes: [...graphMap.nodes.values()], links: [...graphMap.links.values()]});
+      self.values.sourceResult = rdfResult;
+      return self.values;
     } catch (err) {
       console.log(err);
     }
@@ -215,9 +219,9 @@ class VMTable extends ViewModel {
     self = this;
     try {
       // Create nodes and links from triples
-      self.setViewModel({nodes: [...jsonArray.nodes], links: [...jsonArray.links]});
-      self.viewModel.sourceResult = jsonResult;
-      return self.viewModel;
+      self.setValues({nodes: [...jsonArray.nodes], links: [...jsonArray.links]});
+      self.values.sourceResult = jsonResult;
+      return self.values;
     } catch (err) {
       console.log(err);
     }
