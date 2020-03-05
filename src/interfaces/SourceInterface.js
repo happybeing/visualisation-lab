@@ -81,7 +81,7 @@ export class RdfSourceResult extends SourceResult {
     this.rdfDataset = rdfDataset;
   }
 
-  getModelFormat () { return modelFormats.RDFJS_DATASET;}
+  getModelFormat () { return modelFormats.RAW_GRAPH_RDFDATASET;}
   getRdfDataset () {return this.rdfDataset;}
 }
 

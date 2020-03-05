@@ -85,11 +85,16 @@ let columns = [
   }
 ];
 
+// NEXT>>> do this and 
+// - have each model list what it can consume and what it can generate
+// - model offers a set/subset of output modelFormats given an input modelFormat
+// - ViewModel: provide consume functions that accepts an outputFormat param
+
 // Available ViewModel subclasses per SourceResults type
 // TODO: construct this dynamically using SourceInterface.js and ViewModel.js helpers
 // TODO: offer choice of view model type where more than one is available for the current SourceResult
 const availableViewModels = new Map([
-  [modelFormats.RDFJS_DATASET, [VMTable]],
+  [modelFormats.RAW_GRAPH_RDFDATASET, [VMTable]],
 ]);
 
 // Active view models by SourceResult type
@@ -118,7 +123,6 @@ const unsubscribe = resultDataStore.subscribe(rds => {
     }
   } catch(e) {
     console.log('ViewRdfAsTable - failed to consume results (SourceResult)');
-    console.error(e);
   }
 });
 

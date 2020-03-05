@@ -34,8 +34,8 @@ let showViewDebug = false;
 // TODO: construct this dynamically using SourceInterface.js and ViewModel.js helpers
 // TODO: offer choice of view model type where more than one is available for the current SourceResult
 const availableViewModels = new Map([
-  [modelFormats.RDFJS_DATASET, [VMGraph]],
-  [modelFormats.JSON_ARRAY, [VMGraph]],
+  [modelFormats.RAW_GRAPH_RDFDATASET, [VMGraph]],
+// TODO: DEPRECATED  [modelFormats.JSON_ARRAY, [VMGraph]],
 ]);
 
 // Active view models by SourceResult type

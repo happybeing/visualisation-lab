@@ -41,16 +41,17 @@ class ViewModel {
 
   //// Methods to generate the view model from different inputs
 
+  // TODO: review this when adding logic for input types/output types:
   consumeSourceResult (sourceResult) {
     switch(sourceResult.getModelFormat()) {
-      case modelFormats.RDFJS_DATASET: {
+      case modelFormats.RAW_GRAPH_RDFDATASET: {
         return this.consumeRdfSourceResult(sourceResult);
       }
-      case modelFormats.JSON_ARRAY: {
-        return this.consumeJsonSourceResult(sourceResult);
-      }
+      // case modelFormats.JSON_ARRAY: { DEPRECATED
+      //   return this.consumeJsonSourceResult(sourceResult);
+      // }
       default: {
-        console.error(this.constructor.name + '.consumeSourceResult() - does not accept ViewModel type: ', sourceResult.getValuesType())
+        console.error(this.constructor.name + '.consumeSourceResult() - does not accept ViewModel type: ', sourceResult.getModelFormat())
         return undefined;
       }
     }
@@ -134,6 +135,11 @@ export class VMGraph extends ViewModel {
   */
 
   consumeJsonSourceResult (jsonResult) {
+    if (jsonResult.getModelFormat() !== modelFormats.VM_GRAPH_JSON) {
+      console.error(this.constructor.name + '.consumeSourceResult() - does not accept ViewModel type: ', jsonResult.getModelFormat())
+      self.setValues(undefined);
+      return self.values;
+    }
     let jsonArray = jsonResult.getJsonResult();
     console.log('JsonViewModel.consumeSourceResult()', jsonArray)
     let graphMap = {nodes: new Map(), links: new Map() };
