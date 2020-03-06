@@ -27,6 +27,14 @@ An overview and detailed design notes have been written but are not yet included
 in this repository. If you wish to know more or get involved, please contact
 the author.
 
+## JSON ViewModel Specification - proposed
+In creating VisLab I searched in vein for a standard or documentation for a 
+comprehensive set of JSON data structures designed for visualisation. So I am 
+developing my own, the [JSON ViewModel Specification](https://github.com/theWebalyst/visualisation-lab/wiki/JSON-ViewModel-Specification) 
+and welcome comments, suggestions and feedback as I hope it will save people who 
+adopt it work, by making it quicker and easier to produce visualisations as well as
+improving code maintenance and interoperability.
+
 ## Get started
 
 ```bash
