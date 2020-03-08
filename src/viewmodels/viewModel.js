@@ -33,8 +33,7 @@ class ViewModel {
   // - list the available models for a given SourceResult subclasses
   // - generate/update view model based on Filters, SourceResult and chosen view model
 
-  getTypesConsumed () {return [];}  // Array of types supported by consumeSourceResult()
-  consumeSourceResult (sourceResult) {throw Error('ViewModel.consumeSourceResult() not implemented');}
+  getFormatsConsumed () {return [];}  // Array of types supported by consumeSourceResult()
   getValuesFormat () {throw Error('ViewModel - no viewModelType');}
 
   setValues (values) {this.values = values;}
@@ -48,9 +47,9 @@ class ViewModel {
       case modelFormats.RAW_GRAPH_RDFDATASET: {
         return this.consumeRdfSourceResult(sourceResult);
       }
-      // case modelFormats.JSON_ARRAY: { DEPRECATED
-      //   return this.consumeJsonSourceResult(sourceResult);
-      // }
+      case modelFormats.VM_GRAPH_JSON: {
+        return this.consumeGraphJsonSourceResult(sourceResult);
+      }
       default: {
         console.error(this.constructor.name + '.consumeSourceResult() - does not accept ViewModel type: ', sourceResult.getModelFormat())
         return undefined;
@@ -82,12 +81,18 @@ export class VMGraph extends ViewModel {
 
   //// Methods to generate the view model from different inputs
 
+  getFormatsConsumed () { return [
+    modelFormats.RAW_GRAPH_RDFDATASET,
+    modelFormats.VM_GRAPH_JSON
+  ];}
+  getValuesFormat () {    return modelFormats.VM_GRAPH_JSON; }
+
   /** consume RDF
   input:
     @param RdfSourceResult rdfResult as RDF/JS Dataset
 
   output:
-    @param {Object}           graph {nodes: [], links: []} (./stores.js) 
+    @param {Object}    graph in ViewModel vm-graph-json format 
 
   This separates the raw RDF from data which is made available to a 
   visualisation component, such that:
@@ -122,9 +127,9 @@ export class VMGraph extends ViewModel {
     }
   }
 
-  /** consume JsonSourceResult, create/overwrite viewModel 
+  /** consume GraphJsonSourceResult, create/overwrite viewModel 
   input:
-  @param JsonSourceResult jsonResult as {nodes: [], links: []}  jsonData
+  @param {Object}  jsonData in ViewModel vm-graph-json format
 
   output:
   @param {Object}           graph {nodes: [], links: []}
@@ -135,7 +140,7 @@ export class VMGraph extends ViewModel {
   - TODO: allow the application to modify or select the visual representation programmatically
   */
 
-  consumeJsonSourceResult (jsonResult) {
+ consumeGraphJsonSourceResult (jsonResult) {
     if (jsonResult.getModelFormat() !== modelFormats.VM_GRAPH_JSON) {
       console.error(this.constructor.name + '.consumeSourceResult() - does not accept ViewModel type: ', jsonResult.getModelFormat())
       self.setValues(undefined);
@@ -163,10 +168,15 @@ export class VMTable extends ViewModel {
     super();
   }
 
+  //// Methods to generate the view model from different inputs
+
   // TODO: implement consume CSV
   // TODO: implement consume VMGraph model (JSON)
   
-  //// Methods to generate the view model from different inputs
+  getFormatsConsumed () { return [
+    modelFormats.RAW_GRAPH_RDFDATASET
+  ];}
+  getValuesFormat () {    return modelFormats.VM_TABULAR_JSON; }
 
   /** consume RDF
   input:

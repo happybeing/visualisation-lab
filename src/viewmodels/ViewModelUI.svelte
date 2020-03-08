@@ -12,7 +12,7 @@ import {onMount} from 'svelte';
 
 import FiltersUI from './FiltersUI.svelte'
 
-import {modelFormats, modelTypeMap} from '../modelTypes.js';
+import {modelFormats, modelTypeMap} from '../modelFormats.js';
 import {VMGraph} from './viewModel.js';
 
 import {resultDataStore} from "../stores.js";
@@ -35,7 +35,7 @@ let showViewDebug = false;
 // TODO: offer choice of view model type where more than one is available for the current SourceResult
 const availableViewModels = new Map([
   [modelFormats.RAW_GRAPH_RDFDATASET, [VMGraph]],
-// TODO: DEPRECATED  [modelFormats.JSON_ARRAY, [VMGraph]],
+  [modelFormats.VM_GRAPH_JSON, [VMGraph]],
 ]);
 
 // Active view models by SourceResult type

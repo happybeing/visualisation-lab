@@ -5,7 +5,7 @@
 // TODO: move subclasses to separate files and export from this file
 // TODO: remove all console.dir
 
-import {modelFormats} from '../modelTypes.js';
+import {modelFormats} from '../modelFormats.js';
 
 class SourceInterface {
   constructor (shortName, description, uiComponent) {
