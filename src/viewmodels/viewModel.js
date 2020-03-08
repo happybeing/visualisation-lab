@@ -20,7 +20,7 @@ TODO:  RdfViewModel implements mapping(s) of RdfSourceResult to a view model
 
 */
 
-import {modelFormats} from '../modelTypes.js';
+import {modelFormats} from '../modelFormats.js';
 
 class ViewModel {
   constructor () {
@@ -28,15 +28,16 @@ class ViewModel {
     this.values = undefined;
   }
 
-  consumeSourceResult (sourceResult) {throw Error('ViewModel.consumeSourceResult() not implemented');}
-  getValuesType () {throw Error('ViewModel - no viewModelType');}
-
   // TODO: Base interface: 
   // - list subclasses of SourceResult I consume
   // - list the available models for a given SourceResult subclasses
   // - generate/update view model based on Filters, SourceResult and chosen view model
 
-  setValues (viewModel) {this.values = viewModel;}
+  getTypesConsumed () {return [];}  // Array of types supported by consumeSourceResult()
+  consumeSourceResult (sourceResult) {throw Error('ViewModel.consumeSourceResult() not implemented');}
+  getValuesFormat () {throw Error('ViewModel - no viewModelType');}
+
+  setValues (values) {this.values = values;}
   getValues () {return this.values;}
 
   //// Methods to generate the view model from different inputs
@@ -213,7 +214,7 @@ class VMTree extends ViewModel {
 //   FROM_JSON: 'FROM_JSON',
 // }
 
-// export const viewModelTypeMap = new Map([
+// export const viewModelFormatMap = new Map([
 //   [modelFormats.FROM_RDF, {friendlyName: 'RDF', modelClass: RdfViewModel, category: 'RDF'}],
 //   [modelFormats.FROM_JSON, {friendlyName: 'JSON', modelClass: JsonViewModel, category: 'JSON ???'}],
 // ])

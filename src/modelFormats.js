@@ -1,6 +1,7 @@
-/** Data model types offered by SourceResult and ViewModel classes
+/** Data model formats offered by SourceResult and ViewModel classes
  * 
- * See VisLab JSON ViewModel Specification
+ * See VisLab JSON ViewModel Specification:
+ * https://github.com/theWebalyst/visualisation-lab/wiki/JSON-ViewModel-Specification
  * 
  */
 
@@ -16,7 +17,7 @@ export const modelFormats = {
   VM_GEO_JSON: 'vm-geo-json',
 };
 
-export const modelTypeMap = new Map([
+export const modelFormatsMap = new Map([
   [modelFormats.RAW_GRAPH_RDFDATASET, {friendlyName: 'RDF/JS Dataset', categoryName: 'RDF'}],
 ]);
 
