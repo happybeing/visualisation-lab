@@ -1,12 +1,22 @@
 # Visualisation Lab
 
-An experimental visualisation workbench built using Svelte - work in progress.
+VisLab is an experimental visualisation workbench being built using Svelte. 
+This is a work in progress so nothing fancy yet although potentially useful 
+even now.
 
-Having begun life as [svelte-rdf-vis](https://github.com/theWebalyst/svelte-rdf-vis), Visualisation Lab will not be
-restricted to RDF / Linked Data, although that remains the initial 
-and probably the main focus. If you wish to use it with other kinds of
-data they can be added by implementing a small number of JavaScript classes.
+Feedback and contributions are welcome.
 
+Visualisation Lab aims to make it easy to do useful stuff as easily as
+possible with RDF / Linked Data. So 'semantic sources' are the focus, but
+this doesn't mean you can't visualise other data. Many formats will be or
+are already supported from CSV to directly querying of databases.
+
+If you wish to add support for a new data source or format it can be added
+easily, by implementing a couple of JavaScript classes to load the data
+and get it into one of the standard formats used internally for visualisation
+which are defined in the **VisLab JSON ViewModel Specificaiton** (see below).
+
+## Plan
 The plan is to start simple but long term aim to allow visualisation
 of data from multiple sources (manual, queried, loaded, filtered) to
 be explored, mixed and mashed through multiple visualisations.
@@ -29,13 +39,18 @@ the author.
 
 ## JSON ViewModel Specification - proposed
 In creating VisLab I searched in vein for a standard or documentation for a 
-comprehensive set of JSON data structures designed for visualisation. So I am 
-developing my own, the [JSON ViewModel Specification](https://github.com/theWebalyst/visualisation-lab/wiki/JSON-ViewModel-Specification) 
-and welcome comments, suggestions and feedback as I hope it will save people who 
-adopt it work, by making it quicker and easier to produce visualisations as well as
-improving code maintenance and interoperability.
+comprehensive set of JSON data structures designed for visualisation.
 
-## Get started
+The aim of this specification is to make it quicker and easier to produce 
+visualisations, reduce work on producing documentation and help improve code 
+maintenance and interoperability.
+
+Having not found anything suitable I created the [JSON ViewModel Specification](https://github.com/theWebalyst/visualisation-lab/wiki/JSON-ViewModel-Specification) 
+and welcome comments, suggestions and feedback. It is will be tested in VisLab and
+is open to changes that will improve its usefulness and effectiveness in other
+projects.
+
+## Get started developing
 
 ```bash
 git clone https://github.com/theWebalyst/visualisation-lab
@@ -58,6 +73,11 @@ Navigate to [localhost:8080](http://localhost:8080). You should see each compone
 
 
 ## Deploying to the web
+
+I include the following even though I've moved from using `now` to my regular hosting
+service so I have offer `http` rather than `https` as I encountered problems accessing
+some of the SPARQL demo databases when hosting under `https`. That's something that
+needs looking into, so if it is in your expertise and you want to help, let me know.
 
 ### With [now](https://zeit.co/now)
 
