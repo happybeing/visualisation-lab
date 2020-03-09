@@ -1,10 +1,10 @@
-<!-- Map SourceResult to objects for visualisation 
+<!-- UI to control how SourceResults are visualised using ViewModels and Views 
 
-Provides
-- updates a set of ViewModels with data from the latest SourceResult
-NEXT>>> - TODO: clear view models when SourceResult is changed
-- provides UI to select View components are active
-- TODO: a UI defining filters to apply to SourceResults
+Functionality:
+NEXT>>> - TODO: clears active ViewModels when SourceResult changes
+- updates a set of ViewModels which can consume the latest SourceResult
+- provides UI to select which View components are active
+- TODO: UI controlling filters which can be applied to SourceResults (and ViewModels?)
 -->
 
 <script>
@@ -19,12 +19,6 @@ import ViewNetworkGraphCanvas from '../views/ViewNetworkGraphCanvas.svelte';
 import ViewRdfInSvelteTable from '../views/ViewRdfInSvelteTable.svelte';
 
 import {resultDataStore, activeViews, activeModelsByConsumeFormat, activeModelsByFormat} from "../stores.js";
-
-let rdfViewModel;
-let showViewDebug = false;
-
-// Active view models by SourceResult type
-const resultsModelMap = new Map;  // Map of SourceResults types to a ViewModel (that consumes the result type)
 
 // Update View Models when SourceResult changes
 
@@ -82,11 +76,11 @@ onMount(() => {
 });
 
 // Views available for selection in UI
+
 const viewList = [ 
   { active: true, description: "Graph (ViewNetworkGraphCanvas)", class: ViewNetworkGraphCanvas },
   { active: true, description: "Table (ViewRdfInSvelteTable)", class: ViewRdfInSvelteTable },
 ];
-
 
 function updateActiveViews() {
   let activeList = [];
