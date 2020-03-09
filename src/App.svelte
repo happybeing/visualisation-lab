@@ -5,9 +5,8 @@ import { notifications } from './notifications.js';
 import SourceUI from './interfaces/SourceUI.svelte';
 import ViewModelUI from './viewmodels/ViewModelUI.svelte';
 
-import NetworkGraphD3SVG from './views/NetworkGraphD3SVG.svelte';
-// import GraphSvelteSVG from './views/NetworkGraphSvelteSVG.svelte';
-import NetworkGraphCanvas from './views/NetworkGraphCanvas.svelte';
+import ViewNetworkGraphD3SVG from './views/ViewNetworkGraphD3SVG.svelte';
+import ViewNetworkGraphCanvas from './views/ViewNetworkGraphCanvas.svelte';
 import ViewRdfAsTableUI from './views/ViewRdfInSvelteTable.svelte';
 
 
@@ -35,7 +34,7 @@ RDF data sources. Built using Sveltejs and D3js to be extendable. Code on <a hre
 </p>
 <ViewModelUI resultDataStore={resultDataStore}/>
 {#each $activeViews as viewUI, i}
-  <svelte:component this={viewUI} {graph}/>
+  <svelte:component this= {viewUI} {graph}/>
 {/each}
 
 </Notifications>

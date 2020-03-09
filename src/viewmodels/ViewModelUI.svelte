@@ -15,7 +15,7 @@ import FiltersUI from './FiltersUI.svelte'
 import {modelFormats, modelTypeMap} from '../modelFormats.js';
 import {VMGraph, availableViewModels} from './viewModel.js';
 
-import NetworkGraphCanvas from '../views/NetworkGraphCanvas.svelte';
+import ViewNetworkGraphCanvas from '../views/ViewNetworkGraphCanvas.svelte';
 import ViewRdfAsTableUI from '../views/ViewRdfInSvelteTable.svelte';
 
 import {resultDataStore, graph, activeViews} from "../stores.js";
@@ -52,7 +52,7 @@ const unsubscribe = resultDataStore.subscribe(rds => {
 });
 
 onMount(() => {
-  $activeViews = [NetworkGraphCanvas, ViewRdfAsTableUI];
+  $activeViews = [ViewNetworkGraphCanvas, ViewRdfAsTableUI];
   $graph = {nodes: [], links: []};
   rdfViewModel = new VMGraph;
 });
