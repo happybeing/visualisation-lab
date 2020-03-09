@@ -6,10 +6,22 @@ import SvelteTable from 'svelte-table';
 
 import {resultDataStore} from "../stores.js";
 import {modelFormats} from '../modelFormats.js';
-import {VMTable} from '../viewmodels/viewModel.js';
+export let activeModelsByFormat;
 
-let rows = [];
-let columns = [
+let viewModel;
+$: rows = updateTable($activeModelsByFormat);
+
+function updateTable (activeModelsByFormat) {
+  let allModels = activeModelsByFormat.get(modelFormats.VM_TABULAR_JSON);
+  if (allModels === undefined) return [];
+
+  // TODO how to handle multiple compatible models? (We visualise only the first)
+  viewModel = allModels[0];      
+  return viewModel.getValues().rows;
+}
+
+
+$: columns = [
   {
     key: "Subject",
     title: "Subject",
@@ -89,38 +101,38 @@ let columns = [
 // Available ViewModel subclasses per SourceResults type
 // TODO: construct this dynamically using SourceInterface.js and ViewModel.js helpers
 // TODO: offer choice of view model type where more than one is available for the current SourceResult
-const compatibleViewModels = new Map([
-  [modelFormats.RAW_GRAPH_RDFDATASET, [VMTable]],
-]);
+// const compatibleViewModels = new Map([
+//   [modelFormats.RAW_GRAPH_RDFDATASET, [VMTable]],
+// ]);
 
-// Active view models by SourceResult type
-const resultsModelMap = new Map;  // Map of SourceResults types to a ViewModel (that consumes the result type)
+// // Active view models by SourceResult type
+// const resultsModelMap = new Map;  // Map of SourceResults types to a ViewModel (that consumes the result type)
 
-const unsubscribe = resultDataStore.subscribe(rds => {
-  console.log('ViewRdfAsTable rds update:');
-  console.dir(rds);
-  if (rds === undefined || rds === 0) {return;}
+// const unsubscribe = resultDataStore.subscribe(rds => {
+//   console.log('ViewRdfAsTable rds update:');
+//   console.dir(rds);
+//   if (rds === undefined || rds === 0) {return;}
 
-  try {
-    let resultType = rds.getModelFormat();
-    let viewModel = resultsModelMap.get(resultType);
-    if (viewModel === undefined) {
-      let modelClass = compatibleViewModels.get(resultType)[0]; 
-      viewModel = new modelClass;   // TODO: later handle multiple models per SourceResultType
-      resultsModelMap.set(resultType, viewModel);
-    }
+//   try {
+//     let resultType = rds.getModelFormat();
+//     let viewModel = resultsModelMap.get(resultType);
+//     if (viewModel === undefined) {
+//       let modelClass = compatibleViewModels.get(resultType)[0]; 
+//       viewModel = new modelClass;   // TODO: later handle multiple models per SourceResultType
+//       resultsModelMap.set(resultType, viewModel);
+//     }
 
-    // Generate/update view model
-    console.dir(viewModel);
-    if (viewModel !== undefined) {
-      const table = viewModel.consumeSourceResult(rds);
-      rows = table.rows;
-      columns = columns;
-    }
-  } catch(e) {
-    console.log('ViewRdfAsTable - failed to consume results (SourceResult)');
-  }
-});
+//     // Generate/update view model
+//     console.dir(viewModel);
+//     if (viewModel !== undefined) {
+//       const table = viewModel.consumeSourceResult(rds);
+//       rows = table.rows;
+//       columns = columns;
+//     }
+//   } catch(e) {
+//     console.log('ViewRdfAsTable - failed to consume results (SourceResult)');
+//   }
+// });
 
 </script>
 <style>

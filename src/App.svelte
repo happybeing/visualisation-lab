@@ -5,11 +5,6 @@ import { notifications } from './notifications.js';
 import SourceUI from './interfaces/SourceUI.svelte';
 import ViewModelUI from './viewmodels/ViewModelUI.svelte';
 
-import ViewNetworkGraphD3SVG from './views/ViewNetworkGraphD3SVG.svelte';
-import ViewNetworkGraphCanvas from './views/ViewNetworkGraphCanvas.svelte';
-import ViewRdfAsTableUI from './views/ViewRdfInSvelteTable.svelte';
-
-
 import {resultDataStore, activeViews} from './stores.js';
 import {activeModelsByFormat} from './stores.js';
 

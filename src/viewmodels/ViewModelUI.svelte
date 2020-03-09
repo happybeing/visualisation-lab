@@ -16,7 +16,7 @@ import {modelFormats} from '../modelFormats.js';
 import {compatibleViewModels} from './viewModel.js';
 
 import ViewNetworkGraphCanvas from '../views/ViewNetworkGraphCanvas.svelte';
-import ViewRdfAsTableUI from '../views/ViewRdfInSvelteTable.svelte';
+import ViewRdfInSvelteTable from '../views/ViewRdfInSvelteTable.svelte';
 
 import {resultDataStore, activeViews, activeModelsByConsumeFormat, activeModelsByFormat} from "../stores.js";
 
@@ -76,7 +76,7 @@ onMount(() => {
     }
   });
 
-  $activeViews = [ViewNetworkGraphCanvas, ViewRdfAsTableUI];
+  $activeViews = [ViewNetworkGraphCanvas, ViewRdfInSvelteTable];
 });
 
 </script>
