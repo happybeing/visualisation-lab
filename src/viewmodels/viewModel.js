@@ -24,7 +24,6 @@ import {modelFormats} from '../modelFormats.js';
 
 class ViewModel {
   constructor () {
-    console.warn('ViewModel - to be implemented');
     this.values = undefined;
   }
 
@@ -227,10 +226,10 @@ class VMTree extends ViewModel {
 // - how are these selected? 
 // - should this just follow the SourceInterface?
 
-// Available ViewModel subclasses per SourceResults type
-// TODO: construct this dynamically using SourceInterface.js and ViewModel.js helpers
+// ViewModel subclasses compatible with SourceResults modelFormat
+// TODO: maybe construct this dynamically using SourceInterface.js and ViewModel.js helpers
 // TODO: offer choice of view model type where more than one is available for the current SourceResult
-export const availableViewModels = new Map([
-  [modelFormats.RAW_GRAPH_RDFDATASET, [VMGraph]],
+export const compatibleViewModels = new Map([
+  [modelFormats.RAW_GRAPH_RDFDATASET, [VMGraph, VMTable]],
   [modelFormats.VM_GRAPH_JSON, [VMGraph]],
 ]);

@@ -12,13 +12,13 @@ import {onMount} from 'svelte';
 
 import FiltersUI from './FiltersUI.svelte'
 
-import {modelFormats, modelTypeMap} from '../modelFormats.js';
-import {VMGraph, availableViewModels} from './viewModel.js';
+import {modelFormats} from '../modelFormats.js';
+import {compatibleViewModels} from './viewModel.js';
 
 import ViewNetworkGraphCanvas from '../views/ViewNetworkGraphCanvas.svelte';
 import ViewRdfAsTableUI from '../views/ViewRdfInSvelteTable.svelte';
 
-import {resultDataStore, graph, activeViews} from "../stores.js";
+import {resultDataStore, activeViews, activeModelsByConsumeFormat, activeModelsByFormat} from "../stores.js";
 
 let rdfViewModel;
 let showViewDebug = false;
@@ -26,35 +26,57 @@ let showViewDebug = false;
 // Active view models by SourceResult type
 const resultsModelMap = new Map;  // Map of SourceResults types to a ViewModel (that consumes the result type)
 
-const unsubscribe = resultDataStore.subscribe(rds => {
-  console.log('ViewModelUI rds update:');
-  console.dir(rds);
-  if (rds === undefined || rds === 0) {return;}
-
-  try {
-    let resultType = rds.getModelFormat();
-    let viewModel = resultsModelMap.get(resultType);
-    if (viewModel === undefined) {
-      let modelClass = availableViewModels.get(resultType)[0]; 
-      viewModel = new modelClass;   // TODO: later handle multiple models per SourceResultType
-      resultsModelMap.set(resultType, viewModel);
-    }
-
-    // Generate/update view model
-    console.dir(viewModel);
-    if (viewModel !== undefined) {
-      $graph = viewModel.consumeSourceResult(rds);
-    }
-  } catch(e) {
-    console.log('ViewModelUI - failed to consume results (SourceResult)');
-    console.error(e);
-  }
-});
+let unsubscribe;
 
 onMount(() => {
+  unsubscribe = resultDataStore.subscribe(rds => {
+    console.log('ViewModelUI rds update:');
+    console.dir(rds);
+    if (rds === undefined || rds === 0) {return;}
+
+    try {
+      const resultFormat = rds.getModelFormat();
+      let activeCompatibleModels = $activeModelsByConsumeFormat.get(resultFormat);
+      if (activeCompatibleModels === undefined) {
+        activeCompatibleModels = [];
+        const compatibleModels = compatibleViewModels.get(resultFormat);
+        if (compatibleModels === undefined) throw Error('No ViewModel found to consume format: ', resultFormat);
+
+        compatibleModels.forEach(model => {
+          // console.log('creating model: ', model);
+          let newModel = new model
+          activeCompatibleModels.push(newModel);
+          
+          // Add new model model format map used by views to find their data
+          const newModelFormat = newModel.getValuesFormat();
+          let modelsOfThisFormat = $activeModelsByFormat.get(newModelFormat);
+          if (modelsOfThisFormat === undefined) modelsOfThisFormat = [];
+          modelsOfThisFormat.push(newModel);
+          $activeModelsByFormat.set(newModelFormat, modelsOfThisFormat);
+        });
+
+        $activeModelsByConsumeFormat.set(resultFormat, activeCompatibleModels);
+      }
+
+      // Generate/update all view models compatible with resultFormat
+      console.log('activeCompatibleModels...');
+      console.dir(activeCompatibleModels);
+      activeCompatibleModels.forEach(model => {
+        console.dir(model);
+        model.consumeSourceResult(rds);
+      });
+
+      // Force update for subscribers to activeModelsByConsumeFormat store
+      // TODO: change so that each model in the activeModelsByConsumeFormat store is a store (so a view can subscribe to just one model)
+      $activeModelsByConsumeFormat = $activeModelsByConsumeFormat;
+      $activeModelsByFormat = $activeModelsByFormat;
+    } catch(e) {
+      console.log('ViewModelUI - failed to consume results (SourceResult)');
+      console.error(e);
+    }
+  });
+
   $activeViews = [ViewNetworkGraphCanvas, ViewRdfAsTableUI];
-  $graph = {nodes: [], links: []};
-  rdfViewModel = new VMGraph;
 });
 
 </script>
@@ -70,32 +92,9 @@ onMount(() => {
 </style>
 
 <div class="main">
-<h2>&lt;ViewModelUI&gt;</h2>
-<p>The ViewModelUI provides control over the view model, and 
-provides filters that are applied to the model to show/hide 
-elements in the View.</p>
-<FiltersUI/>
-
-<label>
-  <input type=checkbox bind:checked={showViewDebug}>
-  Show ViewModelUI debug
-</label>
-
-{#if showViewDebug}
-  <h2>ViewUI debug...</h2>
-
-  <h3>nodes</h3>
-  <ul>
-  {#each $graph.nodes as node}
-  <li>{node.id}</li>
-  {/each}
-  </ul>
-  <h3>links</h3>
-  <ul>
-  {#each $graph.links as link}
-  <li>{JSON.stringify(link)}:<br/>{link.source} -&gt; {link.target}</li>
-  {/each}
-  </ul>
-{/if}
-
+  <h2>&lt;ViewModelUI&gt;</h2>
+  <p>The ViewModelUI provides control over the view model, and 
+  provides filters that are applied to the model to show/hide 
+  elements in the View.</p>
+  <FiltersUI/>
 </div>

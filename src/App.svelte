@@ -11,7 +11,7 @@ import ViewRdfAsTableUI from './views/ViewRdfInSvelteTable.svelte';
 
 
 import {resultDataStore, activeViews} from './stores.js';
-import {graph} from './stores.js';
+import {activeModelsByFormat} from './stores.js';
 
 </script>
 
@@ -34,7 +34,7 @@ RDF data sources. Built using Sveltejs and D3js to be extendable. Code on <a hre
 </p>
 <ViewModelUI resultDataStore={resultDataStore}/>
 {#each $activeViews as viewUI, i}
-  <svelte:component this= {viewUI} {graph}/>
+  <svelte:component this= {viewUI} {activeModelsByFormat}/>
 {/each}
 
 </Notifications>

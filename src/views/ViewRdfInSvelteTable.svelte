@@ -89,7 +89,7 @@ let columns = [
 // Available ViewModel subclasses per SourceResults type
 // TODO: construct this dynamically using SourceInterface.js and ViewModel.js helpers
 // TODO: offer choice of view model type where more than one is available for the current SourceResult
-const availableViewModels = new Map([
+const compatibleViewModels = new Map([
   [modelFormats.RAW_GRAPH_RDFDATASET, [VMTable]],
 ]);
 
@@ -105,7 +105,7 @@ const unsubscribe = resultDataStore.subscribe(rds => {
     let resultType = rds.getModelFormat();
     let viewModel = resultsModelMap.get(resultType);
     if (viewModel === undefined) {
-      let modelClass = availableViewModels.get(resultType)[0]; 
+      let modelClass = compatibleViewModels.get(resultType)[0]; 
       viewModel = new modelClass;   // TODO: later handle multiple models per SourceResultType
       resultsModelMap.set(resultType, viewModel);
     }
