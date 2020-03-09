@@ -13,30 +13,15 @@ import {onMount} from 'svelte';
 import FiltersUI from './FiltersUI.svelte'
 
 import {modelFormats, modelTypeMap} from '../modelFormats.js';
-import {VMGraph} from './viewModel.js';
+import {VMGraph, availableViewModels} from './viewModel.js';
 
-import {resultDataStore} from "../stores.js";
-import {graph} from "../stores.js";
+import NetworkGraphCanvas from '../views/NetworkGraphCanvas.svelte';
+import ViewRdfAsTableUI from '../views/ViewRdfInSvelteTable.svelte';
 
-// TODO: add support for jsonViewModel
-// - enumerate a set of modelFormats for SourceResult.resultData
-// - note TODO: create ViewModel handler for each SourceResultType
-// - implement ViewModel.getViewModelForSourceResult(sourceResult)
-// - implement ViewModel.getView
-// - ??? add SourceResult.getModelFormat()
-// - how are these selected? 
-// - should this just follow the SourceInterface?
+import {resultDataStore, graph, activeViews} from "../stores.js";
 
 let rdfViewModel;
 let showViewDebug = false;
-
-// Available ViewModel subclasses per SourceResults type
-// TODO: construct this dynamically using SourceInterface.js and ViewModel.js helpers
-// TODO: offer choice of view model type where more than one is available for the current SourceResult
-const availableViewModels = new Map([
-  [modelFormats.RAW_GRAPH_RDFDATASET, [VMGraph]],
-  [modelFormats.VM_GRAPH_JSON, [VMGraph]],
-]);
 
 // Active view models by SourceResult type
 const resultsModelMap = new Map;  // Map of SourceResults types to a ViewModel (that consumes the result type)
@@ -67,7 +52,8 @@ const unsubscribe = resultDataStore.subscribe(rds => {
 });
 
 onMount(() => {
-  $graph = {nodes: [], links: []}
+  $activeViews = [NetworkGraphCanvas, ViewRdfAsTableUI];
+  $graph = {nodes: [], links: []};
   rdfViewModel = new VMGraph;
 });
 

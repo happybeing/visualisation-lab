@@ -86,11 +86,6 @@ let columns = [
 ];
 
 // NEXT>>>
-// - fill out the map in modelTypes.js
-// - have each model list what it can consume and what it can generate
-// - model offers a set/subset of output modelFormats given an input modelFormat
-// - ViewModel: provide consume functions that accepts an outputFormat param
-
 // Available ViewModel subclasses per SourceResults type
 // TODO: construct this dynamically using SourceInterface.js and ViewModel.js helpers
 // TODO: offer choice of view model type where more than one is available for the current SourceResult

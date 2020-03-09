@@ -11,7 +11,7 @@ import NetworkGraphCanvas from './views/NetworkGraphCanvas.svelte';
 import ViewRdfAsTableUI from './views/ViewRdfInSvelteTable.svelte';
 
 
-import {resultDataStore} from './stores.js';
+import {resultDataStore, activeViews} from './stores.js';
 import {graph} from './stores.js';
 
 </script>
@@ -30,12 +30,12 @@ RDF data sources. Built using Sveltejs and D3js to be extendable. Code on <a hre
 <p>SourceUI handles interaction with data sources:
 <SourceUI resultDataStore={resultDataStore}/>
 </p>
-<p>ViewModelUI maps the RDF to objects for visualisation:
+
+<p>ViewModelUI selects and configures active views:
 </p>
 <ViewModelUI resultDataStore={resultDataStore}/>
-<NetworkGraphCanvas {graph} />
-
-<p>ViewRdfAsTableUI provides a tabular summary of the current RDF dataset</p>
-<ViewRdfAsTableUI/>
+{#each $activeViews as viewUI, i}
+  <svelte:component this={viewUI} {graph}/>
+{/each}
 
 </Notifications>

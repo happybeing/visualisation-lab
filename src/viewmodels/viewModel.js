@@ -218,13 +218,19 @@ class VMTree extends ViewModel {
   // TODO: implement a ViewTree
 }
 
-// View model types
-// export const modelFormats = {
-//   FROM_RDF: 'FROM_RDF',
-//   FROM_JSON: 'FROM_JSON',
-// }
+// TODO: add support for jsonViewModel
+// - enumerate a set of modelFormats for SourceResult.resultData
+// - note TODO: create ViewModel handler for each SourceResultType
+// - implement ViewModel.getViewModelForSourceResult(sourceResult)
+// - implement ViewModel.getView
+// - ??? add SourceResult.getModelFormat()
+// - how are these selected? 
+// - should this just follow the SourceInterface?
 
-// export const viewModelFormatMap = new Map([
-//   [modelFormats.FROM_RDF, {friendlyName: 'RDF', modelClass: RdfViewModel, category: 'RDF'}],
-//   [modelFormats.FROM_JSON, {friendlyName: 'JSON', modelClass: JsonViewModel, category: 'JSON ???'}],
-// ])
+// Available ViewModel subclasses per SourceResults type
+// TODO: construct this dynamically using SourceInterface.js and ViewModel.js helpers
+// TODO: offer choice of view model type where more than one is available for the current SourceResult
+export const availableViewModels = new Map([
+  [modelFormats.RAW_GRAPH_RDFDATASET, [VMGraph]],
+  [modelFormats.VM_GRAPH_JSON, [VMGraph]],
+]);
