@@ -1,10 +1,10 @@
 <!-- Map SourceResult to objects for visualisation 
 
 Provides
+- updates a set of ViewModels with data from the latest SourceResult
+NEXT>>> - TODO: clear view models when SourceResult is changed
+- provides UI to select View components are active
 - TODO: a UI defining filters to apply to SourceResults
-- TODO: allows selection of a suitable view model (available for the active SourceResults subclass)
-- TODO: filters the SourceResults subclass and generates chosen view model
-- TODO: provides UI to select a View component which can visualise the active view model
 -->
 
 <script>
@@ -25,6 +25,8 @@ let showViewDebug = false;
 
 // Active view models by SourceResult type
 const resultsModelMap = new Map;  // Map of SourceResults types to a ViewModel (that consumes the result type)
+
+// Update View Models when SourceResult changes
 
 let unsubscribe;
 
@@ -76,8 +78,21 @@ onMount(() => {
     }
   });
 
-  $activeViews = [ViewNetworkGraphCanvas, ViewRdfInSvelteTable];
+  updateActiveViews();
 });
+
+// Views available for selection in UI
+const viewList = [ 
+  { active: true, description: "Graph (ViewNetworkGraphCanvas)", class: ViewNetworkGraphCanvas },
+  { active: true, description: "Table (ViewRdfInSvelteTable)", class: ViewRdfInSvelteTable },
+];
+
+
+function updateActiveViews() {
+  let activeList = [];
+  viewList.forEach(view => {if (view.active) activeList.push(view.class);});
+  $activeViews = [...activeList];
+}
 
 </script>
 <style>
@@ -97,4 +112,7 @@ onMount(() => {
   provides filters that are applied to the model to show/hide 
   elements in the View.</p>
   <FiltersUI/>
+  {#each viewList as view}
+    <label><input type=checkbox bind:checked={view.active} on:change={updateActiveViews}>{view.description}</label>
+  {/each}
 </div>
