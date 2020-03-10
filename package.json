@@ -48,6 +48,8 @@
     "node-sass": "^4.13.1",
     "svelte-notifications": "^0.9.9",
     "svelte-table": "^0.1.7",
-    "url-loader": "^3.0.0"
+    "url-loader": "^3.0.0",
+    "vega": "^5.10.0",
+    "vega-embed": "^6.4.0"
   }
 }
