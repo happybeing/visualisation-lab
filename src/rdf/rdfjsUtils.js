@@ -1,6 +1,67 @@
 const rdfjs = require('@graphy/core.data.factory');
 
-/**
+/** Consume an RDFJS DatasetCore to create a vm-graph-json compatible values object
+ * 
+ */
+
+export class RdfToGraph {
+  constructor (rdfDataset) {
+    this.rdf = rdfDataset;
+    this.graphOptions = {};
+    this.metadataOptions = {};  // TODO needed?
+    this.touch();
+  }
+  
+  /** Get number of triples in rdfDataset
+   */
+  size() { return rdf ? rdf.size : undefined; }
+    
+  /** Clear the graph
+   * 
+   * By default data that has been calculated is cached for re-use, so if the
+   * dataset changes this should be cleared by calling touch()
+   */
+  touch () {
+    this.metadata = {};
+    this.graph = undefined;
+  }
+
+  /** Get graph for current RDF Dataset. Will calculate or return cached object
+   * 
+   * @param {Objects} [options]   optional control of mapping to graph
+   * 
+   * @returns {Object} a vm-graph-json object
+   */
+  Graph (options) {
+    if (this.graph) return this.graph;
+    this.touch(); // Clear any metadata
+    console.log('RdfToGraph.Graph()', this.rdf);
+    const graph = {nodes: new Map(), links: new Map() };
+    if (this.rdf === undefined) {
+      console.warn('RdfToGraph.Graph() - RDF dataset undefined');
+      window.notify.warn('No RDF loaded');
+      return;
+    }
+    try {
+        for (const quad of this.rdf) {
+          // console.log('Mapping quad: ', quad);
+          // TODO: implement better mapping to links (e.g. based on predicates rather than subject-object)
+          // TODO: probably need utility classes to provide different mappings for use by several ViewModels
+          graph.nodes.set(quad.subject.value, {id: quad.subject.value, group: 1});
+          graph.links.set(quad.subject.value + '--LINK--' + quad.object.value, {source: quad.subject.value, target:quad.object.value, value: 1});
+  
+          // TODO: Don't treat all values as nodes as here:
+          graph.nodes.set(quad.object.value, {id: quad.object.value, group: 1});
+        }
+        this.graph = graph; // Cache the result
+        return this.graph;
+      } catch (err) {
+        console.log(err);
+      }
+    }
+}
+
+ /**
  * Consumes an RDFJS DatasetCore to create vm-tabular-json (see JSON ViewModel)
  * 
  */
@@ -13,13 +74,11 @@ export class RdfTabulator {
     this.touch();
   }
   
-  /**
-   * Get number of triples in rdfDataset
+  /** Get number of triples in rdfDataset
    */
   size() { return rdf ? rdf.size : undefined; }
     
-  /**
-   * Clear tabulation
+  /** Clear tabulation
    * 
    * By default data that has been calculated is cached for re-use, so if the
    * dataset changes this should be cleared by calling touch()
@@ -29,8 +88,7 @@ export class RdfTabulator {
     this.table = undefined;
   }
 
-  /**
-   * Returns an array of the ontologies referenced in the dataset
+  /** Returns an array of the ontologies referenced in the dataset
    */
   ontologies () {
     let ontologies = this.metadata.ontologies;
@@ -41,10 +99,11 @@ export class RdfTabulator {
     return ontologies ? [ ...ontologies.keys() ].sort() : [];
   }
 
-  /**
-   * Get table for current RDF Dataset. Will calculate or return cached object
+  /** Get table for current RDF Dataset. Will calculate or return cached object
    * 
    * @param {Objects} [options]   optional control of the tabulation
+   * 
+   * @returns {Object} a vm-tabular-json object
    */
   Table (options) {
     if (this.table) return this.table;
@@ -52,7 +111,7 @@ export class RdfTabulator {
     const table = { header: ["Subject", "Predicate", "Object", "Object Type"], rows: [] };
 
     if (this.rdf === undefined) {
-      console.warn('RdfTabulation.calculateTabulation() - RDF dataset undefined');
+      console.warn('RdfTabulation.Table() - RDF dataset undefined');
       window.notify.warn('No RDF loaded');
       return;
     }

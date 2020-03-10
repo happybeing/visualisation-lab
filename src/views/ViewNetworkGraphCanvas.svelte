@@ -1,7 +1,7 @@
 <!-- d3 Force Directed Graph in Svelte js - canvas with d3 hit detection -->
 
 <script>
-import { onDestroy, tick } from 'svelte';
+import { onMount, onDestroy, tick } from 'svelte';
 
 import { scaleLinear, scaleOrdinal } from 'd3-scale';
 import { zoom, zoomIdentity } from 'd3-zoom';
@@ -24,28 +24,32 @@ const nodeRadius = 5;
 const padding = { top: 20, right: 40, bottom: 40, left: 25 };
 const groupColour = d3.scaleOrdinal(d3.schemeCategory10);
 
-const emptyGraph = {nodes: [], links: []};
-let graph = {nodes: [], links: []};
-
 let viewModel;
+let graph = {nodes: [], links: []};
 $: graph = updateGraph($activeModelsByFormat);
 
 function updateGraph (activeModelsByFormat) {
   let allModels = activeModelsByFormat.get(modelFormats.VM_GRAPH_JSON);
-  if (allModels === undefined) return emptyGraph;
+  if (allModels === undefined) return {nodes: [], links: []};
 
   // TODO how to handle multiple compatible models? (We visualise only the first)
-  viewModel = allModels[0];      
-  return viewModel.getValues();
-}
+  viewModel = allModels[0];  
+  const values = viewModel.getValues();
+  const graph = {nodes: [...values.nodes.values()], links: [...values.links.values()]};
+  return graph;
+} 
 
 $: links = graph.links.map(d => Object.create(d));
 $: nodes = graph.nodes.map(d => Object.create(d));
 
-const unsubscribe = activeModelsByFormat.subscribe(async $data => {
-  // Have to use tick so links and nodes can catch up
-  await tick();
-  render();
+let unsubscribe;
+
+onMount(() => {
+  unsubscribe = activeModelsByFormat.subscribe(async $data => {
+    // Have to use tick so links and nodes can catch up
+    await tick();
+    render();
+  });
 });
 
 onDestroy(() => {

@@ -73,6 +73,8 @@ class ViewModel {
   }
 }
 
+import {RdfToGraph} from '../rdf/rdfjsUtils.js';
+
 export class VMGraph extends ViewModel {
   constructor () {
     super();
@@ -103,24 +105,15 @@ export class VMGraph extends ViewModel {
   - TODO: allow the application to modify or select the visual representation programmatically
   */
   consumeRdfSourceResult (rdfResult) {
-  let rdfDataset = rdfResult.getRdfDataset();
-  console.log('RdfViewModel.consumeSourceResult()', rdfDataset)
-  let graphMap = {nodes: new Map(), links: new Map() };
-  const self = this;
-  try {
-      for (const quad of rdfDataset) {
-        // console.log('Mapping quad: ', quad);
-        // TODO: implement better mapping to nodes and links
-        graphMap.nodes.set(quad.subject.value, {id: quad.subject.value, group: 1});
-        graphMap.links.set(quad.subject.value + '--LINK--' + quad.object.value, {source: quad.subject.value, target:quad.object.value, value: 1});
-
-        // TODO: Don't treat all values as nodes as here:
-        graphMap.nodes.set(quad.object.value, {id: quad.object.value, group: 1});
-      }
-      // Create nodes and links from triples
-      self.setValues({nodes: [...graphMap.nodes.values()], links: [...graphMap.links.values()]});
-      self.values.sourceResult = rdfResult;
-      return self.values;
+    console.log('VMGraph.consumeSourceResult()', rdfResult);
+    try {
+      let rdfToGraph = new RdfToGraph(rdfResult.getRdfDataset());
+      let graph = rdfToGraph.Graph();
+      graph.sourceResult = rdfResult;
+      this.setValues(graph);
+      console.log('VMGraph.values:')
+      console.dir(this.values);
+      return this.values;
     } catch (err) {
       console.log(err);
     }
@@ -128,10 +121,10 @@ export class VMGraph extends ViewModel {
 
   /** consume GraphJsonSourceResult, create/overwrite viewModel 
   input:
-  @param {Object}  jsonData in ViewModel vm-graph-json format
+    @param {Object}    graph in ViewModel vm-graph-json format 
 
   output:
-  @param {Object}           graph {nodes: [], links: []}
+    @param {Object}    graph in ViewModel vm-graph-json format 
 
   - TODO: apply filters
   - TODO: provides default representations for different visualisation types/components
@@ -146,7 +139,7 @@ export class VMGraph extends ViewModel {
       return self.values;
     }
     let jsonArray = jsonResult.getJsonResult();
-    console.log('JsonViewModel.consumeSourceResult()', jsonArray)
+    console.log('VMGraph.consumeSourceResult()', jsonArray)
     let graphMap = {nodes: new Map(), links: new Map() };
     self = this;
     try {
@@ -197,6 +190,7 @@ export class VMTable extends ViewModel {
     try {
       const rdfTable = new RdfTabulator(rdfResult.getRdfDataset());
       const table = rdfTable.Table();
+      table.sourceResult = rdfResult;
       this.setValues(table);
       console.log('VMTable.values:')
       console.dir(this.values);
@@ -215,6 +209,91 @@ class VMTree extends ViewModel {
   // TODO: implement consume RDF
   // TODO: implement consume JSON
   // TODO: implement a ViewTree
+
+  //// Methods to generate the view model from different inputs
+
+  getFormatsConsumed () { return [
+    modelFormats.RAW_GRAPH_RDFDATASET,
+    modelFormats.VM_GRAPH_JSON
+  ];}
+  
+  getValuesFormat () {    return modelFormats.VM_TREE_JSON; }
+
+  /** consume RDF
+  input:
+    @param RdfSourceResult rdfResult as RDF/JS Dataset
+
+  output:
+    @param {Object}    graph in ViewModel vm-graph-json format 
+
+  This separates the raw RDF from data which is made available to a 
+  visualisation component, such that:
+  - TODO: apply filters
+  - TODO: maps between triples (Rdfjs dataset) and visualisation (JSON)
+  - TODO: it isolates RDF and and application specific modelling from the visualisation and app
+  - TODO: provides default representations for different visualisation types/components
+  - TODO: support addition of custom representations per the application or the data source
+  - TODO: allow the application to modify or select the visual representation programmatically
+  */
+  consumeRdfSourceResult (rdfResult) {
+    console.log('VMTree.consumeSourceResult()', rdfResult);
+    try {
+      // Start with the graph
+      let rdfToGraph = new RdfToGraph(rdfResult.getRdfDataset());
+      let graph = rdfToGraph.Graph();
+      
+      // Create a tree from the graph
+      // TODO make sure we start from the root (could this be chosent?)
+      // TODO improve on this crude conversion from graph to tree
+      let tree = [...graph.nodes.values()];
+      let idToIndex = new Map();
+      tree.forEach((node, i) => {node.index = i; idToIndex.set(node.id, i)});
+      [...graph.links.values()].forEach(link => {
+        tree[idToIndex.get(link.target)].parent = idToIndex.get(link.source);
+      });
+
+      tree.sourceResult = rdfResult;
+      this.setValues(tree);
+      console.log('VMTree.values:')
+      console.dir(this.values);
+      return this.values;
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  /** consume GraphJsonSourceResult, create/overwrite viewModel 
+    input:
+    @param {Object}  jsonData in ViewModel vm-graph-json format
+
+    output:
+    @param {Object}  jsonData in ViewModel vm-graph-json format
+
+    - TODO: apply filters
+    - TODO: provides default representations for different visualisation types/components
+    - TODO: support addition of custom representations per the application or the data source
+    - TODO: allow the application to modify or select the visual representation programmatically
+    */
+
+  consumeGraphJsonSourceResult (jsonResult) {
+    if (jsonResult.getModelFormat() !== modelFormats.VM_GRAPH_JSON) {
+      console.error(this.constructor.name + '.consumeSourceResult() - does not accept ViewModel type: ', jsonResult.getModelFormat())
+      self.setValues(undefined);
+      return self.values;
+    }
+    let jsonArray = jsonResult.getJsonResult();
+    console.log('JsonViewModel.consumeSourceResult()', jsonArray)
+    let graphMap = {nodes: new Map(), links: new Map() };
+    self = this;
+    try {
+      // Create nodes and links from triples
+      self.setValues({nodes: [...jsonArray.nodes], links: [...jsonArray.links]});
+      self.values.sourceResult = jsonResult;
+      return self.values;
+    } catch (err) {
+      console.log(err);
+    }
+  }
 }
 
 // TODO: add support for jsonViewModel
@@ -230,6 +309,6 @@ class VMTree extends ViewModel {
 // TODO: maybe construct this dynamically using SourceInterface.js and ViewModel.js helpers
 // TODO: offer choice of view model type where more than one is available for the current SourceResult
 export const compatibleViewModels = new Map([
-  [modelFormats.RAW_GRAPH_RDFDATASET, [VMGraph, VMTable]],
+  [modelFormats.RAW_GRAPH_RDFDATASET, [VMGraph, VMTable, VMTree]],
   [modelFormats.VM_GRAPH_JSON, [VMGraph]],
 ]);
