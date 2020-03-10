@@ -1,6 +1,9 @@
 .DS_Store
 node_modules
 public/bundle.*
+public/*.eot
+public/*.svg
+public/*.ttf
 package-lock.json
 scripts/vlab.ncftp
 yarn.lock
