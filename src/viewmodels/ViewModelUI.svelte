@@ -17,6 +17,8 @@ import {compatibleViewModels} from './viewModel.js';
 
 import ViewNetworkGraphCanvas from '../views/ViewNetworkGraphCanvas.svelte';
 import ViewRdfInSvelteTable from '../views/ViewRdfInSvelteTable.svelte';
+import ViewVegaMulti from '../views/ViewVegaMulti.svelte';
+import ViewVegaVoyager from '../views/ViewVegaVoyager.svelte';
 
 import {resultDataStore, activeViews, activeModelsByConsumeFormat, activeModelsByFormat} from "../stores.js";
 
@@ -78,8 +80,10 @@ onMount(() => {
 // Views available for selection in UI
 
 const viewList = [ 
+  { active: true, description: "Tree??? (ViewVegaMulti)", class: ViewVegaMulti },
   { active: true, description: "Graph (ViewNetworkGraphCanvas)", class: ViewNetworkGraphCanvas },
   { active: true, description: "Table (ViewRdfInSvelteTable)", class: ViewRdfInSvelteTable },
+  { active: true, description: "Vega Voyager", class: ViewVegaVoyager },
 ];
 
 function updateActiveViews() {
