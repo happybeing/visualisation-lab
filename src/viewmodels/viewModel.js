@@ -43,7 +43,62 @@ class ViewModel {
   // TODO: review this when adding logic for input types/output types:
   consumeSourceResult (sourceResult) {
     switch(sourceResult.getModelFormat()) {
-      case modelFormats.RAW_GRAPH_RDFDATASET: {
+      case modelFormats.RAW_RDFDATASET: {
+        return this.consumeRdfSourceResult(sourceResult);
+      }
+      case modelFormats.VM_GRAPH_JSON: {
+        return this.consumeGraphJsonSourceResult(sourceResult);
+      }
+      default: {
+        console.error(this.constructor.name + '.consumeSourceResult() - does not accept ViewModel type: ', sourceResult.getModelFormat())
+        return undefined;
+      }
+    }
+  }
+
+  /* consume RDF
+  input:
+    @param RdfSourceResult rdfResult as RDF/JS Dataset
+  */
+  consumeRdfSourceResult (rdfResult) {
+    Error('ViewModel.consumeRdfSourceResult() not implemented');
+  }
+
+  /** consume JSON 
+  input:
+    @param JsonSourceResult jsonResult as {nodes: [], links: []}  jsonData
+  */
+  consumeJsonSourceResult (jsonResult) {
+    Error('ViewModel.consumeJsonSourceResult() not implemented');
+  }
+}
+
+/** Consume an RDF stream
+ * 
+ * TODO: - maybe add other input formats?
+ */
+class VMRdfStream {
+  constructor () {
+    this.values = undefined;
+  }
+
+  // TODO: Base interface: 
+  // - list subclasses of SourceResult I consume
+  // - list the available models for a given SourceResult subclasses
+  // - generate/update view model based on Filters, SourceResult and chosen view model
+
+  getFormatsConsumed () {return [modelFormats.RAW_STREAM_RDF];}  // Array of types supported by consumeSourceResult()
+  getValuesFormat () {return modelFormats.RAW_RDFDATASET;}
+
+  setValues (values) {this.values = values;}
+  getValues () {return this.values;}
+
+  //// Methods to generate the view model from different inputs
+
+  // TODO: review this when adding logic for input types/output types:
+  consumeSourceResult (sourceResult) {
+    switch(sourceResult.getModelFormat()) {
+      case modelFormats.RAW_RDFDATASET: {
         return this.consumeRdfSourceResult(sourceResult);
       }
       case modelFormats.VM_GRAPH_JSON: {
@@ -83,7 +138,7 @@ export class VMGraph extends ViewModel {
   //// Methods to generate the view model from different inputs
 
   getFormatsConsumed () { return [
-    modelFormats.RAW_GRAPH_RDFDATASET,
+    modelFormats.RAW_RDFDATASET,
     modelFormats.VM_GRAPH_JSON
   ];}
   getValuesFormat () {    return modelFormats.VM_GRAPH_JSON; }
@@ -138,7 +193,8 @@ export class VMGraph extends ViewModel {
       self.setValues(undefined);
       return self.values;
     }
-    let jsonArray = jsonResult.getJsonResult();
+    console.dir(jsonResult)
+    let jsonArray = jsonResult.getJsonArray();
     console.log('VMGraph.consumeSourceResult()', jsonArray)
     let graphMap = {nodes: new Map(), links: new Map() };
     self = this;
@@ -166,7 +222,7 @@ export class VMTable extends ViewModel {
   // TODO: implement consume VMGraph model (JSON)
   
   getFormatsConsumed () { return [
-    modelFormats.RAW_GRAPH_RDFDATASET
+    modelFormats.RAW_RDFDATASET
   ];}
   getValuesFormat () {    return modelFormats.VM_TABULAR_JSON; }
 
@@ -213,7 +269,7 @@ class VMTree extends ViewModel {
   //// Methods to generate the view model from different inputs
 
   getFormatsConsumed () { return [
-    modelFormats.RAW_GRAPH_RDFDATASET,
+    modelFormats.RAW_RDFDATASET,
     modelFormats.VM_GRAPH_JSON
   ];}
   
@@ -281,7 +337,7 @@ class VMTree extends ViewModel {
       self.setValues(undefined);
       return self.values;
     }
-    let jsonArray = jsonResult.getJsonResult();
+    let jsonArray = jsonResult.getJsonArray();
     console.log('JsonViewModel.consumeSourceResult()', jsonArray)
     let graphMap = {nodes: new Map(), links: new Map() };
     self = this;
@@ -309,6 +365,6 @@ class VMTree extends ViewModel {
 // TODO: maybe construct this dynamically using SourceInterface.js and ViewModel.js helpers
 // TODO: offer choice of view model type where more than one is available for the current SourceResult
 export const compatibleViewModels = new Map([
-  [modelFormats.RAW_GRAPH_RDFDATASET, [VMGraph, VMTable, VMTree]],
+  [modelFormats.RAW_RDFDATASET, [VMGraph, VMTable, VMTree]],
   [modelFormats.VM_GRAPH_JSON, [VMGraph]],
 ]);

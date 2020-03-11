@@ -102,7 +102,7 @@ $: columns = [
 // TODO: construct this dynamically using SourceInterface.js and ViewModel.js helpers
 // TODO: offer choice of view model type where more than one is available for the current SourceResult
 // const compatibleViewModels = new Map([
-//   [modelFormats.RAW_GRAPH_RDFDATASET, [VMTable]],
+//   [modelFormats.RAW_RDFDATASET, [VMTable]],
 // ]);
 
 // // Active view models by SourceResult type

@@ -8,7 +8,6 @@ import {Voyager, CreateVoyager} from 'datavoyager';
 import {onMount} from 'svelte';
 import {resultDataStore} from "../stores.js";
 import {modelFormats} from '../modelFormats.js';
-export let activeModelsByFormat;
 
 let voyagerInstance;
 

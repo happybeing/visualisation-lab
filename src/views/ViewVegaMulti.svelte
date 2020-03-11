@@ -14,30 +14,150 @@ import {resultDataStore} from "../stores.js";
 import {modelFormats} from '../modelFormats.js';
 export let activeModelsByFormat;
 
-// const testTreeSchema = {};
+const spec = `{
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Simple bar chart",
+    "data": {
+        "values": [
+            {"x": "A", "y": 28}, {"x": "y", "B": 55}, {"x": "C", "y": 43},
+            {"x": "D", "y": 91}, {"x": "E", "y": 81}, {"x": "F", "y": 53},
+            {"x": "G", "y": 19}, {"x": "H", "y": 87}, {"x": "I", "y": 52}
+        ]
+    },
+    "mark": "bar",
+    "encoding": {
+        "x": {"field": "x", "type": "ordinal"},
+        "y": {"field": "y", "type": "quantitative"}
+    }
+  }`;
 
-// import simpleChartSpec from './data/vega-simple-chart.js';
+const xSpec = ``;
+
+const treeSpec = `{
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "description": "An example of Cartesian layouts for a node-link diagram of hierarchical data.",
+  "width": 600,
+  "height": 1600,
+  "padding": 5,
+
+  "signals": [
+    {
+      "name": "labels", "value": true,
+      "bind": {"input": "checkbox"}
+    },
+    {
+      "name": "layout", "value": "tidy",
+      "bind": {"input": "radio", "options": ["tidy", "cluster"]}
+    },
+    {
+      "name": "links", "value": "diagonal",
+      "bind": {
+        "input": "select",
+        "options": ["line", "curve", "diagonal", "orthogonal"]
+      }
+    },
+    {
+      "name": "separation", "value": false,
+      "bind": {"input": "checkbox"}
+    }
+  ],
+
+  "data": [
+    {
+      "name": "tree",
+      "values": {},
+      "transform": [
+        {
+          "type": "stratify",
+          "key": "index",
+          "parentKey": "parent"
+        },
+        {
+          "type": "tree",
+          "method": {"signal": "layout"},
+          "size": [{"signal": "height"}, {"signal": "width - 100"}],
+          "separation": {"signal": "separation"},
+          "as": ["y", "x", "depth", "children"]
+        }
+      ]
+    },
+    {
+      "name": "links",
+      "source": "tree",
+      "transform": [
+        { "type": "treelinks" },
+        {
+          "type": "linkpath",
+          "orient": "horizontal",
+          "shape": {"signal": "links"}
+        }
+      ]
+    }
+  ],
+
+  "scales": [
+    {
+      "name": "color",
+      "type": "linear",
+      "range": {"scheme": "magma"},
+      "domain": {"data": "tree", "field": "depth"},
+      "zero": true
+    }
+  ],
+
+  "marks": [
+    {
+      "type": "path",
+      "from": {"data": "links"},
+      "encode": {
+        "update": {
+          "path": {"field": "path"},
+          "stroke": {"value": "#ccc"}
+        }
+      }
+    },
+    {
+      "type": "symbol",
+      "from": {"data": "tree"},
+      "encode": {
+        "enter": {
+          "size": {"value": 100},
+          "stroke": {"value": "#fff"}
+        },
+        "update": {
+          "x": {"field": "x"},
+          "y": {"field": "y"},
+          "fill": {"scale": "color", "field": "depth"}
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": {"data": "tree"},
+      "encode": {
+        "enter": {
+          "text": {"field": "name"},
+          "fontSize": {"value": 9},
+          "baseline": {"value": "middle"}
+        },
+        "update": {
+          "x": {"field": "x"},
+          "y": {"field": "y"},
+          "dx": {"signal": "datum.children ? -7 : 7"},
+          "align": {"signal": "datum.children ? 'right' : 'left'"},
+          "opacity": {"signal": "labels ? 1 : 0"}
+        }
+      }
+    }
+  ]
+}`;
+
+const testSchema = JSON.parse(treeSpec);
 
 onMount(() => {
-  const spec = `{
-      "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-      "description": "Simple bar chart",
-      "data": {
-          "values": [
-              {"x": "A", "y": 28}, {"x": "y", "B": 55}, {"x": "C", "y": 43},
-              {"x": "D", "y": 91}, {"x": "E", "y": 81}, {"x": "F", "y": 53},
-              {"x": "G", "y": 19}, {"x": "H", "y": 87}, {"x": "I", "y": 52}
-          ]
-      },
-      "mark": "bar",
-      "encoding": {
-          "x": {"field": "x", "type": "ordinal"},
-          "y": {"field": "y", "type": "quantitative"}
-      }
-    }`;
 
   // option 1: where the spec is a string
-   embed("#vega-embed", JSON.parse(spec), { actions: false }).catch(error =>
+   embed("#vega-embed", testSchema, { actions: false }).catch(error =>
      console.log(error)
    );
 
@@ -52,17 +172,23 @@ onMount(() => {
   //  );
 });
 
-// let viewModel;
-// $: rows = updateTree($activeModelsByFormat);
+let viewModel;
+$: updateTree($activeModelsByFormat);
 
-// function updateTree (activeModelsByFormat) {
-//   let allModels = activeModelsByFormat.get(modelFormats.VM_TREE_JSON);
-//   if (allModels === undefined) return [];
+function updateTree (activeModelsByFormat) {
+  console.log('updateTree()...');
+  let allModels = activeModelsByFormat.get(modelFormats.VM_TREE_JSON);
+  if (allModels === undefined) return [];
 
-//   // TODO how to handle multiple compatible models? (We visualise only the first)
-//   viewModel = allModels[0];      
-// // ???  return viewModel.getValues().rows;
-// }
+  // TODO how to handle multiple compatible models? (We visualise only the first)
+  viewModel = allModels[0];      
+  const values = viewModel.getValues();
+  testSchema.data.values = values;
+  console.dir(testSchema);
+  // console.dir(testSchema.data);
+  embed("#vega-embed", testSchema, { actions: false }).catch(error =>
+    console.log(error));
+}
 
 </script>
 <style>

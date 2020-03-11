@@ -2,6 +2,8 @@
 export let sourceInterface;
 export let sourceResultStore;
 
+import {statusTextStore} from '../stores.js';
+
 import lodCloudRdf from '../data/LODCloud_SPARQL_Endpoints.ttl';
 //import lodCloudRdf from '../data/1521803020108-tickled-turtles.ttl';
 </script>
@@ -20,7 +22,7 @@ import lodCloudRdf from '../data/LODCloud_SPARQL_Endpoints.ttl';
   <b>&lt;TestRdfUI&gt;</b>
   <button 
     enabled={sourceInterface !== undefined} 
-    on:click={() => sourceInterface.consumeRdfTextTtl(sourceResultStore, lodCloudRdf)}>
+    on:click={() => sourceInterface.consumeRdfTextTtl(sourceResultStore, statusTextStore, lodCloudRdf)}>
     Load lodCloud
   </button>
 </p>

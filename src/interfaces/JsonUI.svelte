@@ -18,7 +18,7 @@ export let sourceResultStore;
   <b>&lt;JsonUI&gt;</b>
   <button 
     enabled={sourceInterface !== undefined} 
-    on:click={() => sourceInterface.loadTestJson(sourceResultStore)}>
+    on:click={() => sourceInterface.consumeJson(sourceResultStore)}>
     Load 'Les Miserables'
   </button>
 </p>

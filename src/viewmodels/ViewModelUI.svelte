@@ -1,10 +1,10 @@
 <!-- UI to control how SourceResults are visualised using ViewModels and Views 
 
-Functionality:
-NEXT>>> - TODO: clears active ViewModels when SourceResult changes
-- updates a set of ViewModels which can consume the latest SourceResult
-- provides UI to select which View components are active
-- TODO: UI controlling filters which can be applied to SourceResults (and ViewModels?)
+Provides a simple UI for selecting the available set of Views.
+
+Creates and updates ViewModels when a new set of data are loaded into the 
+resultDataStore, and is a place to provide UI to allow control over which
+models are used by which views.
 -->
 
 <script>
@@ -22,7 +22,44 @@ import ViewVegaVoyager from '../views/ViewVegaVoyager.svelte';
 
 import {resultDataStore, activeViews, activeModelsByConsumeFormat, activeModelsByFormat} from "../stores.js";
 
-// Update View Models when SourceResult changes
+// Views available for selection in UI
+const viewList = [ 
+  { active: true, description: "Tree??? (ViewVegaMulti)", class: ViewVegaMulti },
+  { active: true, description: "Graph (ViewNetworkGraphCanvas)", class: ViewNetworkGraphCanvas },
+  { active: true, description: "Table (ViewRdfInSvelteTable)", class: ViewRdfInSvelteTable },
+  { active: true, description: "Vega Voyager", class: ViewVegaVoyager },
+];
+
+function updateActiveViews() {
+  let activeList = [];
+  viewList.forEach(view => {if (view.active) activeList.push(view.class);});
+  $activeViews = [...activeList];
+}
+
+// How ViewModels Are used
+// 
+// ViewModels are created and updated here, and shared via the stores:
+//
+//  activeModelsByConsumeFormat - maps to list of ViewModels by what they consume
+//  activeModelsByFormat - maps to ViewModels by their model format
+//
+// The code below watches for changes to the resultDataStore and updates
+// both maps accordingly.
+//
+// The design here is for prototyping. In an application you might want
+// to handle the generation of ViewModels and connecting them to View
+// components differently.
+//
+// For now the list of models is re-generated completely each time
+// the resultDataStore updates. This ensures that all available models
+// correspond to the last loaded data. It also makes 
+// activeModelsByConsumeFormat redundant, but it is retained here for
+// to assist debuggin during development.
+//
+// TODO: what to do when there are multiple ViewModels of the same format? 
+// -> For now the View components will just take the first,
+// but the ViewModelUI might offer a way for this to be selected in the UI,
+// or for 'competing' ViewModels to be prioritised.
 
 let unsubscribe;
 
@@ -34,6 +71,9 @@ onMount(() => {
 
     try {
       const resultFormat = rds.getModelFormat();
+      $activeModelsByConsumeFormat = new Map;
+      $activeModelsByFormat = new Map;
+
       let activeCompatibleModels = $activeModelsByConsumeFormat.get(resultFormat);
       if (activeCompatibleModels === undefined) {
         activeCompatibleModels = [];
@@ -76,21 +116,6 @@ onMount(() => {
 
   updateActiveViews();
 });
-
-// Views available for selection in UI
-
-const viewList = [ 
-  { active: true, description: "Tree??? (ViewVegaMulti)", class: ViewVegaMulti },
-  { active: true, description: "Graph (ViewNetworkGraphCanvas)", class: ViewNetworkGraphCanvas },
-  { active: true, description: "Table (ViewRdfInSvelteTable)", class: ViewRdfInSvelteTable },
-  { active: true, description: "Vega Voyager", class: ViewVegaVoyager },
-];
-
-function updateActiveViews() {
-  let activeList = [];
-  viewList.forEach(view => {if (view.active) activeList.push(view.class);});
-  $activeViews = [...activeList];
-}
 
 </script>
 <style>

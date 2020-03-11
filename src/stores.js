@@ -5,6 +5,7 @@ export const statusTextStore = writable('');    // Feedback for SourceUI from da
 export const activeViews = writable([]);        // ViewUI classes to display - set by ViewModelUI
 export const graph = writable({nodes: [], links: []});// Updated by ViewModelUI, consumed by View
 
-// ViewUI updated ViewModels as Map([modelFormat, viewModels[]]):
+// ViewModelUI updated ViewModels as Map([modelFormat, viewModels[]]):
+// See ViewModelUI for details
 export const activeModelsByConsumeFormat = writable(new Map);
 export const activeModelsByFormat = writable(new Map);

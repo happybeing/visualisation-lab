@@ -6,8 +6,18 @@
  */
 
 export const modelFormats = {
+  // Meta types:
+  UNDEFINED: 'undefined', // Used when no data, otherwise data should have a format
+
+  // Types for consumption by a SourceResult:
+  RAW_STREAM_CSV: 'raw-stream-csv',
+  RAW_STREAM_JSON: 'raw-stream-json',
+  RAW_STREAM_RDF: 'raw-stream-rdf',
+  RAW_TEXT_TURTLE: 'raw-text-turtle',
+  RAW_JSON_ARRAY: 'raw-json-array',
+
   // Types for SourceResult output / ViewModel input:
-  RAW_GRAPH_RDFDATASET: 'raw-graph-rdfdataset',
+  RAW_RDFDATASET: 'raw-rdfdataset',
 
   // Types for ViewModel output:
   VM_TABULAR_JSON: 'vm-tabular-json',
@@ -18,6 +28,6 @@ export const modelFormats = {
 };
 
 export const modelFormatsMap = new Map([
-  [modelFormats.RAW_GRAPH_RDFDATASET, {friendlyName: 'RDF/JS Dataset', categoryName: 'RDF'}],
+  [modelFormats.RAW_RDFDATASET, {friendlyName: 'RDF/JS Dataset', categoryName: 'RDF'}],
 ]);
 
