@@ -2,6 +2,7 @@
 export let sourceInterface;
 export let sourceResultStore;
 export let statusTextStore;
+export let options;
 
 let filePath;
 let fileInfo;
@@ -12,8 +13,8 @@ function handleChange(event) {
   console.dir(this);
   fileInfo = this.files[0];
   console.dir(fileInfo);
-  
-  sourceInterface.loadFiles(sourceResultStore, statusTextStore, this.files);
+
+  sourceInterface.loadFiles(sourceResultStore, statusTextStore, this.files, options);
 }
 
 function handleInput(event) {

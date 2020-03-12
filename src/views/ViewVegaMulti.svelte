@@ -181,8 +181,9 @@ function updateTree (activeModelsByFormat) {
   if (allModels === undefined) return [];
 
   // TODO how to handle multiple compatible models? (We visualise only the first)
+  // TODO merge the model into the schema - don't just set values
   viewModel = allModels[0];      
-  const values = viewModel.getValues();
+  const values = viewModel.getJsonModelValues();
   testSchema.data.values = values;
   console.dir(testSchema);
   // console.dir(testSchema.data);

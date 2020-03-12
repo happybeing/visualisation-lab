@@ -24,108 +24,64 @@ import {modelFormats} from '../modelFormats.js';
 
 class ViewModel {
   constructor () {
-    this.values = undefined;
+    this.jsonModel = undefined;
   }
 
-  // TODO: Base interface: 
-  // - list subclasses of SourceResult I consume
-  // - list the available models for a given SourceResult subclasses
-  // - generate/update view model based on Filters, SourceResult and chosen view model
+  // TODO: generate/update view model based on Filters, SourceResult and chosen view model
 
   getFormatsConsumed () {return [];}  // Array of types supported by consumeSourceResult()
-  getValuesFormat () {throw Error('ViewModel - no viewModelType');}
+  getJsonModelFormat() {this.jsonModel ? this.jsonModel.modelFormat : undefined}
 
-  setValues (values) {this.values = values;}
-  getValues () {return this.values;}
+  setJsonModel (jsonModel) {
+    this.jsonModel = jsonModel;
+  }
+  getJsonModel () {return this.jsonModel;}
+  getJsonModelValues () {return this.jsonModel ? this.jsonModel.values : undefined;}
 
   //// Methods to generate the view model from different inputs
 
   // TODO: review this when adding logic for input types/output types:
   consumeSourceResult (sourceResult) {
-    switch(sourceResult.getModelFormat()) {
+    switch(sourceResult.getJsonModelFormat()) {
       case modelFormats.RAW_RDFDATASET: {
         return this.consumeRdfSourceResult(sourceResult);
       }
       case modelFormats.VM_GRAPH_JSON: {
         return this.consumeGraphJsonSourceResult(sourceResult);
       }
+      case modelFormats.VM_TABULAR_JSON: {
+        return this.consumeTabularJsonSourceResult(sourceResult);
+      }
       default: {
-        console.error(this.constructor.name + '.consumeSourceResult() - does not accept ViewModel type: ', sourceResult.getModelFormat())
+        console.error(this.constructor.name + '.consumeSourceResult() - does not accept ViewModel type: ', sourceResult.getJsonModelFormat())
         return undefined;
       }
     }
   }
 
-  /* consume RDF
+  /* consume RAW_RDFDATASET
   input:
-    @param RdfSourceResult rdfResult as RDF/JS Dataset
+    @param {RdfSourceResult} rdfResult as RDF/JS Dataset
   */
   consumeRdfSourceResult (rdfResult) {
     Error('ViewModel.consumeRdfSourceResult() not implemented');
   }
 
-  /** consume JSON 
+  /** consume VM_GRAPH_JSON 
   input:
-    @param JsonSourceResult jsonResult as {nodes: [], links: []}  jsonData
+    @param {JsonSourceResult} jsonResult as vm-graph-json
   */
-  consumeJsonSourceResult (jsonResult) {
+ consumeGraphJsonSourceResult (jsonResult) {
     Error('ViewModel.consumeJsonSourceResult() not implemented');
   }
+
+  /** consume VM_TABULAR_JSON 
+  input:
+    @param {JsonSourceResult} jsonResult as vm-tabular-json
+  */
+ consumeTabularJsonSourceResult (jsonResult) {
+  Error('ViewModel.consumeTabularJsonSourceResult() not implemented');
 }
-
-/** Consume an RDF stream
- * 
- * TODO: - maybe add other input formats?
- */
-class VMRdfStream {
-  constructor () {
-    this.values = undefined;
-  }
-
-  // TODO: Base interface: 
-  // - list subclasses of SourceResult I consume
-  // - list the available models for a given SourceResult subclasses
-  // - generate/update view model based on Filters, SourceResult and chosen view model
-
-  getFormatsConsumed () {return [modelFormats.RAW_STREAM_RDF];}  // Array of types supported by consumeSourceResult()
-  getValuesFormat () {return modelFormats.RAW_RDFDATASET;}
-
-  setValues (values) {this.values = values;}
-  getValues () {return this.values;}
-
-  //// Methods to generate the view model from different inputs
-
-  // TODO: review this when adding logic for input types/output types:
-  consumeSourceResult (sourceResult) {
-    switch(sourceResult.getModelFormat()) {
-      case modelFormats.RAW_RDFDATASET: {
-        return this.consumeRdfSourceResult(sourceResult);
-      }
-      case modelFormats.VM_GRAPH_JSON: {
-        return this.consumeGraphJsonSourceResult(sourceResult);
-      }
-      default: {
-        console.error(this.constructor.name + '.consumeSourceResult() - does not accept ViewModel type: ', sourceResult.getModelFormat())
-        return undefined;
-      }
-    }
-  }
-
-  /* consume RDF
-  input:
-    @param RdfSourceResult rdfResult as RDF/JS Dataset
-  */
-  consumeRdfSourceResult (rdfResult) {
-    Error('ViewModel.consumeRdfSourceResult() not implemented');
-  }
-
-  /** consume JSON 
-  input:
-    @param JsonSourceResult jsonResult as {nodes: [], links: []}  jsonData
-  */
-  consumeJsonSourceResult (jsonResult) {
-    Error('ViewModel.consumeJsonSourceResult() not implemented');
-  }
 }
 
 import {RdfToGraph} from '../rdf/rdfjsUtils.js';
@@ -141,7 +97,7 @@ export class VMGraph extends ViewModel {
     modelFormats.RAW_RDFDATASET,
     modelFormats.VM_GRAPH_JSON
   ];}
-  getValuesFormat () {    return modelFormats.VM_GRAPH_JSON; }
+  getJsonModelFormat () {    return modelFormats.VM_GRAPH_JSON; }
 
   /** consume RDF
   input:
@@ -164,11 +120,14 @@ export class VMGraph extends ViewModel {
     try {
       let rdfToGraph = new RdfToGraph(rdfResult.getRdfDataset());
       let graph = rdfToGraph.Graph();
-      graph.sourceResult = rdfResult;
-      this.setValues(graph);
-      console.log('VMGraph.values:')
-      console.dir(this.values);
-      return this.values;
+      this.setJsonModel({
+        values: graph, 
+        modelFormat: modelFormats.VM_GRAPH_JSON,
+        sourceResult: rdfResult,
+      });
+      console.log('VMGraph.jsonModel:')
+      console.dir(this.jsonModel);
+      return this.jsonModel;
     } catch (err) {
       console.log(err);
     }
@@ -188,21 +147,24 @@ export class VMGraph extends ViewModel {
   */
 
  consumeGraphJsonSourceResult (jsonResult) {
-    if (jsonResult.getModelFormat() !== modelFormats.VM_GRAPH_JSON) {
-      console.error(this.constructor.name + '.consumeSourceResult() - does not accept ViewModel type: ', jsonResult.getModelFormat())
-      self.setValues(undefined);
-      return self.values;
+    if (jsonResult.getJsonModelFormat() !== modelFormats.VM_GRAPH_JSON) {
+      console.error(this.constructor.name + '.consumeSourceResult() - does not accept ViewModel type: ', jsonResult.getJsonModelFormat())
+      self.setJsonModel(undefined);
+      return self.jsonModel;
     }
     console.dir(jsonResult)
-    let jsonArray = jsonResult.getJsonArray();
+    let jsonArray = jsonResult.getJsonModelValues();
     console.log('VMGraph.consumeSourceResult()', jsonArray)
     let graphMap = {nodes: new Map(), links: new Map() };
     self = this;
     try {
       // Create nodes and links from triples
-      self.setValues({nodes: [...jsonArray.nodes], links: [...jsonArray.links]});
-      self.values.sourceResult = jsonResult;
-      return self.values;
+      self.setJsonModel({
+        values: {nodes: [...jsonArray.nodes], links: [...jsonArray.links]}, 
+        modelFormat: modelFormats.VM_GRAPH_JSON,
+        sourceResult: jsonResult,
+      });
+      return self.jsonModel;
     } catch (err) {
       console.log(err);
     }
@@ -222,13 +184,14 @@ export class VMTable extends ViewModel {
   // TODO: implement consume VMGraph model (JSON)
   
   getFormatsConsumed () { return [
-    modelFormats.RAW_RDFDATASET
+    modelFormats.RAW_RDFDATASET,
+    this.getJsonModelFormat()
   ];}
-  getValuesFormat () {    return modelFormats.VM_TABULAR_JSON; }
+  getJsonModelFormat () {    return modelFormats.VM_TABULAR_JSON; }
 
   /** consume RDF
   input:
-    @param RdfSourceResult rdfResult as RDF/JS Dataset
+    @param {RdfSourceResult} rdfResult as RDF/JS Dataset
 
   output:
     @param {Object}           graph {nodes: [], links: []} (./stores.js) 
@@ -245,12 +208,37 @@ export class VMTable extends ViewModel {
   consumeRdfSourceResult (rdfResult) {
     try {
       const rdfTable = new RdfTabulator(rdfResult.getRdfDataset());
-      const table = rdfTable.Table();
-      table.sourceResult = rdfResult;
-      this.setValues(table);
-      console.log('VMTable.values:')
-      console.dir(this.values);
-      return this.values;
+      const table = rdfTable.Table({});
+      const values = table.rows;
+      if (table.columns) this.header = table.columns;
+      this.setJsonModel({
+        values: values,
+        modelFormat: modelFormats.VM_TABULAR_JSON,
+        sourceResult: rdfResult,
+      });
+      console.log('VMTable.jsonModel:')
+      console.dir(this.jsonModel);
+      return this.jsonModel;
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  /** consume JSON
+  input:
+   @param {Object}  jsonResult vm-tabular-json
+   */
+  consumeTabularJsonSourceResult(jsonResult) {
+    try {
+      let jsonValues = jsonResult.getJsonModelValues();
+      this.setJsonModel({
+        values: jsonValues,
+        modelFormat: modelFormats.VM_TABULAR_JSON,
+        sourceResult: jsonResult,
+      });
+      console.log('VMTable.jsonModel:')
+      console.dir(this.getJsonModel());
+      return this.getJsonModel();
     } catch (err) {
       console.log(err);
     }
@@ -273,7 +261,7 @@ class VMTree extends ViewModel {
     modelFormats.VM_GRAPH_JSON
   ];}
   
-  getValuesFormat () {    return modelFormats.VM_TREE_JSON; }
+  getJsonModelFormat () {    return modelFormats.VM_TREE_JSON; }
 
   /** consume RDF
   input:
@@ -308,11 +296,14 @@ class VMTree extends ViewModel {
         tree[idToIndex.get(link.target)].parent = idToIndex.get(link.source);
       });
 
-      tree.sourceResult = rdfResult;
-      this.setValues(tree);
-      console.log('VMTree.values:')
-      console.dir(this.values);
-      return this.values;
+      this.setJsonModel({
+        values: tree,
+        modelFormat: modelFormats.VM_TREE_JSON,
+        sourceResult: rdfResult,
+      });
+      console.log('VMTree.jsonModel:')
+      console.dir(this.jsonModel);
+      return this.jsonModel;
     } catch (err) {
       console.log(err);
     }
@@ -332,20 +323,23 @@ class VMTree extends ViewModel {
     */
 
   consumeGraphJsonSourceResult (jsonResult) {
-    if (jsonResult.getModelFormat() !== modelFormats.VM_GRAPH_JSON) {
-      console.error(this.constructor.name + '.consumeSourceResult() - does not accept ViewModel type: ', jsonResult.getModelFormat())
-      self.setValues(undefined);
-      return self.values;
+    if (jsonResult.getJsonModelFormat() !== modelFormats.VM_GRAPH_JSON) {
+      console.error(this.constructor.name + '.consumeSourceResult() - does not accept ViewModel type: ', jsonResult.getJsonModelFormat())
+      self.setJsonModel(undefined);
+      return self.jsonModel;
     }
-    let jsonArray = jsonResult.getJsonArray();
+    let jsonArray = jsonResult.getJsonModelValues();
     console.log('JsonViewModel.consumeSourceResult()', jsonArray)
     let graphMap = {nodes: new Map(), links: new Map() };
     self = this;
     try {
       // Create nodes and links from triples
-      self.setValues({nodes: [...jsonArray.nodes], links: [...jsonArray.links]});
-      self.values.sourceResult = jsonResult;
-      return self.values;
+      self.setJsonModel({
+        values: {nodes: [...jsonArray.nodes], links: [...jsonArray.links]},
+        modelFormat: modelFormats.VM_GRAPH_JSON,
+        sourceResult: jsonResult,
+      });
+      return self.getJsonModel();
     } catch (err) {
       console.log(err);
     }
@@ -357,7 +351,7 @@ class VMTree extends ViewModel {
 // - note TODO: create ViewModel handler for each SourceResultType
 // - implement ViewModel.getViewModelForSourceResult(sourceResult)
 // - implement ViewModel.getView
-// - ??? add SourceResult.getModelFormat()
+// - ??? add SourceResult.getJsonModelFormat()
 // - how are these selected? 
 // - should this just follow the SourceInterface?
 
@@ -367,4 +361,5 @@ class VMTree extends ViewModel {
 export const compatibleViewModels = new Map([
   [modelFormats.RAW_RDFDATASET, [VMGraph, VMTable, VMTree]],
   [modelFormats.VM_GRAPH_JSON, [VMGraph]],
+  [modelFormats.VM_TABULAR_JSON, [VMTable]],
 ]);

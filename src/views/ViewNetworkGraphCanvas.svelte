@@ -34,7 +34,7 @@ function updateGraph (activeModelsByFormat) {
 
   // TODO how to handle multiple compatible models? (We visualise only the first)
   viewModel = allModels[0];  
-  const values = viewModel.getValues();
+  const values = viewModel.getJsonModelValues();
   const graph = {nodes: [...values.nodes.values()], links: [...values.links.values()]};
   return graph;
 } 

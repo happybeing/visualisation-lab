@@ -1,9 +1,5 @@
 // Classes interfacing with external data sources
 //
-// TODO: refactor: move parsing from SourceInterface classes to SourceResult
-// TODO: update set of SourceResult types in line with ViewModel refactor (e.g. RDF graph, RDF table, JSON graph, JSON table)
-// DONE: separate the SourceResult types from SourceResult (naming) into modelFormats.js for use by SourceInterface and ViewModel
-// TODO: move subclasses to separate files and export from this file
 // TODO: remove all console.dir
 
 import {modelFormats} from '../modelFormats.js';
@@ -35,9 +31,9 @@ import {modelFormats} from '../modelFormats.js';
     const sourceResult = new SourceResult(this);
     return sourceResult.consumeJson(sourceResultStore);
   }
-  loadFiles(sourceResultStore, statusTextStore, fileList) {
+  loadFiles(sourceResultStore, statusTextStore, fileList, options) {
     const sourceResult = new SourceResult(this);
-    return sourceResult.loadFiles(sourceResultStore, statusTextStore, fileList);
+    return sourceResult.loadFiles(sourceResultStore, statusTextStore, fileList, options);
   }
   loadUri(sourceResultStore, statusTextStore, uri) {
     const sourceResult = new SourceResult(this);
@@ -46,6 +42,10 @@ import {modelFormats} from '../modelFormats.js';
   loadSparqlQuery(sourceResultStore, statusTextStore, endpoint, sparqlText) {
     const sourceResult = new SourceResult(this);
     return sourceResult.loadSparqlQuery(sourceResultStore, statusTextStore, endpoint, sparqlText);
+  }
+  consumeCsvStream (sourceResultStore, statusTextStore, stream, {mimeType, size}) {
+    const sourceResult = new SourceResult(this);
+    return sourceResult.consumeCsvStream(sourceResultStore, statusTextStore, stream, {mimeType, size});
   }
 
   // TODO: review the following...
@@ -105,13 +105,17 @@ import JsonUI from "./JsonUI.svelte";
 import TestRdfUI from "./TestRdfUI.svelte";
 import lesMisData from '../data/data-les-miserables.js';
 
+// RDF Support
 const ttlReader = require('@graphy/content.ttl.read');
 const RdfDataset = require('@graphy/memory.dataset.fast');
 
+// CSV Support
+import {parser as parseCsv} from 'csv-parse';
+// const parseCsv = require('csv-parse');
 
-/** Base class for loading different external data formats into an internal representation
+/** Load multiple external data formats into a JSON ViewModel representation
  * 
- * The set of internal data representations is defined in modelFormats.js
+ * The set of ViewModel representations is defined in modelFormats.js
  */
 class SourceResult {
   constructor (sourceInterface) {
@@ -119,24 +123,18 @@ class SourceResult {
   }
 
   getSourceInterface () {return this.sourceInterface;}
-  getRdfDataset () {return this.modelFormat === modelFormats.RAW_RDFDATASET ? this.internalModel : undefined;}
-  getJsonArray () {
-    return this.modelFormat === modelFormats.RAW_JSON_ARRAY ||
-      this.modelFormat === modelFormats.VM_GRAPH_JSON 
-      ? this.internalModel : undefined;}
-  
+  getRdfDataset () {return this.getJsonModelFormat() === modelFormats.RAW_RDFDATASET ? this.getJsonModelValues() : undefined;}
   getFormatsConsumed () {return [
     modelFormats.RAW_STREAM_RDF, 
     modelFormats.RAW_TEXT_TURTLE,
     modelFormats.RAW_JSON_ARRAY,
   ];}
-
-  setModel (internalModel, modelFormat) {
-    this.internalModel = internalModel;
-    this.modelFormat = modelFormat;
-  }
-  getModel () { return this.internalModel; }
-  getModelFormat () { return this.modelFormat ? this.modelFormat : modelFormats.UNDEFINED; }
+    
+  setJsonModel (jsonModel) {this.jsonModel = jsonModel;}
+ 
+  getJsonModel () {return this.jsonModel;}
+  getJsonModelFormat () {return this.jsonModel ? this.jsonModel.modelFormat : modelFormats.UNDEFINED; }
+  getJsonModelValues () {return this.jsonModel ? this.jsonModel.values : undefined;}
 
   // import fetch from '@rdfjs/fetch';
   
@@ -154,7 +152,7 @@ class SourceResult {
   
   // TODO: Unify data consumption and move to ViewModel:
   // TODO: - extend MIME type support using graphy reader based on mimeType
-  consumeRdfStream (sourceResultStore, statusTextStore, stream, {mimeType, size}) {
+  consumeRdfStream (sourceResultStore, statusTextStore, stream,  {mimeType, size}) {
     console.log('SourceResult.consumeRdfFile()');
     console.dir(stream);
     console.log('Size: ', size);
@@ -171,7 +169,7 @@ class SourceResult {
         eof () {
           console.log('done!');
           console.log('rdfDataset size: ', rdfDataset.size);
-          self.setModel(rdfDataset, modelFormats.RAW_RDFDATASET);
+          self.setJsonModel({values: rdfDataset, modelFormat: modelFormats.RAW_RDFDATASET});
           self.sourceResultStore.update(v => self);
           }
         });
@@ -219,7 +217,11 @@ class SourceResult {
         eof(h_prefixes) {
           console.log('done!');
           console.log('rdfDataset size: ', rdfDataset.size);
-          self.setModel(rdfDataset, modelFormats.RAW_RDFDATASET);
+          self.setJsonModel({
+            values: rdfDataset, 
+            modelFormat: modelFormats.RAW_RDFDATASET,  
+            sourceInterface: this,
+          });
           self.sourceResultStore.update(v => self);
         },
       })
@@ -235,7 +237,7 @@ class SourceResult {
     console.log('SourceResult.consumeJson()');
     this.sourceResultStore = sourceResultStore;
 
-    this.setModel(lesMisData, modelFormats.VM_GRAPH_JSON);
+    this.setJsonModel({values: lesMisData, modelFormat: modelFormats.VM_GRAPH_JSON});
     this.sourceResultStore.update(v => this);
   }
 
@@ -250,8 +252,9 @@ class SourceResult {
    * 
    * @param {Writeable<SourceResult>} sourceResultStore 
    * @param {FileList} fileList 
+   * @param {Object}  current options: {mimeType: String}
    */
-  loadFiles(sourceResultStore, statusTextStore, fileList) {
+  loadFiles(sourceResultStore, statusTextStore, fileList, options) {
     console.log('SourceResult.loadFiles()');
 
     // TODO: load multiple files into same store
@@ -261,7 +264,13 @@ class SourceResult {
       statusTextStore.set('loading file(s)');
       try {
         console.log('Loading ', file.size, ' bytes from ', file);
-        this.consumeRdfStream(sourceResultStore, statusTextStore, file.stream(), {mimeType: file.type, size: file.size});
+        let mimeType = file.type;
+        if (mimeType === undefined) mimeType = options.mimeType ? options.mimeType : undefined;
+
+        if (mimeType === 'text/csv')
+          this.consumeCsvStream(sourceResultStore, statusTextStore, file.stream(), {mimeType: file.type, size: file.size});
+        else  // Default to RDF
+          this.consumeRdfStream(sourceResultStore, statusTextStore, file.stream(), {mimeType: file.type, size: file.size});
       } catch(e) {
         console.warn(e);
         window.notifications.notifyWarning('File load error');
@@ -323,6 +332,30 @@ class SourceResult {
     console.log(url);
     return this.loadUri(sourceResultStore, statusTextStore, url);
   }
+
+  // TODO: a consumeStream() which uses the options.mimeType param to choose the consume function
+  consumeCsvStream (sourceResultStore, statusTextStore, stream, {mimeType, size}) {
+    console.log('CsvInterface.consumeCsvFile()');
+    console.dir(stream);
+    console.log('Size: ', size);
+    this.sourceResultStore = sourceResultStore;
+    // TODO: parse stream to generate csvJson
+    // TODO: update statusTextStore (e.g. 1234 rows loaded)
+    const csvJson = [ 
+      ["a", "b", "c"],
+      ["1", "3", "3"],
+      ["2", "2", "2"],
+      ["5", "1", "4"],
+    ];
+
+    try {
+      this.setJsonModel({values: csvJson, modelFormat: modelFormats.VM_TABULAR_JSON});
+      this.sourceResultStore.update(v => this);
+    } catch(e) {
+      console.error(e);
+      window.notifications.notifyWarning('Failed to parse CSV result.')
+    }
+  }
 }
 
 function readableStreamToGraphyReader(readableStream, graphyReader) {
@@ -345,37 +378,6 @@ function readableStreamToGraphyReader(readableStream, graphyReader) {
   next();
 }
 
-import {parser as parseCsv} from 'csv-parse';
-// const parseCsv = require('csv-parse');
-
-class CsvInterface extends SourceInterface {
-  constructor (shortName, description, uiComponent) {
-    super(shortName, description, uiComponent ? uiComponent : TestCsvUI);
-  }
-
-  consumeCsvStream (sourceResultStore, statusTextStore, stream, {mimeType, size}) {
-    console.log('CsvInterface.consumeCsvFile()');
-    console.dir(stream);
-    console.log('Size: ', size);
-    this.setSourceResult(undefined);
-    this.sourceResultStore = sourceResultStore;
-    const csv = [ 
-      ["a", "b", "c"],
-      ["1", "3", "3"],
-      ["2", "2", "2"],
-      ["5", "1", "4"],
-    ];
-
-    try {
-      this.setSourceResult(csv);
-    } catch(e) {
-      console.error(e);
-      window.notifications.notifyWarning('Failed to parse CSV result.')
-    }
-  }
-
-}
-
 // TODO: replace fixed interfaces with an initial set
 // TODO: change iClass to String and use a 'factory' so I can serialise (research ways to serialise first)
 const testInterfaces = [
@@ -383,7 +385,7 @@ const testInterfaces = [
   {uiClass: WebSparqlUI, shortName: "rdf-sparql", description: "Web SPARQL endpoint (RDF/Turtle)", options: {}},
   {uiClass: WebUI, shortName: "rdf-ldp", description: "Web LDP resource (RDF/Turtle)", options: {}},
   {uiClass: FileUI, shortName: "rdf-file", description: "Load from file (RDF/Turtle)", options: {}},
-  // {uiClass: ???FileUI, shortName: "csv-file", description: "Load from file (CSV)", options: {}},
+  {uiClass: FileUI, shortName: "csv-file", description: "Load from file (CSV)", options: {mimeType: "text/csv"}},
  
   // Test UIs
   {uiClass: JsonUI, shortName: "json-test", description: "File (JSON)", options: {}},

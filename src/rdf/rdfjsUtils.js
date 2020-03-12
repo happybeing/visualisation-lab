@@ -101,11 +101,14 @@ export class RdfTabulator {
 
   /** Get table for current RDF Dataset. Will calculate or return cached object
    * 
-   * @param {Objects} [options]   optional control of the tabulation
+   * @param {Objects} [options]   optional control of the tabulation:
+   *          rowAsObject: true - row is {"heading1:" v1, "heading2:" v2}
+   *                       false - row is array [v1, v2]
    * 
    * @returns {Object} a vm-tabular-json object
    */
   Table (options) {
+    if (options === undefined) options = {};
     if (this.table) return this.table;
     this.touch(); // Clear any metadata
     const table = { header: ["Subject", "Predicate", "Object", "Object Type"], rows: [] };
@@ -125,7 +128,10 @@ export class RdfTabulator {
     let res = this.rdf.match(null, rdfjs.namedNode('http://www.w3.org/2003/01/geo/wgs84_pos#lat'))
     console.dir(res);
     for (let quad of this.rdf) {
-      table.rows.push({"Subject": quad.subject.value, "Predicate": quad.predicate.value, "Object": quad.object.value, "ObjectType": quad.object.termType})
+      if (options.rowAsObject)
+        table.rows.push({"Subject": quad.subject.value, "Predicate": quad.predicate.value, "Object": quad.object.value, "ObjectType": quad.object.termType});
+      else
+        table.rows.push([quad.subject.value, quad.predicate.value, quad.object.value, quad.object.termType]);
       
       const subjectOntology = extractOntology(quad.subject.value);
       const predicateOntology = extractOntology(quad.predicate.value);
@@ -141,7 +147,7 @@ export class RdfTabulator {
     console.log('ontologies:')
     console.dir(this.metadata.ontologies);
 
-    this.metadataOptions = options ? options : {};
+    this.metadataOptions = options;
 
     this.table = table; // Cache the table
     return table;

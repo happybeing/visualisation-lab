@@ -35,7 +35,7 @@ function handleChange(e) { statusTextStore.set('');}
   <p><b>Data Source:</b> <select bind:value={currentInterface} title='Data Source' on:change={handleChange}>
     {#each [...interfaceManager.sourceInterfaces] as source}
       <option value={source[1]}>
-        {source[0]} : {source[1].description}
+        {source[1].shortName} : {source[1].description}
       </option>
     {/each}
   </select>
@@ -48,6 +48,7 @@ function handleChange(e) { statusTextStore.set('');}
     sourceInterface={currentInterface}
     sourceResultStore={resultDataStore}
     statusTextStore={statusTextStore}
+    options={currentInterface ? currentInterface.options : {}}
   />
 </div>
 </Notifications>

@@ -16,7 +16,7 @@ import {modelFormats} from '../modelFormats.js';
 import {compatibleViewModels} from './viewModel.js';
 
 import ViewNetworkGraphCanvas from '../views/ViewNetworkGraphCanvas.svelte';
-import ViewRdfInSvelteTable from '../views/ViewRdfInSvelteTable.svelte';
+import ViewTable from '../views/ViewTable.svelte';
 import ViewVegaMulti from '../views/ViewVegaMulti.svelte';
 import ViewVegaVoyager from '../views/ViewVegaVoyager.svelte';
 
@@ -24,9 +24,9 @@ import {resultDataStore, activeViews, activeModelsByConsumeFormat, activeModelsB
 
 // Views available for selection in UI
 const viewList = [ 
-  { active: true, description: "Tree??? (ViewVegaMulti)", class: ViewVegaMulti },
+  { active: true, description: "Table (ViewRdfInSvelteTable)", class: ViewTable },
+  { active: false, description: "Tree??? (ViewVegaMulti)", class: ViewVegaMulti },
   { active: true, description: "Graph (ViewNetworkGraphCanvas)", class: ViewNetworkGraphCanvas },
-  { active: true, description: "Table (ViewRdfInSvelteTable)", class: ViewRdfInSvelteTable },
   { active: true, description: "Vega Voyager", class: ViewVegaVoyager },
 ];
 
@@ -70,7 +70,7 @@ onMount(() => {
     if (rds === undefined || rds === 0) {return;}
 
     try {
-      const resultFormat = rds.getModelFormat();
+      const resultFormat = rds.getJsonModelFormat();
       $activeModelsByConsumeFormat = new Map;
       $activeModelsByFormat = new Map;
 
@@ -78,7 +78,7 @@ onMount(() => {
       if (activeCompatibleModels === undefined) {
         activeCompatibleModels = [];
         const compatibleModels = compatibleViewModels.get(resultFormat);
-        if (compatibleModels === undefined) throw Error('No ViewModel found to consume format: ', resultFormat);
+        if (compatibleModels === undefined) throw Error('No ViewModel found to consume format: ' + resultFormat);
 
         compatibleModels.forEach(model => {
           // console.log('creating model: ', model);
@@ -86,7 +86,7 @@ onMount(() => {
           activeCompatibleModels.push(newModel);
           
           // Add new model model format map used by views to find their data
-          const newModelFormat = newModel.getValuesFormat();
+          const newModelFormat = newModel.getJsonModelFormat();
           let modelsOfThisFormat = $activeModelsByFormat.get(newModelFormat);
           if (modelsOfThisFormat === undefined) modelsOfThisFormat = [];
           modelsOfThisFormat.push(newModel);
