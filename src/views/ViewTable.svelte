@@ -32,10 +32,6 @@ function updateTable (activeModelsByFormat) {
     };
 }
 
-// NEXT>>> 
-//    - fix definition of vm-table-json ( [{}, {}] -> [ [], [] ])
-//    - change to include wrapper object at level of Vega schema so ViewModel.values becomes ViewModel.model.values
-
 $: columns = makeColumns(rows, headings);
 
 function makeColumns(rows, headings) {
