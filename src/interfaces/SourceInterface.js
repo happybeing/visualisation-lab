@@ -110,8 +110,8 @@ const ttlReader = require('@graphy/content.ttl.read');
 const RdfDataset = require('@graphy/memory.dataset.fast');
 
 // CSV Support
-import {parser as parseCsv} from 'csv-parse';
-// const parseCsv = require('csv-parse');
+// import {parser as csvParse} from 'csv-parse';
+const csvParse = require('csv-parse');
 
 /** Load multiple external data formats into a JSON ViewModel representation
  * 
@@ -233,12 +233,49 @@ class SourceResult {
   }
 
   // JSON - initially just {nodes: [], links []}
+  // TODO add a ViewModel type param so any ViewModel can be loaded as JSON (e.g. from file)
   consumeJson (sourceResultStore) {
     console.log('SourceResult.consumeJson()');
     this.sourceResultStore = sourceResultStore;
 
     this.setJsonModel({values: lesMisData, modelFormat: modelFormats.VM_GRAPH_JSON});
     this.sourceResultStore.update(v => this);
+  }
+
+  // TODO: a consumeStream() which uses the options.mimeType param to choose the consume function
+  consumeCsvStream (sourceResultStore, statusTextStore, stream, {mimeType, size}) {
+    console.log('CsvInterface.consumeCsvFile()');
+    console.dir(stream);
+    console.log('Size: ', size);
+    this.sourceResultStore = sourceResultStore;
+
+    try {
+      const self = this;
+      const csvJson = [];
+      let records = 1;
+      statusTextStore.set('loading CSV...');
+      const parser = csvParse();
+      parser.on('readable', function(){
+        let record
+        while (record = parser.read()) {
+          csvJson.push(record)
+          statusTextStore.set(records++ + ' records loaded');
+        }
+      })
+      parser.on('error', function(err){
+        throw(err);
+      })
+      parser.on('end', function(){
+        statusTextStore.set(records + ' records loaded');
+        self.setJsonModel({values: csvJson, modelFormat: modelFormats.VM_TABULAR_JSON});
+        self.sourceResultStore.update(v => self);
+      })
+      readableStreamToConsumer(stream, parser);
+    } catch(e) {
+      console.error(e);
+      window.notifications.notifyWarning('Failed to parse CSV result.')
+      return;
+    }
   }
 
   /** Load and parse files into a SourceResult store 
@@ -332,32 +369,29 @@ class SourceResult {
     console.log(url);
     return this.loadUri(sourceResultStore, statusTextStore, url);
   }
-
-  // TODO: a consumeStream() which uses the options.mimeType param to choose the consume function
-  consumeCsvStream (sourceResultStore, statusTextStore, stream, {mimeType, size}) {
-    console.log('CsvInterface.consumeCsvFile()');
-    console.dir(stream);
-    console.log('Size: ', size);
-    this.sourceResultStore = sourceResultStore;
-    // TODO: parse stream to generate csvJson
-    // TODO: update statusTextStore (e.g. 1234 rows loaded)
-    const csvJson = [ 
-      ["a", "b", "c"],
-      ["1", "3", "3"],
-      ["2", "2", "2"],
-      ["5", "1", "4"],
-    ];
-
-    try {
-      this.setJsonModel({values: csvJson, modelFormat: modelFormats.VM_TABULAR_JSON});
-      this.sourceResultStore.update(v => this);
-    } catch(e) {
-      console.error(e);
-      window.notifications.notifyWarning('Failed to parse CSV result.')
-    }
-  }
 }
 
+function readableStreamToConsumer(readableStream, consumer) {
+  const bodyReader = readableStream.getReader();
+
+  function next () {
+    bodyReader.read().then(readChunk);
+  }
+
+  function readChunk ({value, done}) {
+    if (done) {
+      consumer.end();
+      return;
+    }
+
+    consumer.write(value);
+    next();
+  }
+
+  next();
+}
+
+// TODO deprecate in favour of readableStreamToConsumer()
 function readableStreamToGraphyReader(readableStream, graphyReader) {
   const bodyReader = readableStream.getReader();
 

@@ -76,9 +76,7 @@ function makeColumns(rows, headings) {
 
 <div class="main">
 <h2>&lt;ViewTable&gt;</h2>
-<p>
-TODO: maybe allow text entry on filters<br/>
-</p>
-<br/>
 <SvelteTable columns="{columns}" rows="{rows}"></SvelteTable>
+<p>TODO: NOTE this is using a local fork of svelte-table<br/>
+TODO: maybe make svelte-table allow text entry on filters<br/></p>
 </div>
