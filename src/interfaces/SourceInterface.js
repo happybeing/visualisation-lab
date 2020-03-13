@@ -421,8 +421,7 @@ const testInterfaces = [
   // Application interface UIs
   {uiClass: WebSparqlUI, shortName: "rdf-sparql", description: "Web SPARQL endpoint (RDF/Turtle)", options: {}},
   {uiClass: WebUI, shortName: "rdf-ldp", description: "Web LDP resource (RDF/Turtle)", options: {}},
-  {uiClass: FileUI, shortName: "rdf-file", description: "Load from file (RDF/Turtle)", options: {}},
-  {uiClass: FileUI, shortName: "csv-file", description: "Load from file (CSV)", options: {mimeType: "text/csv"}},
+  {uiClass: FileUI, shortName: "file", description: "Load from file (RDF/Turtle, CSV)", options: {}},
  
   // Test UIs
   {uiClass: JsonUI, shortName: "json-test", description: "File (JSON)", options: {}},
