@@ -210,8 +210,8 @@ export class VMTable extends ViewModel {
       const rdfTable = new RdfTabulator(rdfResult.getRdfDataset());
       const table = rdfTable.Table({});
       const values = table.rows;
-      if (table.columns) this.header = table.columns;
       this.setJsonModel({
+        header: table.header,
         values: values,
         modelFormat: modelFormats.VM_TABULAR_JSON,
         sourceResult: rdfResult,
