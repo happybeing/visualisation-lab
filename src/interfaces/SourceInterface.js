@@ -243,12 +243,11 @@ class SourceResult {
   }
 
   // TODO: a consumeStream() which uses the options.mimeType param to choose the consume function
-  consumeCsvStream (sourceResultStore, statusTextStore, stream, {mimeType, size}) {
+  consumeCsvStream (sourceResultStore, statusTextStore, stream, {mimeType, size, stringToNumber}) {
     console.log('CsvInterface.consumeCsvFile()');
     console.dir(stream);
     console.log('Size: ', size);
     this.sourceResultStore = sourceResultStore;
-
     try {
       const self = this;
       const csvJson = [];
@@ -258,6 +257,9 @@ class SourceResult {
       parser.on('readable', function(){
         let record
         while (record = parser.read()) {
+          if (stringToNumber) {
+            record.forEach((v,i,a) => {if (!isNaN(Number(v))) a[i] = Number(v);});
+          }
           csvJson.push(record)
           statusTextStore.set(records++ + ' records loaded');
         }
@@ -304,10 +306,11 @@ class SourceResult {
         let mimeType = file.type;
         if (mimeType === undefined) mimeType = options.mimeType ? options.mimeType : undefined;
 
+        const options = {stringToNumber: true, mimeType: file.type, size: file.size};
         if (mimeType === 'text/csv')
-          this.consumeCsvStream(sourceResultStore, statusTextStore, file.stream(), {mimeType: file.type, size: file.size});
+          this.consumeCsvStream(sourceResultStore, statusTextStore, file.stream(), options);
         else  // Default to RDF
-          this.consumeRdfStream(sourceResultStore, statusTextStore, file.stream(), {mimeType: file.type, size: file.size});
+          this.consumeRdfStream(sourceResultStore, statusTextStore, file.stream(), options);
       } catch(e) {
         console.warn(e);
         window.notifications.notifyWarning('File load error');

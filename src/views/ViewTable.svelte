@@ -54,7 +54,17 @@ function makeColumns(rows, headings) {
             filterArray.push({name: row[i], value: row[i]});
           }
         });
-        filterArray.sort((v1, v2) => v1.name.localeCompare(v2.name));
+        
+        filterArray.sort((v1, v2) => {
+          const n1 = Number(v1.value);
+          const n2 = Number(v2.value);
+          if (n1 !== undefined && n2 !== undefined) {
+            if (n1 > n2) return 1;
+            if (n1 < n2) return -1;
+            return 0;
+          } else
+            return v1.value.localeCompare(v2.value);
+        });
         return filterArray;
       },
     });
