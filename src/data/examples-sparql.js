@@ -131,7 +131,7 @@ WHERE {
 }
 LIMIT 1`},
 
-{ description: 'Chart Scatterplot (disable CORS)', endpoint: 'http://togostanza.org/sparql', options: {}, sparqlText: `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+{ description: 'Chart Scatterplot', endpoint: 'http://togostanza.org/sparql', options: {}, sparqlText: `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX id_tax:<http://identifiers.org/taxonomy/>
 PREFIX tax: <http://ddbj.nig.ac.jp/ontologies/taxonomy/>
 PREFIX stats:  <http://togogenome.org/stats/>
@@ -161,7 +161,7 @@ SELECT DISTINCT ?organism ?label ?length ?genes (COUNT(DISTINCT ?protein) AS ?hk
 } GROUP BY ?organism ?label ?length ?genes ORDER BY ?length
 `},
 
-{ description: 'Tree Map (disable CORS)', endpoint: 'http://togostanza.org/sparql', options: {}, sparqlText: `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+{ description: 'Tree Map', endpoint: 'http://togostanza.org/sparql', options: {}, sparqlText: `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX tax: <http://ddbj.nig.ac.jp/ontologies/taxonomy/>
 
 SELECT DISTINCT ?root_name ?parent_name ?child_name
@@ -177,7 +177,7 @@ WHERE
 }
 `},
 
-{ description: 'Tree Map zoom (disable CORS)', endpoint: 'http://togostanza.org/sparql', options: {}, sparqlText: `PREFIX up: <http://purl.uniprot.org/core/>
+{ description: 'Tree Map zoom', endpoint: 'http://togostanza.org/sparql', options: {}, sparqlText: `PREFIX up: <http://purl.uniprot.org/core/>
 PREFIX ec: <http://purl.uniprot.org/enzyme/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
@@ -201,7 +201,7 @@ WHERE
 GROUP BY ?root ?parent ?enzyme ORDER BY ?enzyme
 `},
 
-{ description: 'Tree Sunburst (disable CORS)', endpoint: 'http://togostanza.org/sparql', options: {}, sparqlText: `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+{ description: 'Tree Sunburst', endpoint: 'http://togostanza.org/sparql', options: {}, sparqlText: `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX tax: <http://ddbj.nig.ac.jp/ontologies/taxonomy/>
 
 SELECT DISTINCT ?root_name ?parent_name ?child_name
@@ -217,7 +217,7 @@ WHERE
 }
 `},
 
-{ description: 'Tree Round (disable CORS)', endpoint: 'http://togostanza.org/sparql', options: {}, sparqlText: `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+{ description: 'Tree Round', endpoint: 'http://togostanza.org/sparql', options: {}, sparqlText: `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX tax: <http://ddbj.nig.ac.jp/ontologies/taxonomy/>
 
 SELECT DISTINCT ?root_name ?parent_name ?child_name
@@ -233,7 +233,7 @@ WHERE
 }
 `},
   
-{ description: 'Tree Dendogram (disable CORS)', endpoint: 'http://togostanza.org/sparql', options: {}, sparqlText: `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+{ description: 'Tree Dendogram', endpoint: 'http://togostanza.org/sparql', options: {}, sparqlText: `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX tax: <http://ddbj.nig.ac.jp/ontologies/taxonomy/>
 
 SELECT DISTINCT ?root_name ?parent_name ?child_name
@@ -263,7 +263,7 @@ WHERE
   ?parent tax:scientificName ?parent_name .
 }`},
 
-{ description: 'Table HTML (disable CORS)', endpoint: 'http://togostanza.org/sparql', options: {}, sparqlText: `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+{ description: 'Table HTML', endpoint: 'http://togostanza.org/sparql', options: {}, sparqlText: `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX id_tax:<http://identifiers.org/taxonomy/>
 PREFIX tax: <http://ddbj.nig.ac.jp/ontologies/taxonomy/>
 PREFIX stats:  <http://togogenome.org/stats/>

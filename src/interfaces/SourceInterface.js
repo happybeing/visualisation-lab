@@ -336,9 +336,13 @@ class SourceResult {
     statusTextStore.set('loading data');
     fetch(uri, {
       method: 'GET',
+      // mode: 'no-cors', // Last examples-sparql.js query not working, this doesn't help
       headers: {
-        'Content-Type': 'application/sparql-query',
-        'Accept': 'text/turtle',
+        // Need to avoid CORS Pre-flight checks, so avoid
+        // adding headers that will trigger them:
+        // See 'Simple Requests' at https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+
+        'Accept': 'text/turtle', // Needed for SPARQL endpoints that return JSON by default
         // 'Accept': 'application/sparql-results+json',
       }})
     .then(response => {
