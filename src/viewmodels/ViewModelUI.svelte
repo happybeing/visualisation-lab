@@ -24,10 +24,10 @@ import {resultDataStore, activeViews, activeModelsByConsumeFormat, activeModelsB
 
 // Views available for selection in UI
 const viewList = [ 
+  { active: true, description: "Vega Charts (ViewVegaMulti)", class: ViewVegaMulti },
   { active: true, description: "Table (ViewRdfInSvelteTable)", class: ViewTable },
-  { active: false, description: "Tree??? (ViewVegaMulti)", class: ViewVegaMulti },
-  { active: true, description: "Graph (ViewNetworkGraphCanvas)", class: ViewNetworkGraphCanvas },
-  { active: true, description: "Vega Voyager", class: ViewVegaVoyager },
+  { active: false, description: "Graph (ViewNetworkGraphCanvas)", class: ViewNetworkGraphCanvas },
+  { active: false, description: "Vega Voyager", class: ViewVegaVoyager },
 ];
 
 function updateActiveViews() {
@@ -130,12 +130,15 @@ onMount(() => {
 </style>
 
 <div class="main">
-  <h2>&lt;ViewModelUI&gt;</h2>
-  <p>The ViewModelUI provides control over the view model, and 
+  <p>The &lt;ViewModelUI&gt; selects and configures active views, 
+  provides control over the view model, and 
   provides filters that are applied to the model to show/hide 
   elements in the View.</p>
   <FiltersUI/>
-  {#each viewList as view}
-    <label><input type=checkbox bind:checked={view.active} on:change={updateActiveViews}>{view.description}</label>
-  {/each}
+  <p><b>Display views of type:</b></p>
+  <p>
+    {#each viewList as view}
+      <label><input type=checkbox bind:checked={view.active} on:change={updateActiveViews}>{view.description}</label>
+    {/each}
+  </p>
 </div>

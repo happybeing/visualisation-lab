@@ -85,7 +85,7 @@ function makeColumns(rows, headings) {
 </style>
 
 <div class="main">
-<h2>&lt;ViewTable&gt;</h2>
+<p>&lt;ViewTable&gt; is a prototype tabular view with sorting and filtering.</p>
 <SvelteTable columns="{columns}" rows="{rows}"></SvelteTable>
 <p>TODO: NOTE this is using a local fork of svelte-table<br/>
 TODO: maybe make svelte-table allow text entry on filters<br/></p>

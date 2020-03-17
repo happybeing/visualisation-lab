@@ -36,8 +36,7 @@ onMount(() => {
 
 
 <div class="main">
-<h2>&lt;ViewVegaVoyager&gt;</h2>
-<p><a href='https://github.com/vega/voyager#voyager-2'>About Vega Voyager </a> / <a href='https://github.com/vega/vega-datasets'>Example Datasets</a> / 
+<p>&lt;ViewVegaVoyager&gt; embeds the Vega Voyager component. <a href='https://github.com/vega/voyager#voyager-2'>About Vega Voyager </a> / <a href='https://github.com/vega/vega-datasets'>Example Datasets</a> / 
 Example URI to paste into Vega Voyager via the 'Load' button: https://vega.github.io/vega-datasets/data/cars.json
 <p/>
 <div id='voyager-embed'></div>

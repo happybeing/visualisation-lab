@@ -7,10 +7,11 @@ import {modelFormats} from '../modelFormats.js';
 /** Base class for interfaces to different kinds of data source (file, database, web) 
  */
  class SourceInterface {
-  constructor (shortName, description, uiComponent) {
+  constructor (shortName, description, uiComponent, options) {
     this.shortName = shortName;
     this.description = description;
     this.uiComponent = uiComponent;
+    this.options = options;
 
     this.sourceResult = undefined;  // A subclass of SourceResult
   }
@@ -26,6 +27,11 @@ import {modelFormats} from '../modelFormats.js';
   consumeRdfTextTtl (sourceResultStore, statusTextStore, textTtl) {
     const sourceResult = new SourceResult(this);
     return sourceResult.consumeRdfTextTtl(sourceResultStore, statusTextStore, textTtl);
+  }
+  consumeCsvText (sourceResultStore, statusTextStore, csvText, options) {
+    if (options === undefined) options = {};
+    const sourceResult = new SourceResult(this);
+    return sourceResult.consumeCsvText(sourceResultStore, statusTextStore, csvText, options);
   }
   consumeJson (sourceResultStore) {
     const sourceResult = new SourceResult(this);
@@ -78,9 +84,7 @@ export class SourceInterfaceManager {
       try {
         let newInterface
         if (def.uiClass)
-          newInterface = new SourceInterface(def.shortName, def.description, def.uiClass);
-        else // TODO: deprecate...
-          newInterface = new def.iClass(def.shortName, def.description);
+          newInterface = new SourceInterface(def.shortName, def.description, def.uiClass, def.options);
 
         this.sourceInterfaces.set(def.shortName, newInterface);
         console.dir(newInterface);
@@ -103,6 +107,7 @@ import WebSparqlUI from './WebSparqlUI.svelte';
 // import GeneratorUI from "./GeneratorUI";
 import JsonUI from "./JsonUI.svelte";
 import TestRdfUI from "./TestRdfUI.svelte";
+import TestCsvUI from "./TestCsvUI.svelte";
 import lesMisData from '../data/data-les-miserables.js';
 
 // RDF Support
@@ -242,9 +247,51 @@ class SourceResult {
     this.sourceResultStore.update(v => this);
   }
 
+  consumeCsvText (sourceResultStore, statusTextStore, csvText, {mimeType, size, stringToNumber}) {
+    console.log('SourceResult.consumeCsvText()');
+    this.sourceResultStore = sourceResultStore;
+    try {
+      const self = this;
+      const csvJson = [];
+      let records = 1;
+      statusTextStore.set('loading CSV...');
+      const parser = csvParse();
+      parser.on('readable', function(){
+        let record
+        while (record = parser.read()) {
+          // console.log('READ: ' + record);
+          if (stringToNumber) {
+            record.forEach((v,i,a) => {if (!isNaN(Number(v))) a[i] = Number(v);});
+          }
+          csvJson.push(record)
+          statusTextStore.set(records++ + ' records loaded');
+        }
+      })
+      parser.on('error', function(err){
+        throw(err);
+      })
+      parser.on('end', function(){
+        statusTextStore.set(records + ' records loaded');
+        self.setJsonModel({values: csvJson, modelFormat: modelFormats.VM_TABULAR_JSON});
+        self.sourceResultStore.update(v => self);
+      })
+      // Pass the text to the parser
+      csvText.split('\n').forEach(line => {
+        if (line.length > 0) parser.write(line + '\n')
+      });
+      // console.log('END');
+      parser.end();
+    } catch(e) {
+      console.dir(e);
+      // console.error(e);
+      window.notifications.notifyWarning('Failed to parse CSV result.')
+      return;
+    }
+  }
+
   // TODO: a consumeStream() which uses the options.mimeType param to choose the consume function
   consumeCsvStream (sourceResultStore, statusTextStore, stream, {mimeType, size, stringToNumber}) {
-    console.log('CsvInterface.consumeCsvFile()');
+    console.log('CsvInterface.consumeCsvStream)');
     console.dir(stream);
     console.log('Size: ', size);
     this.sourceResultStore = sourceResultStore;
@@ -274,7 +321,8 @@ class SourceResult {
       })
       readableStreamToConsumer(stream, parser);
     } catch(e) {
-      console.error(e);
+      console.dir(e);
+      // console.error(e);
       window.notifications.notifyWarning('Failed to parse CSV result.')
       return;
     }
@@ -420,17 +468,19 @@ function readableStreamToGraphyReader(readableStream, graphyReader) {
 }
 
 // TODO: replace fixed interfaces with an initial set
-// TODO: change iClass to String and use a 'factory' so I can serialise (research ways to serialise first)
+// TODO: change uiClass to String and use a 'factory' so I can serialise (research ways to serialise first)
 const testInterfaces = [
-  // Application interface UIs
-  {uiClass: WebSparqlUI, shortName: "rdf-sparql", description: "Web SPARQL endpoint (RDF/Turtle)", options: {}},
-  {uiClass: WebUI, shortName: "rdf-ldp", description: "Web LDP resource (RDF/Turtle)", options: {}},
-  {uiClass: FileUI, shortName: "file", description: "Load from file (RDF/Turtle, CSV)", options: {}},
- 
   // Test UIs
-  {uiClass: JsonUI, shortName: "json-test", description: "File (JSON)", options: {}},
-  {uiClass: TestRdfUI, shortName: "rdf-test", description: "Load a test RDF/Turtle example", options: {}},
+  // {uiClass: WebUI, shortName: "test-web-csv", description: "Test WHO latest CSV data (Covid19 total_cases.csv)", options: {fixedUri: 'https://covid.ourworldindata.org/data/total_cases.csv'}},
+  {uiClass: JsonUI, shortName: "json-test", description: "Test JSON (Les Miserables)", options: {}},
+  {uiClass: TestRdfUI, shortName: "rdf-test", description: "Test RDF/Turtle file (LOD Cloud)", options: {}},
   // {uiClass: ManualUI, shortName:  "manual-test", description: "Manual (mrh)", options: {}},
   // {uiClass: GeneratorUI, shortName:  "generator-test", description: "Generator (mrh)", options: {}},
+
+  // Application interface UIs
+  {uiClass: WebSparqlUI, shortName: "rdf-sparql", description: "SPARQL Query", options: {}},
+  {uiClass: WebUI, shortName: "rdf-ldp", description: "Web resource (LDP RDF/Turtle, CSV file)", options: {}},
+  {uiClass: FileUI, shortName: "file", description: "Local file (RDF/Turtle, CSV)", options: {}}, 
+  {uiClass: TestCsvUI, shortName: "test-csv", description: "Test local CSV file (WHO Covid19 total_cases.csv)", options: {fixedFile: '~/visualisation/datasets/covid19/total_cases.csv'}},
  ];
 

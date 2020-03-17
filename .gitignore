@@ -10,4 +10,5 @@ yarn.lock
 .history
 src/results/
 
+vegaPlayground.vg
 .now

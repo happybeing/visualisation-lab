@@ -183,8 +183,7 @@ canvas {
 </style>
 
 <div class='main' >
-  <h2>&lt;ViewNetworkGraphCanvas&gt;</h2>
-  <p>ViewNetworkGraphCanvas uses d3-force to display the graph.</p>
+  <p>V&lt;ViewNetworkGraphCanvas&gt; uses d3-force to display a scalable interactive graph.</p>
   <p>TODO: wrap ViewNetworkGraphCanvas & co. in View (or ViewUI?) and size canvas to its div</p>
 
   <div class='container' style='width: {width}px; height: {height}px'>

@@ -17,19 +17,13 @@ import {activeModelsByFormat} from './stores.js';
 </style>
 
 <Notifications>
-<h1>Visualisation Lab</h1>
-<p>Prototype visualisation workspace, initially for visualisation of 
-RDF data sources. Built using Sveltejs and D3js to be extendable. Code on <a href='https://github.com/theWebalyst/visualisation-lab'>github</a>.
-</p>
-<p>SourceUI handles interaction with data sources:
-<SourceUI resultDataStore={resultDataStore}/>
-</p>
-
-<p>ViewModelUI selects and configures active views:
-</p>
-<ViewModelUI resultDataStore={resultDataStore}/>
-{#each $activeViews as viewUI, i}
-  <svelte:component this= {viewUI} {activeModelsByFormat}/>
-{/each}
-
+  <h1>Visualisation Lab</h1>
+  <p>
+    Prototype visualisation workspace for analysis using a wide variety of data sources, and built to be easily extendable. Powered by Sveltejs, Vega-Lite and D3js. Code on <a href='https://github.com/theWebalyst/visualisation-lab'>github</a>.
+  </p>
+  <SourceUI resultDataStore={resultDataStore}/>
+  <ViewModelUI resultDataStore={resultDataStore}/>
+  {#each $activeViews as viewUI, i}
+    <svelte:component this= {viewUI} {activeModelsByFormat}/>
+  {/each}
 </Notifications>

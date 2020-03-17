@@ -53,6 +53,10 @@ module.exports = {
         test: /\.ttl$/i,
         use: 'raw-loader',
       },
+      {
+        test: /\.csv$/i,
+        use: 'raw-loader',
+      },
       /*** url-loader and file-loader for font awesome (datavoyager dependency): */
 
       // the url-loader uses DataUrls.

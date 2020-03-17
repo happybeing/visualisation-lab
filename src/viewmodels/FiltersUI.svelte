@@ -17,8 +17,5 @@
 </style>
 
 <div class="main">
-<p>
-  <b>&lt;FiltersUI&gt;</b>
-</p>
-<p>TODO: implement filtering by type/property according to the current model</p>
+<p>TODO: &lt;FiltersUI&gt; will implement filtering by type/property according to the current model</p>
 </div>

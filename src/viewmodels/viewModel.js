@@ -2,21 +2,19 @@
 
 A ViewModel consumes one or more SourceResults or ViewModel formats (see modelTypes.js)
 and transforms these inputs into a new model which is exposed as a 'values' property,
-and other optional properties in accordance with the JSON ViewModel spec.
+and other optional properties in accordance with the JSON ViewModel Specifiction*.
 
-TODO: ViewModel - a base class which defines the ViewModel API, as used by SourceInterface and View classes
-TODO: A template subclass for each type of ViewModel, named VM<Type> (e.g. VMTable, VMGraph etc)
+Export compatibleViewModels is a map of modelFormats to ViewModel classes which consume themselves
+
+* JSON ViewModel Specification: https://github.com/theWebalyst/visualisation-lab/wiki/JSON-ViewModel-Specification
+
+ViewModel - a base class which defines the ViewModel API, as used by SourceInterface and View classes
+A template subclass for each type of ViewModel, named VM<Type> (e.g. VMTable, VMGraph etc)
 TODO: - VMTable rework to consumeRdf and consumeJSON and make/define VMTable model based on ViewRdfAsTable
 TODO: - VMGraph rework to consumeRdf and consumeJSON and make/define VMGraph based on { nodes: [], links: [] }
 TODO: Include VM<Type> templates for other view models, with ability to consume RDF and/or JSON and
 TODO:  use these to define ModelTypes, a set of SourceResult and ViewModel types that will be declared/offered by 
 TODO:  each ViewModel and each SourceInterface (and in sourceResultTypeMap)
-TODO: Export viewModelTypeMap, an object which enumerates the available VM<Type> classes
-
-Maybe... (these need review)
-TODO: class Filters - filters which can be applied to a viewModel 
-TODO: RdfViewModel / JsonViewModel / etc where:
-TODO:  RdfViewModel implements mapping(s) of RdfSourceResult to a view model
 
 */
 
@@ -37,6 +35,15 @@ class ViewModel {
   }
   getJsonModel () {return this.jsonModel;}
   getJsonModelValues () {return this.jsonModel ? this.jsonModel.values : undefined;}
+
+  /** Get a Vega/Vega-Lite dataset based on the JSON ViewModel 
+   * 
+   * @param {Object} options with properties:
+   *                  name: String // optional 'name' property for the dataset 
+   * 
+   * @returns {Object}  an object that can be assigned to the 'data' property of a Vega/Vega-Lite schema
+   */
+  getModelAsVegaDataset (options) { Error('ViewModel.getModelAsVegaDataset() not implemented'); }
 
   //// Methods to generate the view model from different inputs
 
@@ -346,18 +353,9 @@ class VMTree extends ViewModel {
   }
 }
 
-// TODO: add support for jsonViewModel
-// - enumerate a set of modelFormats for SourceResult.resultData
-// - note TODO: create ViewModel handler for each SourceResultType
-// - implement ViewModel.getViewModelForSourceResult(sourceResult)
-// - implement ViewModel.getView
-// - ??? add SourceResult.getJsonModelFormat()
-// - how are these selected? 
-// - should this just follow the SourceInterface?
-
-// ViewModel subclasses compatible with SourceResults modelFormat
-// TODO: maybe construct this dynamically using SourceInterface.js and ViewModel.js helpers
-// TODO: offer choice of view model type where more than one is available for the current SourceResult
+// ViewModels which can consume a given modelFormat
+// TODO: maybe construct this dynamically
+// TODO: ViewModel UI could offer choice of view models for the current SourceResult
 export const compatibleViewModels = new Map([
   [modelFormats.RAW_RDFDATASET, [VMGraph, VMTable, VMTree]],
   [modelFormats.VM_GRAPH_JSON, [VMGraph]],

@@ -31,11 +31,11 @@ function handleChange(e) { statusTextStore.set('');}
 </style>
 <Notifications>
 <div class="main">
-  <h3>&lt;SourceUI&gt;</h3>
+  <p>&lt;SourceUI&gt; handles interaction with data sources.</p>
   <p><b>Data Source:</b> <select bind:value={currentInterface} title='Data Source' on:change={handleChange}>
     {#each [...interfaceManager.sourceInterfaces] as source}
       <option value={source[1]}>
-        {source[1].shortName} : {source[1].description}
+        {source[1].description} ({source[1].shortName})
       </option>
     {/each}
   </select>

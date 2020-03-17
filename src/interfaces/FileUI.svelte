@@ -4,7 +4,7 @@ export let sourceResultStore;
 export let statusTextStore;
 export let options;
 
-let filePath;
+let filePath = options.fixedFile;
 let fileInfo;
 
 function handleChange(event) {
@@ -24,6 +24,7 @@ function handleInput(event) {
   fileInfo = this.files[0];
   console.dir(fileInfo);
 }
+
 </script>
 
 <style>
@@ -38,12 +39,14 @@ function handleInput(event) {
 <div class="main">
 <p>
   <b>&lt;FileUI&gt;</b>
-  <!-- <button 
-    enabled={sourceInterface !== undefined} 
-    on:click={() => sourceInterface.loadTestRdf(sourceResultStore)}>
-    Load lodCloud
-  </button> -->
-  <input width='600px' type="file" bind:value={filePath} on:change={handleChange} on:input={handleInput}/>
+  <!-- {#if currentInterface.options.fixedFile}
+    <button 
+    enabled={currentInterface !== undefined} 
+    on:click={() => currentInterface.loadFixedFile(sourceResultStore, currentInterface.options.fixedFile)}>
+    Load {currentInterface.options.fixedFile}
+  </button>
+  {else} -->
+    <input width='600px' type="file" bind:value={filePath} on:change={handleChange} on:input={handleInput}/>
 </p>
 
 </div>
