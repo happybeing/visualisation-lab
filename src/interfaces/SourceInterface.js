@@ -396,7 +396,10 @@ class SourceResult {
     .then(response => {
       if (response.ok ) {
         const contentLength = (response.headers.get('Content-Length'));
-        this.consumeRdfStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
+        if (response.headers.get('Content-Type').startsWith('text/csv'))
+          this.consumeCsvStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
+        else
+          this.consumeRdfStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
       } else {
         const warning = 'Failed to load URI.\n' + response.statusText;
         console.warn(warning);
@@ -471,7 +474,7 @@ function readableStreamToGraphyReader(readableStream, graphyReader) {
 // TODO: change uiClass to String and use a 'factory' so I can serialise (research ways to serialise first)
 const testInterfaces = [
   // Test UIs
-  // {uiClass: WebUI, shortName: "test-web-csv", description: "Test WHO latest CSV data (Covid19 total_cases.csv)", options: {fixedUri: 'https://covid.ourworldindata.org/data/total_cases.csv'}},
+  {uiClass: WebUI, shortName: "test-web-csv", description: "Test WHO latest CSV data (Covid19 total_cases.csv)", options: {fixedUri: 'https://covid.ourworldindata.org/data/total_cases.csv'}},
   {uiClass: JsonUI, shortName: "json-test", description: "Test JSON (Les Miserables)", options: {}},
   {uiClass: TestRdfUI, shortName: "rdf-test", description: "Test RDF/Turtle file (LOD Cloud)", options: {}},
   // {uiClass: ManualUI, shortName:  "manual-test", description: "Manual (mrh)", options: {}},

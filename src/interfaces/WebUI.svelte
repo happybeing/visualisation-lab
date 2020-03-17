@@ -25,15 +25,20 @@ let lastError;
   </datalist>
   <div>
     <p>
-      <b>&lt;WebUI&gt;</b>
+      &lt;WebUI&gt; allows loading of CSV or RDF from a web address.
+    </p>
+    <p>
+      {#if !sourceInterface.options.fixedUri}
+      <p><b>Enter URI, or select from list:</b></p>
       <input list="example-urls" inputmode="url" width="100%" type="url" bind:value={uri} placeholder="enter a web uri"/>
+      {/if}
     </p>
   </div>
   <div>
     <button 
       enabled={sourceInterface !== undefined} 
-      on:click={() => sourceInterface.loadUri(sourceResultStore, statusTextStore, uri)}>
-      Load RDF
+      on:click={() => sourceInterface.loadUri(sourceResultStore, statusTextStore, sourceInterface.options.fixedUri ? sourceInterface.options.fixedUri : uri)}>
+      Load data from URI
     </button>
     <text enabled={lastError !== undefined}></text>
   </div>
