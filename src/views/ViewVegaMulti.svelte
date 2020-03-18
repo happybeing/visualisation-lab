@@ -311,8 +311,8 @@ function updateChart (activeModelsByFormat) {
 }
 
 const vegaViews = [
-  {active: true, tag: 'tree', description: "Vega Tree", options: {}},
   {active: true, tag: 'chart', description: "Vega Chart", options: {}},
+  {active: false, tag: 'tree', description: "Vega Tree", options: {}},
 ];
 
 </script>
