@@ -1,9 +1,9 @@
-<!-- A generic Vega view for multiple Vega/Vega-Lite Schemas using Vega Embed 
+<!-- A generic Vega view for multiple Vega/Vega-Lite Specs using Vega Embed 
 
-TODO: - add multiple schemas, at least one for each Visual Model format
-TODO: - allow selection of the schema from a drop down of pre-defined schemas
-TODO: - ability to load additional schemas from file system
-TODO: - think about useful schema tweaks to support (should UI for this be here or outside?)
+TODO: - add multiple specs, at least one for each Visual Model format
+TODO: - allow selection of the spec from a drop down of pre-defined specs
+TODO: - ability to load additional specs from file system
+TODO: - think about useful spec tweaks to support (should UI for this be here or outside?)
 -->
 
 <script>
@@ -13,7 +13,7 @@ import {resultDataStore} from "../stores.js";
 import {modelFormats} from '../modelFormats.js';
 export let activeModelsByFormat;
 
-// TODO: load built in schemas from JS files
+// TODO: load built in specs from JS files
 const spec = `{
     "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "description": "Simple bar chart",
@@ -31,7 +31,7 @@ const spec = `{
     }
   }`;
 
-const treeSpec = `{
+const treeSpecTemplate = `{
   "$schema": "https://vega.github.io/schema/vega/v5.json",
   "description": "An example of Cartesian layouts for a node-link diagram of hierarchical data.",
   "width": 600,
@@ -150,7 +150,7 @@ const treeSpec = `{
   ]
 }`;
 
-const chartSchemaTest = {
+const chartSpecTest = {
   "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
   "description": "ViewVegaMulti Line Chart (example)",
   "data": {
@@ -177,7 +177,7 @@ const chartSchemaTest = {
 //
 // TODO: create a ViewModel to Vega library along these lines, data chosen, visualisation tweaked
 // TODO: implement UI which allows the visualisation to be selected, data chosen etc.
-const chartSchemaNoFlatten = {
+const chartSpecNoFlatten = {
   "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
   "description": "ViewVegaMulti Line Chart (example)",
   "data": {
@@ -202,11 +202,11 @@ const chartSchemaNoFlatten = {
 // For VMTable data (not flattened)
 //
 // This works with column-major data as used in VMTable (after header row has been 
-// removed), but has the disadvantage that the schema needs customising to work with
+// removed), but has the disadvantage that the spec needs customising to work with
 // the column labels (date, country).
 //
 // TODO: think if can create this using parameterised 'makeVegaPlot()' lib and helpers
-const chartSchemaFlatten = {
+const chartSpecFlatten = {
   "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
   "description": "ViewVegaMulti Line Chart (example)",
   "data": {
@@ -229,8 +229,8 @@ const chartSchemaFlatten = {
   }
 };
 
-const treeSchema = JSON.parse(treeSpec);
-// const chartSchema = JSON.parse(lineChartSpec);
+const treeSpec = JSON.parse(treeSpecTemplate);
+// const chartSpec = JSON.parse(lineChartSpec);
 
 let viewModel;
 $: updateTree($activeModelsByFormat);
@@ -242,16 +242,16 @@ function updateTree (activeModelsByFormat) {
   if (true||allModels === undefined) return [];
 
   // TODO how to handle multiple compatible models? (We visualise only the first)
-  // TODO merge the model into the schema - don't just set values
+  // TODO merge the model into the spec - don't just set values
   viewModel = allModels[0];      
-  const fullSchema = viewModel.makeMegedJsonModel(testSchema);
-  console.log('treeSchema');console.dir(treeSchema);
-  console.log('fullSchema');console.dir(fullSchema);
-  embed("#vega-tree", testSchema, { actions: false }).catch(error =>
+  const fullSpec = viewModel.makeMegedJsonModel(testSpec);
+  console.log('treeSpec');console.dir(treeSpec);
+  console.log('fullSpec');console.dir(fullSpec);
+  embed("#vega-tree", testSpec, { actions: false }).catch(error =>
     console.log(error));
 }
 
-/** Flatten VMTable model for Vega-Lite schema: chartSchemaNoFlatten
+/** Flatten VMTable model for Vega-Lite spec: chartSpecNoFlatten
 */
 function getJsonModelAsVegaDataset (model, options) {
   if (options === undefined ) options = {};
@@ -286,20 +286,20 @@ function updateChart (activeModelsByFormat) {
   if (allModels === undefined) return [];
 
   // TODO how to handle multiple compatible models? (We visualise only the first)
-  // TODO merge the model into the schema - don't just set values
+  // TODO merge the model into the spec - don't just set values
   viewModel = allModels[0];
   const jsonModel = viewModel.getJsonModel();
   console.log('jsonModel');console.dir(jsonModel);
-  const fullSchema = Object.assign({}, chartSchemaNoFlatten);
-  // fullSchema.data.values = jsonModel.values;
+  const fullSpec = Object.assign({}, chartSpecNoFlatten);
+  // fullSpec.data.values = jsonModel.values;
 
   const dataset = getJsonModelAsVegaDataset(jsonModel);
-  fullSchema.data.name = 'test';
-  fullSchema.data.values = dataset;
-  console.log('DATASET:');console.dir(fullSchema.data.values);
-  console.log('fullSchema');console.dir(fullSchema);
+  fullSpec.data.name = 'test';
+  fullSpec.data.values = dataset;
+  console.log('DATASET:');console.dir(fullSpec.data.values);
+  console.log('fullSpec');console.dir(fullSpec);
 
-  embed("#vega-chart", fullSchema, { actions: false }).catch(error =>
+  embed("#vega-chart", fullSpec, { actions: false }).catch(error =>
     console.log(error)).then(vega => {
       console.log('VIEW:');
       console.dir(vega.view);

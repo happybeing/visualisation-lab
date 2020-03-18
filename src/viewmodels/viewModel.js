@@ -41,7 +41,7 @@ class ViewModel {
    * @param {Object} options with properties:
    *                  name: String // optional 'name' property for the dataset 
    * 
-   * @returns {Object}  an object that can be assigned to the 'data' property of a Vega/Vega-Lite schema
+   * @returns {Object}  an object that can be assigned to the 'data' property of a Vega/Vega-Lite specification
    */
   getModelAsVegaDataset (options) { Error('ViewModel.getModelAsVegaDataset() not implemented'); }
 
