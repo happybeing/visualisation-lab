@@ -187,7 +187,12 @@ const chartSpecNoFlatten = {
         {"date": "2020-01-03","South Korea": "5","China": "67"}
     ]
   },
-    "transform": [
+  "selection": {
+    "grid": {
+      "type": "interval", "bind": "scales"
+    }
+  },
+  "transform": [
       {"calculate": "toDate(datum.date)", "as": "date"},
       {"fold": ["France", "Germany", "United States", "United Kingdom"], "as": ["Country", "Cases"]}
     ],
