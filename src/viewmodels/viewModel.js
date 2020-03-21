@@ -19,11 +19,16 @@ TODO:  each ViewModel and each SourceInterface (and in sourceResultTypeMap)
 */
 
 import {modelFormats} from '../modelFormats.js';
+import {Fashion} from './Fashion.js';
 
 class ViewModel {
   constructor () {
     this.jsonModel = undefined;
   }
+
+  // Fashion API
+  getFashion () {return this.fashion;}
+  getJsonModelFields () {return [];}
 
   // TODO: generate/update view model based on Filters, SourceResult and chosen view model
 
@@ -35,6 +40,9 @@ class ViewModel {
   }
   getJsonModel () {return this.jsonModel;}
   getJsonModelValues () {return this.jsonModel ? this.jsonModel.values : undefined;}
+
+  // API to support Fashion.js
+  getJsonModelFields () { console.log('WARNING: getJsonModelFields() not implemented for ' + this.constructor.name); return [];}
 
   /** Get a Vega/Vega-Lite dataset based on the JSON ViewModel 
    * 
@@ -97,6 +105,9 @@ export class VMGraph extends ViewModel {
   constructor () {
     super();
   }
+
+  // API to support Fashion.js
+// TODO  getJsonModelFields () { console.log('WARNING: getJsonModelFields() not implemented for ' + this.constructor.name); return [];}
 
   //// Methods to generate the view model from different inputs
 
@@ -183,6 +194,13 @@ import {RdfTabulator} from '../rdf/rdfjsUtils.js';
 export class VMTable extends ViewModel {
   constructor () {
     super();
+    this.fashion = new Fashion(this);
+  }
+
+  // Fashion API
+  getJsonModelFields () { 
+    const jsonModel = this.getJsonModel();
+    return jsonModel.headers ? [...jsonModel.headers] : jsonModel.values[0];
   }
 
   //// Methods to generate the view model from different inputs
@@ -256,6 +274,9 @@ class VMTree extends ViewModel {
   constructor () {
     super();
   }
+
+  // API to support Fashion.js
+// TODO  getJsonModelFields () { console.log('WARNING: getJsonModelFields() not implemented for ' + this.constructor.name); return [];}
 
   // TODO: implement consume RDF
   // TODO: implement consume JSON

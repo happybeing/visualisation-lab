@@ -10,7 +10,7 @@ models are used by which views.
 <script>
 import {onMount} from 'svelte';
 
-import FiltersUI from './FiltersUI.svelte'
+import FashionUI from './FashionUI.svelte'
 
 import {modelFormats} from '../modelFormats.js';
 import {compatibleViewModels} from './viewModel.js';
@@ -134,7 +134,7 @@ onMount(() => {
   provides control over the view model, and 
   provides filters that are applied to the model to show/hide 
   elements in the View.</p>
-  <FiltersUI/>
+  <FashionUI {activeModelsByFormat}/>
   <p><b>Display views of type:</b></p>
   <p>
     {#each viewList as view}

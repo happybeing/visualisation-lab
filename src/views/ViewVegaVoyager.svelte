@@ -6,7 +6,7 @@
 import {Voyager, CreateVoyager} from 'datavoyager';
 
 import {onMount} from 'svelte';
-import {resultDataStore} from "../stores.js";
+import {resultDataStore} from '../stores.js';
 import {modelFormats} from '../modelFormats.js';
 
 let voyagerInstance;
