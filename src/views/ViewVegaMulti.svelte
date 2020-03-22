@@ -172,7 +172,7 @@ const chartSpecTest = {
 // For data flattened by a Vega helper lib
 //
 // This works with:
-// - VMTable loading ~/visualisation/datasets/covid19/total_cases.csv
+// - VMTable loading ~/visualisation/datasets/covid19/total_deaths.csv
 // - the temporary helper function getJsonModelAsVegaDataset()
 //
 // TODO: create a ViewModel to Vega library along these lines, data chosen, visualisation tweaked
@@ -194,12 +194,12 @@ const chartSpecNoFlatten = {
   },
   "transform": [
       {"calculate": "toDate(datum.date)", "as": "date"},
-      {"fold": ["France", "Germany", "United States", "United Kingdom"], "as": ["Country", "Cases"]}
+      {"fold": ["France", "Germany", "United States", "United Kingdom"], "as": ["Country", "Deaths"]}
     ],
   "mark": "line",
   "encoding": {
     "x": {"field": "date", "type": "temporal"},
-    "y": {"field": "Cases", "type": "quantitative"},
+    "y": {"field": "Deaths", "type": "quantitative"},
     "color": {"field": "Country", "type": "nominal"}
   }
 }
@@ -224,12 +224,12 @@ const chartSpecFlatten = {
     "transform": [
       {"flatten": ["date", "China", "South Korea"]},
       {"calculate": "toDate(datum.date)", "as": "date"},
-      {"fold": ["China", "South Korea"], "as": ["Country", "Cases"]}
+      {"fold": ["China", "South Korea"], "as": ["Country", "Deaths"]}
     ],
   "mark": "line",
   "encoding": {
     "x": {"field": "date", "type": "temporal"},
-    "y": {"field": "Cases", "type": "quantitative"},
+    "y": {"field": "Deaths", "type": "quantitative"},
     "color": {"field": "Country", "type": "nominal"}
   }
 };

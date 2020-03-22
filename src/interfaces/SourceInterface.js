@@ -384,6 +384,8 @@ class SourceResult {
     statusTextStore.set('loading data');
     fetch(uri, {
       method: 'GET',
+      cache: "reload",
+      pragma: "no-cache",
       // mode: 'no-cors', // Last examples-sparql.js query not working, this doesn't help
       headers: {
         // Need to avoid CORS Pre-flight checks, so avoid
@@ -392,6 +394,7 @@ class SourceResult {
 
         'Accept': 'text/turtle', // Needed for SPARQL endpoints that return JSON by default
         // 'Accept': 'application/sparql-results+json',
+        // 'Cache-Control': 'no-cache',
       }})
     .then(response => {
       if (response.ok ) {
@@ -474,7 +477,7 @@ function readableStreamToGraphyReader(readableStream, graphyReader) {
 // TODO: change uiClass to String and use a 'factory' so I can serialise (research ways to serialise first)
 const testInterfaces = [
   // Test UIs
-  {uiClass: WebUI, shortName: "test-web-csv", description: "Test WHO latest CSV data (Covid19 total_cases.csv)", options: {fixedUri: 'https://covid.ourworldindata.org/data/total_cases.csv'}},
+  {uiClass: WebUI, shortName: "test-web-csv", description: "Test WHO latest CSV data (Covid19 total_deaths.csv)", options: {fixedUri: 'https://covid.ourworldindata.org/data/ecdc/total_deaths.csv'}},
   {uiClass: JsonUI, shortName: "json-test", description: "Test JSON (Les Miserables)", options: {}},
   {uiClass: TestRdfUI, shortName: "rdf-test", description: "Test RDF/Turtle file (LOD Cloud)", options: {}},
   // {uiClass: ManualUI, shortName:  "manual-test", description: "Manual (mrh)", options: {}},
