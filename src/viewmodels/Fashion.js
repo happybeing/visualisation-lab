@@ -48,7 +48,8 @@ export class Fashion {
 
   getFieldsVisibility (visible, defaultVisibility) {
     const visibleFields = []
-    this.fieldProperties.keys().forEach(properties, field => {
+    this.viewModel.getJsonModelFields().forEach(field => {
+      let properties = this.fieldProperties.get(field);
       if (properties.visible ? properties.visible : defaultVisibility) visibleFields.push(field);
     });
     return visibleFields;
@@ -63,10 +64,13 @@ export class Fashion {
   }
 
   getFieldsWithProperty (property, value, defaultValue) {
-    const matchingFields = []
-    this.fieldProperties.forEach((properties, field) => {
-      if ((properties && properties[property] ? properties[property] : defaultValue) == value) matchingFields.push(field);
+    const matchingFields = [];
+    console.dir(this.fieldProperties);
+    this.viewModel.getJsonModelFields().forEach(field => {
+      let properties = this.fieldProperties.get(field);
+      if ((properties && properties[property] !== undefined ? properties[property] : defaultValue) === value) matchingFields.push(field);
     });
+    console.log('getFieldsWithProperty(' + property + ', ' + value + ', ' + defaultValue + ')');console.dir(matchingFields);
     return matchingFields;
   }
 

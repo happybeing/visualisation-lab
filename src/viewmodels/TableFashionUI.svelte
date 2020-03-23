@@ -2,6 +2,8 @@
 -->
 <script>
 import {onMount} from 'svelte';
+import Tags from "svelte-tags-input";
+
 import {resultDataStore} from '../stores.js';
 
 import {modelFormats} from '../modelFormats.js';
@@ -9,11 +11,37 @@ import {modelFormats} from '../modelFormats.js';
 export let viewModelStore;
 $: viewModel = $viewModelStore;
 
-$: fashion = viewModel ? viewModel.getFashion() : undefined;
-$: allFields = viewModel ? viewModel.getJsonModelFields() : [];
-$: visibleFields = fashion ? fashion.getFieldsWithProperty('visible', true, true) : [];
-$: invisibleFields = fashion ? fashion.getFieldsWithProperty('visible', false, true) : [];
+$: fashion = viewModel ? viewModel.getFashion() : undefined; console.log('NEW fashion');
+$: allFields = viewModel ? viewModel.getJsonModelFields() : []; console.log('NEW allFields');
+$: visibleFields = fashion ? fashion.getFieldsWithProperty('visible', true, false) : []; console.log('NEW visibleFields');
+$: invisibleFields = fashion ? fashion.getFieldsWithProperty('visible', false, false) : []; console.log('NEW invisibleFields');
 
+let xAxis;
+let lastXAxis;
+$: updateXAxis(xAxis)
+
+function updateXAxis (xAxis) {
+  console.log('updateXAxis() to ' + xAxis);
+  if (fashion) {
+      if (lastXAxis) {
+        // fashion.setFieldsProperty([lastXAxis], 'visible', false);
+        fashion.setFieldsProperty([lastXAxis], 'x-axis', false);
+      }
+      lastXAxis = xAxis;
+      // fashion.setFieldsProperty([xAxis], 'visible', true);
+      fashion.setFieldsProperty([xAxis], 'x-axis', true);
+      fashion = fashion;
+    }
+}
+
+function handleFields (e) {
+  console.log('handleFields()');
+  console.dir(e);
+  allFields.forEach(field => {
+    fashion.setFieldsProperty([field], 'visible', e.detail.tags.includes(field));
+  });
+  fashion = fashion;
+}
 </script>
 
 <style>
@@ -26,7 +54,8 @@ $: invisibleFields = fashion ? fashion.getFieldsWithProperty('visible', false, t
 </style>
 
 <div class="main">
-  <p>&lt;TableFashionUI&gt; for tabular data</p>
+  <p>&lt;TableFashionUI&gt; for tabular data
+  </p>
   <p>
   TODO: accept a config object to control properties, type, values, defaults to apply via the UI<br/>
   TODO: extend range of filters<br/>
@@ -36,12 +65,31 @@ $: invisibleFields = fashion ? fashion.getFieldsWithProperty('visible', false, t
   TODO: make Svelte Table View respond to and update tabular fashion controls
   TODO: make Network Graph View respond to NetworkFashionUI controls (visibility, node type, node style)
   </p>
-  <p>
-    {#each allFields as field}
-      {field} 
-      {#if fashion}
-        {fashion.compareFieldProperty(field, 'visible', true, true ) == 0 ? 'visible' : 'not visible'}  
-      {/if}<br/>
+  <p><b>X-Axis:</b> <select bind:value={xAxis} title='X-axis'>
+    {#each invisibleFields as field}
+      <option value={field}>{field}</option>
     {/each}
+    </select>
+
+  <p><b>Countries:</b>
+    <Tags 
+      placeholder={"Enter names of countries"}  
+      on:tags={handleFields}
+      autoComplete={invisibleFields}
+      allowDrop={true}
+      allowPaste={true}
+      onlyUnique={true}
+      />
   </p>
+  <p>List:
+  </p>
+    <table>
+    {#each allFields as field}
+      <tr><td>{field}</td><td> 
+      {#if fashion}
+        {fashion.compareFieldProperty(field, 'visible', true, false ) == 0 ? 'visible' : 'not visible'}  
+      {/if}
+      </td></tr>
+    {/each}
+    </table>
 </div>
