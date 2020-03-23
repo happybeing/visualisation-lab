@@ -1,4 +1,4 @@
-<!-- UI to control Fashion (filtering and presentation) of current SourceResults
+<!-- UI to control Fashion (filtering and presentation) of VMTable
 -->
 <script>
 import {onMount} from 'svelte';
@@ -6,21 +6,13 @@ import {resultDataStore} from '../stores.js';
 
 import {modelFormats} from '../modelFormats.js';
 
-export let activeModelsByFormat;
+export let viewModelStore;
+$: viewModel = $viewModelStore;
 
-$: viewModel = updateViewModel($activeModelsByFormat);
 $: fashion = viewModel ? viewModel.getFashion() : undefined;
 $: allFields = viewModel ? viewModel.getJsonModelFields() : [];
 $: visibleFields = fashion ? fashion.getFieldsWithProperty('visible', true, true) : [];
 $: invisibleFields = fashion ? fashion.getFieldsWithProperty('visible', false, true) : [];
-
-function updateViewModel (activeModelsByFormat) {
-  let allModels = activeModelsByFormat.get(modelFormats.VM_TABULAR_JSON);
-  if (allModels === undefined) return undefined;
-
-  // TODO how to handle multiple compatible models? (We visualise only the first)
-  return allModels[0];
-} 
 
 </script>
 

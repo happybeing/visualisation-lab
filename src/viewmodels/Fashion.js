@@ -1,43 +1,20 @@
-/** Fashion - reactive state which controls filtering and presentation 
+/** Fashions control filtering and presentation of ViewModels
 
-A Fashion is owned by SourceResult but is closest to ViewModel, View and 
-Filters.
+A Fashion View is similar to and has the same API as a View component.
 
-A Fashion is intended to be held in a Svelte 'store' to support reactive
-updates to different parts of the UI and visual presentation when it is
-modified.
+The main difference between View and Fashion components is that a View presents ViewModel 
+data, whereas a Fashion View both presents that data and augments the ViewModel with control 
+properties which can affect Views (and other Fashion components).
 
-Design Notes (DRAFT)
-------------
-- A Fashion UI uses the Fashion object of its chosen active ViewModel, to 
-determine the styling, presentation and behaviour of the Fashion UI and 
-View components. Fashion settings can determine what is visible, what is 
-selected and other qualities such as how the data is to be interpreted in 
-particular contexts such as the kind of view. Some Fashion will be generic 
-(e.g. "this field is temporal data") some will depend on context (e.g. 
-"for plots this field maps to the X-axis", or "for networks field should 
-determine icon representation").
+A Fashion View is passed a store holding a ViewModel which it uses to modify and react to 
+changes in the model.
 
-- The Fashion includes Filters can be simple, such as a list of fields to 
-be shown/hidden (where field can be a 'subject' in RDF, a 'column' in CSV 
-etc). A more complex Filter might allow expressions (such as "show/hide 
-rows whose 'subject' equals S", or "show/hide values with time greater than 
-T" etc). Parts of the UI will provide ways to mutate the Fashion (e.g. a 
-filter UI), some will just respond (e.g. a simple x-y chart view), but in 
-most cases the UI will do both (e.g. a table view that lets you set a 
-filter for row values in a column). Most will do both because it makes 
-sense that if I can set something in more than one place (e.g. which fields 
-to show), that should be reflected in any part of the UI that can change 
-the setting or whose presentation is affected by it.   
+A Fashion View can be created stand-alone and will affect any Views also subscribed to the 
+store.
 
-- Provide multiple Fashion UIs which all work on the same underlying 
-control data, each tailored to a particular context (ViewModel structure + 
-View type). These can share the same underlying control data (synchronised) 
-or maintain separate control data per context (independent). For example, 
-when working with tabular data and line charts, or network data and graph 
-presentation, when you switch between these contexts the changes made in 
-one could be reflected in the other (synchronised), or changes applied in 
-one might not affect the other (independent).
+A View may also use a Fashion View as a sub-component to add functionality for filtering 
+and controlling how it presents its
+
 **/
 
 export class Fashion {

@@ -132,6 +132,18 @@ export class VMGraph extends ViewModel {
   - TODO: provides default representations for different visualisation types/components
   - TODO: support addition of custom representations per the application or the data source
   - TODO: allow the application to modify or select the visual representation programmatically
+
+  TODO: PRIORITY!!! improve the mapping to VMGraph ViewModel along the following lines:
+  When RDF is mapped to a graph, the VMGraph ViewModel comprises arrays of nodes and links with properties based on some rules for different row characteristics, for example:
+	- make a node for each unique Subject value
+	- make a node for each Object for a configurable set of Object Types
+	- make a link between any Object value that is also a Subject
+	- each link will have a Predicate property showing the nature of the relationship
+  - every Object value which does not qualify as a node will become a property on the 
+    Subject, with name and value taken from the Predicate and Object
+  - MAYBE, in order to handle duplicate predicates per Subject some or all properties 
+    will have array values, either of the values or of an object per value if additional 
+    metadata needs to be retained. Perhaps we handle both.
   */
   consumeRdfSourceResult (rdfResult) {
     console.log('VMGraph.consumeSourceResult()', rdfResult);
