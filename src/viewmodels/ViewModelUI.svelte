@@ -10,6 +10,7 @@ models are used by which views.
 <script>
 import {onMount} from 'svelte';
 import {writable} from 'svelte/store';
+import {resultDataStore, activeViews, activeModelsByConsumeFormat, activeModelsByFormat} from "../stores.js";
 
 import TableFashionUI from './TableFashionUI.svelte'
 
@@ -20,8 +21,6 @@ import ViewNetworkGraphCanvas from '../views/ViewNetworkGraphCanvas.svelte';
 import ViewTable from '../views/ViewTable.svelte';
 import ViewVegaMulti from '../views/ViewVegaMulti.svelte';
 import ViewVegaVoyager from '../views/ViewVegaVoyager.svelte';
-
-import {resultDataStore, activeViews, activeModelsByConsumeFormat, activeModelsByFormat} from "../stores.js";
 
 // Views available for selection in UI
 const viewList = [ 
@@ -146,4 +145,9 @@ onMount(() => {
       <label><input type=checkbox bind:checked={view.active} on:change={updateActiveViews}>{view.description}</label>
     {/each}
   </p>
+
+  {#each $activeViews as viewUI, i} 
+    <!-- TODO deprecate activeModelsByFormat -->
+    <svelte:component this= {viewUI} {activeModelsByFormat}  {viewModelStore}/>
+  {/each}
 </div>

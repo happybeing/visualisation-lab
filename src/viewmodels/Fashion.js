@@ -85,14 +85,21 @@ export class Fashion {
    * @param {*} property      name of the property
    * @param {*} value         value to compare
    * @param {*} defaultValue  a default if the property is not set
+   * @param {*} caseSensitive [optional] if true, and property is a string ignore case in comparisson
    * 
    * @returns -1 for less than, 
    *           0 for equal, 
    *           1 for value greater than the property value (or defaultValue)
    */
-  compareFieldProperty (field, property, value, defaultValue) {
+  compareFieldProperty (field, property, value, defaultValue, caseSensitive) {
     const properties = this.fieldProperties.get(field) || {};
-    const propertyValue = properties[property] || defaultValue;
+    caseSensitive = caseSensitive || false;
+    
+    let propertyValue = properties[property] || defaultValue;
+    if (!caseSensitive && typeof(value) === String && typeof(propertyValue) === String) {
+      value = value.toLowerCase();
+      propertyValue = value.toLowerCase();
+    }
     return (propertyValue < value ? -1 : 
             propertyValue > value ? 1 : 0);
    }

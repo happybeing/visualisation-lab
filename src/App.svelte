@@ -5,8 +5,7 @@ import { notifications } from './notifications.js';
 import SourceUI from './interfaces/SourceUI.svelte';
 import ViewModelUI from './viewmodels/ViewModelUI.svelte';
 
-import {resultDataStore, activeViews} from './stores.js';
-import {activeModelsByFormat} from './stores.js';
+import {resultDataStore} from './stores.js';
 
 </script>
 
@@ -23,7 +22,4 @@ import {activeModelsByFormat} from './stores.js';
   </p>
   <SourceUI resultDataStore={resultDataStore}/>
   <ViewModelUI resultDataStore={resultDataStore}/>
-  {#each $activeViews as viewUI, i}
-    <svelte:component this= {viewUI} {activeModelsByFormat}/>
-  {/each}
 </Notifications>

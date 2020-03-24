@@ -12,6 +12,58 @@ import {default as embed}  from 'vega-embed';
 import {resultDataStore} from "../stores.js";
 import {modelFormats} from '../modelFormats.js';
 export let activeModelsByFormat;
+export let viewModelStore;
+$: viewModel = $viewModelStore;
+
+$: updateReactiveChart(chartSpecNoFlatten, viewModel)
+
+function updateReactiveChart (templateSpec, viewModel) {
+  console.log('updateReactiveChart()...');
+  if (!viewModel) return;
+
+  const jsonModel = viewModel.getJsonModel();
+  console.log('jsonModel');console.dir(jsonModel);
+  const fullSpec = Object.assign({}, templateSpec);
+  // fullSpec.data.values = jsonModel.values;
+
+  const dataset = getJsonModelAsVegaDataset(jsonModel);
+  fullSpec.data.name = 'test';
+  fullSpec.data.values = dataset;
+
+  const tableFashion = viewModel.getFashion();
+  const fields = tableFashion.getFieldsWithProperty('visible', true, false);
+  const xAxisFields = tableFashion.getFieldsWithProperty('x-axis', true, false);
+  const xAxis = xAxisFields[0] ? xAxisFields[0] : 'date';
+
+  console.log('fields:');console.log(fields);
+  console.log('xAxis: ' + xAxis);
+  fullSpec.transform = [
+      {"calculate": "toDate(datum." + xAxis + ")", "as": xAxis},
+      {"fold": fields, "as": ["Country", "Deaths"]}
+    ];
+
+  fullSpec.mark = "line";
+
+  fullSpec.encoding = {
+    "x": {"field": xAxis, "type": "temporal"},
+    "y": {"field": "Deaths", "type": "quantitative"},
+    "color": {"field": "Country", "type": "nominal"}
+  };
+
+  console.log('DATASET:');console.dir(fullSpec.data.values);
+  console.log('fullSpec');console.dir(fullSpec);
+
+  embed("#vega-reactive-chart", fullSpec, { actions: false }).catch(error =>
+    console.log(error)).then(vega => {
+      console.log('VIEW:');
+      // if(!vega){console.log('ERROR - vega embed failed');return;}
+      console.dir(vega.view);
+      // console.log('DATA:');
+      // console.dir(vega.view._runtime.data.source_0.input.value[0]);
+      console.log('TRANSFORMED DATA:')
+      console.dir(vega.view._runtime.data.data_0.output.value);
+    })
+}
 
 // TODO: load built in specs from JS files
 const spec = `{
@@ -316,6 +368,7 @@ function updateChart (activeModelsByFormat) {
 }
 
 const vegaViews = [
+  {active: true, tag: 'reactive-chart', description: "Vega Reactive Chart", options: {}},
   {active: true, tag: 'chart', description: "Vega Chart", options: {}},
   {active: false, tag: 'tree', description: "Vega Tree", options: {}},
 ];
@@ -358,6 +411,10 @@ const vegaViews = [
       {#if view.tag==='chart'}
         <h2>Chart</h2><p>This chart works if you select the "Test CSV file" from data sources above.</p>
       {/if}
+      {#if view.tag==='reactive-chart'}
+        <h2>Reactive Chart</h2><p>Chart for CSV data sources above. Choose X-Axis and data to plot using the &lt;TableFashionUI&gt; above.</p>
+      {/if}
+
       <div class='vega-multi' id={'vega-'+view.tag} hidden={!view.active}></div>
     {/if}
   {/each}

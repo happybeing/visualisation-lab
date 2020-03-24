@@ -24,13 +24,12 @@ function updateXAxis (xAxis) {
   console.log('updateXAxis() to ' + xAxis);
   if (fashion) {
       if (lastXAxis) {
-        // fashion.setFieldsProperty([lastXAxis], 'visible', false);
         fashion.setFieldsProperty([lastXAxis], 'x-axis', false);
       }
       lastXAxis = xAxis;
-      // fashion.setFieldsProperty([xAxis], 'visible', true);
       fashion.setFieldsProperty([xAxis], 'x-axis', true);
       fashion = fashion;
+      viewModelStore.set(viewModel);
     }
 }
 
@@ -41,6 +40,7 @@ function handleFields (e) {
     fashion.setFieldsProperty([field], 'visible', e.detail.tags.includes(field));
   });
   fashion = fashion;
+  viewModelStore.set(viewModel);
 }
 </script>
 
@@ -80,8 +80,8 @@ function handleFields (e) {
       allowPaste={true}
       onlyUnique={true}
       />
-  </p>
-  <p>List:
+  </p><br/>
+  <!-- <p>List:
   </p>
     <table>
     {#each allFields as field}
@@ -91,5 +91,5 @@ function handleFields (e) {
       {/if}
       </td></tr>
     {/each}
-    </table>
+    </table> -->
 </div>
