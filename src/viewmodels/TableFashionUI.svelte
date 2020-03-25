@@ -34,14 +34,42 @@ function updateXAxis (xAxis) {
 }
 
 function handleFields (e) {
-  console.log('handleFields()');
-  console.dir(e);
+  // console.log('handleFields()'); console.dir(e);
+  sanitiseTags(e.detail.tags, allFields, true);
   allFields.forEach(field => {
     fashion.setFieldsProperty([field], 'visible', e.detail.tags.includes(field));
   });
   fashion = fashion;
   viewModelStore.set(viewModel);
 }
+
+/** Return a list of all tags which are in allTags
+ * 
+ * @param {String[]}  tags - tag names to sanitise
+ * @param {String[]}  allTags - list of allowed tag names
+ * @param {Boolean}   allowAnyCase - if true, match names regardless of case but use the version from allTags
+ */
+function sanitiseTags (tags, allTags, allowAllCase) {
+  let matchAllTags = allTags;
+  if (allowAllCase) {
+    matchAllTags = [];
+    allTags.forEach(tag => matchAllTags.push(tag.toLowerCase()));
+  }
+
+  tags.forEach((tag, i) => {
+    if (!allowAllCase) {
+      if (!matchAllTags.includes(tag)) tags.splice(i, 1);
+    } else {
+      const matchedIndex = matchAllTags.indexOf(tag.toLowerCase());
+      if (matchedIndex > 0) {
+        tags.splice(i, 1, allTags[matchedIndex]); // Replace with allFields value
+        } else {
+          tags.splice(i, 1); // Remove non-matched tag
+      }
+    } 
+  });
+}
+
 </script>
 
 <style>
@@ -57,6 +85,9 @@ function handleFields (e) {
   <p>&lt;TableFashionUI&gt; for tabular data
   </p>
   <p>
+  TODO: add way to restrict input to fields present in the model<br/>
+  TODO: add way to match with fields in the model if case is different (its a partial match?)<br/>
+  TODO: test if just editing the Vega spec object is enough to redraw the Vega chart<br/>
   TODO: accept a config object to control properties, type, values, defaults to apply via the UI<br/>
   TODO: extend range of filters<br/>
   TODO: improve filter UI<br/>
