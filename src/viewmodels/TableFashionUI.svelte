@@ -1,4 +1,12 @@
 <!-- UI to control Fashion (filtering and presentation) of VMTable
+
+TODO: accept a config object to control properties, type, values, defaults to apply via the UI
+TODO: extend range of filters
+TODO: improve filter UI
+TODO: extend Fashion properties, add NetworkFashionUI for network data (e.g. display nodes with property P, use node property I for style S)
+TODO: make Svelte Table View respond to and update tabular fashion controls
+TODO: make Network Graph View respond to NetworkFashionUI controls (visibility, node type, node style)
+
 -->
 <script>
 import {onMount} from 'svelte';
@@ -83,14 +91,6 @@ function sanitiseTags (tags, allTags, allowAllCase) {
 
 <div class="main">
   <p>&lt;TableFashionUI&gt; for tabular data
-  </p>
-  <p>
-  TODO: accept a config object to control properties, type, values, defaults to apply via the UI<br/>
-  TODO: extend range of filters<br/>
-  TODO: improve filter UI<br/>
-  TODO: extend Fashion properties, add NetworkFashionUI for network data (e.g. display nodes with property P, use node property I for style S)<br/>
-  TODO: make Svelte Table View respond to and update tabular fashion controls
-  TODO: make Network Graph View respond to NetworkFashionUI controls (visibility, node type, node style)
   </p>
   <p><b>X-Axis:</b> <select bind:value={xAxis} title='X-axis'>
     {#each invisibleFields as field}
