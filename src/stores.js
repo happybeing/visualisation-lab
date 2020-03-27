@@ -9,3 +9,5 @@ export const graph = writable({nodes: [], links: []});// Updated by ViewModelUI,
 // See ViewModelUI for details
 export const activeModelsByConsumeFormat = writable(new Map);
 export const activeModelsByFormat = writable(new Map);
+export const tableViewModelStore = writable(0);
+export const filterFieldsStore = writable(true);

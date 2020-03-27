@@ -46,11 +46,11 @@ export class Fashion {
     });
   }
 
-  getFieldsVisibility (visible, defaultVisibility) {
+  getFieldsWithVisibility (visible, defaultVisibility) {
     const visibleFields = []
     this.viewModel.getJsonModelFields().forEach(field => {
       let properties = this.fieldProperties.get(field);
-      if (properties.visible ? properties.visible : defaultVisibility) visibleFields.push(field);
+      if (properties && properties.visible ? properties.visible : defaultVisibility) visibleFields.push(field);
     });
     return visibleFields;
   }
@@ -61,6 +61,10 @@ export class Fashion {
       properties[property] = value;
       this.fieldProperties.set(field, properties);
     });  
+  }
+
+  clearAllFieldsOfProperty (property) {
+    this.fieldProperties.forEach( field => {field[property] = undefined;});  
   }
 
   getFieldsWithProperty (property, value, defaultValue) {
@@ -94,7 +98,7 @@ export class Fashion {
   compareFieldProperty (field, property, value, defaultValue, caseSensitive) {
     const properties = this.fieldProperties.get(field) || {};
     caseSensitive = caseSensitive || false;
-    
+
     let propertyValue = properties[property] || defaultValue;
     if (!caseSensitive && typeof(value) === String && typeof(propertyValue) === String) {
       value = value.toLowerCase();

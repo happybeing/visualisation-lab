@@ -10,9 +10,14 @@ models are used by which views.
 <script>
 import {onMount} from 'svelte';
 import {writable} from 'svelte/store';
-import {resultDataStore, activeViews, activeModelsByConsumeFormat, activeModelsByFormat} from "../stores.js";
+import {resultDataStore, 
+        activeViews, 
+        activeModelsByConsumeFormat, 
+        activeModelsByFormat,
+        filterFieldsStore,
+        tableViewModelStore as viewModelStore} from "../stores.js";
 
-import TableFashionUI from './TableFashionUI.svelte'
+import TableFashionUI from '../views/TableFashionUI.svelte'
 
 import {modelFormats} from '../modelFormats.js';
 import {compatibleViewModels} from './viewModel.js';
@@ -24,10 +29,10 @@ import ViewVegaVoyager from '../views/ViewVegaVoyager.svelte';
 
 // Views available for selection in UI
 const viewList = [ 
-  { active: true, description: "Vega Charts (ViewVegaMulti)", class: ViewVegaMulti },
-  { active: true, description: "Table (ViewRdfInSvelteTable)", class: ViewTable },
+  { active: false, description: "Vega Charts (ViewVegaMulti)", class: ViewVegaMulti },
+  { active: true, description: "Table (ViewTable)", class: ViewTable },
   { active: false, description: "Graph (ViewNetworkGraphCanvas)", class: ViewNetworkGraphCanvas },
-  { active: false, description: "Vega Voyager", class: ViewVegaVoyager },
+  { active: false, description: "Vega Voyager (ViewVegaVoyager)", class: ViewVegaVoyager },
 ];
 
 function updateActiveViews() {
@@ -62,13 +67,11 @@ function updateActiveViews() {
 // or for 'competing' ViewModels to be prioritised.
 
 let unsubscribe;
-const viewModelStore = writable(0);
 
 onMount(() => {
   unsubscribe = resultDataStore.subscribe(rds => {
     console.log('ViewModelUI rds update:');
     console.dir(rds);
-    // $viewModelStore = undefined;
 
     if (rds === undefined || rds === 0) {return;}
 
@@ -93,7 +96,7 @@ onMount(() => {
           let modelsOfThisFormat = $activeModelsByFormat.get(newModelFormat);
           if (modelsOfThisFormat === undefined) modelsOfThisFormat = [];
           modelsOfThisFormat.push(newModel);
-          if (newModelFormat === modelFormats.VM_TABULAR_JSON) $viewModelStore = newModel; // TODO: temp hack
+          if (newModelFormat === modelFormats.VM_TABULAR_JSON) viewModelStore.update(newModel => newModel); // TODO: temp hack
           $activeModelsByFormat.set(newModelFormat, modelsOfThisFormat);
         });
 
@@ -138,7 +141,7 @@ onMount(() => {
   provides control over the view model, and 
   provides filters that are applied to the model to show/hide 
   elements in the View.</p>
-  <TableFashionUI {viewModelStore}/>
+  <TableFashionUI {viewModelStore} {filterFieldsStore}/>
   <p><b>Display views of type:</b></p>
   <p>
     {#each viewList as view}
