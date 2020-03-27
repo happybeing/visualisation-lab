@@ -12,8 +12,8 @@ import {default as embed}  from 'vega-embed';
 import {resultDataStore} from "../stores.js";
 import {modelFormats} from '../modelFormats.js';
 export let activeModelsByFormat;
-export let viewModelStore;
-$: viewModel = $viewModelStore;
+export let viewModelProxyStore;
+$: viewModel = $viewModelProxyStore && $viewModelProxyStore.viewModel;
 
 $: updateReactiveChart(chartSpecNoFlatten, viewModel)
 

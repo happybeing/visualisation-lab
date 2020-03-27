@@ -74,7 +74,7 @@ export class Fashion {
       let properties = this.fieldProperties.get(field);
       if ((properties && properties[property] !== undefined ? properties[property] : defaultValue) === value) matchingFields.push(field);
     });
-    console.log('getFieldsWithProperty(' + property + ', ' + value + ', ' + defaultValue + ')');console.dir(matchingFields);
+    // console.log('getFieldsWithProperty(' + property + ', ' + value + ', ' + defaultValue + ')');console.dir(matchingFields);
     return matchingFields;
   }
 

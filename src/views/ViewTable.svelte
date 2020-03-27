@@ -9,24 +9,33 @@ import TableFashionUI from './TableFashionUI.svelte'
 
 import {resultDataStore,
         filterFieldsStore,
-        tableViewModelStore as viewModelStore} from "../stores.js";
+        tableViewModelStore as viewModelProxyStore} from "../stores.js";
 import {modelFormats} from '../modelFormats.js';
 export let activeModelsByFormat;
 
-let viewModel;
-$: table = updateTable($activeModelsByFormat);
+const emptyTable = {rows: [], headings: []};
+
+$: viewModel = $viewModelProxyStore && $viewModelProxyStore.viewModel ? $viewModelProxyStore.viewModel : undefined;
+$: table = initialiseTable($activeModelsByFormat);
+$: table = updateTable(viewModel);
 $: rows = table.rows;
 $: headings = table.headings;
 $: allFields = viewModel ? viewModel.getJsonModelFields() : [];
 
-function updateTable (activeModelsByFormat) {
+function initialiseTable (activeModelsByFormat) {
   let allModels = activeModelsByFormat.get(modelFormats.VM_TABULAR_JSON);
-  if (allModels === undefined) return {rows: [], headings: []};
+  if (allModels === undefined) return emptyTable;
 
   // TODO how to handle multiple compatible models? (We visualise only the first)
   viewModel = allModels[0]; 
-  viewModelStore.update(viewModel => viewModel);
-  let rows = viewModel.getJsonModelValues();
+  $viewModelProxyStore = {viewModel: viewModel};
+  return updateTable(viewModel);
+}
+
+function updateTable (viewModel) {
+  if (viewModel === undefined) return emptyTable;
+
+let rows = viewModel.getJsonModelValues();
   let headings = viewModel.getJsonModel().header;
 
   if (!headings) {
@@ -117,14 +126,10 @@ function sanitiseTags (tags, allowedTags, allowAllCase) {
     allowedTags.forEach(tag => matchAllTags.push(tag.toLowerCase()));
   }
 
-  console.log('SANITISING with..>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
-  console.dir(matchAllTags);
   for (let i = 0 ; i < tags.length ; ) {
     const tag = tags[i];
-    console.log('sanitising: ', tag);
     if (!allowAllCase) {
       if (!matchAllTags.includes(tag)) {
-        console.log('EXCLUDED1');
         tags.splice(i, 1);
       } else {
         ++i;
@@ -132,14 +137,10 @@ function sanitiseTags (tags, allowedTags, allowAllCase) {
     } else {
       const matchedIndex = matchAllTags.indexOf(tag.toLowerCase());
       if (matchedIndex >= 0) {
-        console.log('accepted');
         tags.splice(i, 1, allowedTags[matchedIndex]); // Replace with allFields value
         ++i;
       } else {
-        console.log('EXCLUDED2');
-        console.dir(tags);
           tags.splice(i, 1); // Remove non-matched tag
-        console.dir(tags);
       }
     } 
   }
@@ -161,7 +162,7 @@ function sanitiseTags (tags, allowedTags, allowAllCase) {
   <p>&lt;ViewTable&gt; is a prototype tabular view with sorting and filtering.
   </p>
 
-  <TableFashionUI disabled=true {viewModelStore} {filterFieldsStore}/>
+  <TableFashionUI disabled=true {viewModelProxyStore} {filterFieldsStore}/>
   <SvelteTable {columns} {rows}></SvelteTable>
 
   <p>TODO: NOTE this is using a local fork of svelte-table<br/>

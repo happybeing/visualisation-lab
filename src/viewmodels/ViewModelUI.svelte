@@ -15,7 +15,7 @@ import {resultDataStore,
         activeModelsByConsumeFormat, 
         activeModelsByFormat,
         filterFieldsStore,
-        tableViewModelStore as viewModelStore} from "../stores.js";
+        tableViewModelStore as viewModelProxyStore} from "../stores.js";
 
 import TableFashionUI from '../views/TableFashionUI.svelte'
 
@@ -96,7 +96,7 @@ onMount(() => {
           let modelsOfThisFormat = $activeModelsByFormat.get(newModelFormat);
           if (modelsOfThisFormat === undefined) modelsOfThisFormat = [];
           modelsOfThisFormat.push(newModel);
-          if (newModelFormat === modelFormats.VM_TABULAR_JSON) viewModelStore.update(newModel => newModel); // TODO: temp hack
+          if (newModelFormat === modelFormats.VM_TABULAR_JSON) $viewModelProxyStore = {viewModel: newModel}; // TODO: temp hack
           $activeModelsByFormat.set(newModelFormat, modelsOfThisFormat);
         });
 
@@ -141,7 +141,7 @@ onMount(() => {
   provides control over the view model, and 
   provides filters that are applied to the model to show/hide 
   elements in the View.</p>
-  <TableFashionUI {viewModelStore} {filterFieldsStore}/>
+  <TableFashionUI {viewModelProxyStore} {filterFieldsStore}/>
   <p><b>Display views of type:</b></p>
   <p>
     {#each viewList as view}
@@ -151,6 +151,6 @@ onMount(() => {
 
   {#each $activeViews as viewUI, i} 
     <!-- TODO deprecate activeModelsByFormat -->
-    <svelte:component this= {viewUI} {activeModelsByFormat}  {viewModelStore}/>
+    <svelte:component this= {viewUI} {activeModelsByFormat}  {viewModelProxyStore}/>
   {/each}
 </div>

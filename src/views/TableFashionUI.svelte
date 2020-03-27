@@ -18,18 +18,15 @@ import {modelFormats} from '../modelFormats.js';
 
 export let filterFieldsStore;
 
-export let viewModelStore;
-$: viewModel = $viewModelStore;
+export let viewModelProxyStore;
+$: viewModel = $viewModelProxyStore && $viewModelProxyStore.viewModel;
 
-$: fashion = getFashion(viewModel) 
+// $: fashion = getFashion(viewModel) 
 
-function getFashion (viewModel) {
-  console.log('XXXXXXXXXX');
-  console.dir(viewModel);
-  return viewModel && typeof(viewModel.getFashion) === 'function' ? viewModel.getFashion() : undefined; 
-  console.log('NEW fashion');
-}
-// $: fashion = viewModel ? viewModel.getFashion() : undefined; console.log('NEW fashion');
+// function getFashion (viewModel) {
+//   return viewModel && typeof(viewModel.getFashion) === 'function' ? viewModel.getFashion() : undefined; 
+// }
+$: fashion = viewModel ? viewModel.getFashion() : undefined; console.log('NEW fashion');
 $: allFields = viewModel ? viewModel.getJsonModelFields() : []; console.log('NEW allFields');
 $: visibleFields = fashion ? fashion.getFieldsWithProperty('visible', true, false) : []; console.log('NEW visibleFields');
 $: invisibleFields = fashion ? fashion.getFieldsWithProperty('visible', false, false) : []; console.log('NEW invisibleFields');
@@ -45,7 +42,7 @@ function updateXAxis (xAxis) {
       fashion.clearAllFieldsOfProperty(xAxisProperty);
       fashion.setFieldsProperty([xAxis], xAxisProperty, true);
       fashion = fashion;
-      viewModelStore.update(viewModel => viewModel);
+      $viewModelProxyStore = {viewModel: viewModel};
     }
 }
 
@@ -58,13 +55,13 @@ function updateFromViewModel(viewModel) {
 }
 
 function handleFields (e) {
-  console.log('handleFields()'); console.dir(e);
+  console.log('================================ handleFields() =================================='); console.dir(e);
   sanitiseTags(e.detail.tags, allFields, true);
   allFields.forEach(field => {
     fashion.setFieldsProperty([field], 'visible', e.detail.tags.includes(field));
   });
   fashion = fashion;
-  viewModelStore.update(viewModel => viewModel);
+  $viewModelProxyStore = {viewModel: viewModel};
 }
 
 /** update an array of strings using an array of acceptable values
@@ -80,14 +77,11 @@ function sanitiseTags (tags, allowedTags, allowAllCase) {
     allowedTags.forEach(tag => matchAllTags.push(tag.toLowerCase()));
   }
 
-  console.log('SANITISING with..');
   console.dir(matchAllTags);
   for (let i = 0 ; i < tags.length ; ) {
     const tag = tags[i];
-    console.log('sanitising: ', tag);
     if (!allowAllCase) {
       if (!matchAllTags.includes(tag)) {
-        console.log('EXCLUDED1');
         tags.splice(i, 1);
       } else {
         ++i;
@@ -95,14 +89,10 @@ function sanitiseTags (tags, allowedTags, allowAllCase) {
     } else {
       const matchedIndex = matchAllTags.indexOf(tag.toLowerCase());
       if (matchedIndex >= 0) {
-        console.log('accepted');
         tags.splice(i, 1, allowedTags[matchedIndex]); // Replace with allFields value
         ++i;
       } else {
-        console.log('EXCLUDED2');
-        console.dir(tags);
           tags.splice(i, 1); // Remove non-matched tag
-        console.dir(tags);
       }
     } 
   }
