@@ -389,6 +389,13 @@ const vegaViews = [
   padding: 0.2cm;
   margin: 0.1cm;
 }
+
+.hidden {
+  visibility: hidden;
+  width: 0;
+  height: 0;
+}
+
 </style>
 
 <div class="main">
@@ -414,9 +421,8 @@ const vegaViews = [
       {#if view.tag==='reactive-chart'}
         <h2>Reactive Chart</h2><p>Chart for CSV data sources above. Choose X-Axis and data to plot using the &lt;TableFashionUI&gt; above.</p>
       {/if}
-
-      <div class='vega-multi' id={'vega-'+view.tag} hidden={!view.active}></div>
     {/if}
+    <div class="vega-multi {view.active ? '' : 'hidden'}" id={'vega-'+view.tag}></div>
   {/each}
 
 </div>
