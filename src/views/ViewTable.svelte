@@ -62,9 +62,10 @@ function makeColumns(rows, headings, viewModel, filterFields) {
   let columns = [];
   let filterOptions = [];
   let fieldsFilter = [];
+  let filteredHeadings = headings;
 
   if (filterFields && viewModel && viewModel.fashion) {
-    let filteredHeadings = [...headings];
+    filteredHeadings = [...headings];
     fieldsFilter = viewModel.fashion.getFieldsWithVisibility(true, false);
     console.log('fieldsFilter:');console.dir(fieldsFilter);
     sanitiseTags(filteredHeadings, fieldsFilter, true);
@@ -75,12 +76,12 @@ function makeColumns(rows, headings, viewModel, filterFields) {
       filteredHeadings.splice(0, 0, xAxis[0]);
     }
 
-    headings = filteredHeadings;
     console.log('filteredHeadings:');console.dir(filteredHeadings);
   }
 
-  headings.forEach((heading, i) => {
-    columns.push({
+  filteredHeadings.forEach((heading) => {
+    let i = headings.indexOf(heading);
+    if (i >= 0) columns.push({
       key: heading,
       title: heading,
       value: v => v[i],
