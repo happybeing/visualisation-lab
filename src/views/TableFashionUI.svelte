@@ -18,18 +18,29 @@ import {modelFormats} from '../modelFormats.js';
 
 export let filterFieldsStore;
 
+import { createEventDispatcher } from 'svelte';
+const dispatch = createEventDispatcher();
+
+let setTags = [];  // Used only to set tags, changes picked up via handleTags()
+
 export let viewModelProxyStore;
 $: viewModel = $viewModelProxyStore && $viewModelProxyStore.viewModel;
 
-// $: fashion = getFashion(viewModel) 
-
-// function getFashion (viewModel) {
-//   return viewModel && typeof(viewModel.getFashion) === 'function' ? viewModel.getFashion() : undefined; 
-// }
 $: fashion = viewModel ? viewModel.getFashion() : undefined; console.log('NEW fashion');
 $: allFields = viewModel ? viewModel.getJsonModelFields() : []; console.log('NEW allFields');
 $: visibleFields = fashion ? fashion.getFieldsWithProperty('visible', true, false) : []; console.log('NEW visibleFields');
 $: invisibleFields = fashion ? fashion.getFieldsWithProperty('visible', false, false) : []; console.log('NEW invisibleFields');
+$: updateTags(visibleFields);
+
+function updateTags (visibleFields) {
+  if (setTags.length === visibleFields.length) {
+    for (let i = 0 ; i < setTags.length ; i++) {
+      if (setTags[i] !== visibleFields[i]) break;
+    }
+    return;
+  }
+  setTags = [...visibleFields];
+};
 
 let xAxis;
 $: updateXAxis(xAxis);
@@ -132,6 +143,7 @@ fieldset {
   <p><b>Countries:</b></p>
     <fieldset disabled={!$filterFieldsStore}>
       <Tags
+        setTags={setTags}
         placeholder={"Enter names of countries"}  
         on:tags={handleFields}
         autoComplete={invisibleFields}
@@ -141,6 +153,7 @@ fieldset {
         />
     </fieldset>
   <br/>
+  TODO: NOTE this is using a local fork of svelte-tags-input 
 </div>
   <!-- <p>List:
   </p>
