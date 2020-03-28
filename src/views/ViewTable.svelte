@@ -1,4 +1,4 @@
-<!-- A tabular view for an RDF Dataset 
+<!-- A view for tabular data (vm-tabular-json) 
 -->
 
 <script>
@@ -49,13 +49,6 @@ let rows = viewModel.getJsonModelValues();
 }
 
 $: columns = makeColumns(rows, headings, viewModel, $filterFieldsStore);
-
-// ??? TODO:
-// - move filter on/off inside TableFashionUI
-// - ensure x-axis prop is set from the drop-down when the control inits
-//    ->try init to blank?
-// - cause change to filter or x-axis to update the table
-// - prune the console output here and in TableFashionUI
 
 function makeColumns(rows, headings, viewModel, filterFields) {
   console.log('makeColumns()..filterFields: ' + filterFields);

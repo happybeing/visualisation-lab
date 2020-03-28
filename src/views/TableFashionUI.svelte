@@ -50,23 +50,26 @@ function updateXAxis (xAxis) {
   console.log('updateXAxis() to ' + xAxis);
   if (fashion) {
       const xAxisProperty = 'x-axis';
-      fashion.clearAllFieldsOfProperty(xAxisProperty);
-      fashion.setFieldsProperty([xAxis], xAxisProperty, true);
-      fashion = fashion;
-      $viewModelProxyStore = {viewModel: viewModel};
+      if (xAxis !== undefined) {
+        fashion.clearAllFieldsOfProperty(xAxisProperty);
+        fashion.setFieldsProperty([xAxis], xAxisProperty, true);
+        fashion = fashion;
+        $viewModelProxyStore = {viewModel: viewModel};
+      }
     }
 }
 
 function updateFromViewModel(viewModel) {
-  console.log('updateFromViewModel()..');console.dir(viewModel);
+  console.log('updateFromViewModel() viewModel:');console.dir(viewModel);
   if (viewModel) {
     const fashion = viewModel.getFashion();
     xAxis = fashion.getFieldsWithProperty('x-axis', true, false)[0];
+    // console.log('DEBUG xAxis now:' + xAxis); console.log(fashion);
   }
 }
 
 function handleFields (e) {
-  console.log('================================ handleFields() =================================='); console.dir(e);
+  // console.log('handleFields() event: '); console.dir(e);
   sanitiseTags(e.detail.tags, allFields, true);
   allFields.forEach(field => {
     fashion.setFieldsProperty([field], 'visible', e.detail.tags.includes(field));
@@ -88,7 +91,7 @@ function sanitiseTags (tags, allowedTags, allowAllCase) {
     allowedTags.forEach(tag => matchAllTags.push(tag.toLowerCase()));
   }
 
-  console.dir(matchAllTags);
+  // console.log('sanitiseTags() matchAllTags: '); console.dir(matchAllTags);
   for (let i = 0 ; i < tags.length ; ) {
     const tag = tags[i];
     if (!allowAllCase) {

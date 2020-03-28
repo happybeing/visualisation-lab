@@ -16,12 +16,12 @@ A View may also use a Fashion View as a sub-component to add functionality for f
 and controlling how it presents its
 
 **/
-
 export class Fashion {
   constructor (viewModel) {
     this.viewModel = viewModel ? viewModel : {};
 
     this.fieldProperties = new Map;
+    // console.log('DEBUG Fashion() DONE fieldProperties: '); this.fieldProperties.forEach(logMapElements); console.dir(this.fieldProperties);
   }
 
   getViewModel () {return this.viewModel;}
@@ -44,6 +44,7 @@ export class Fashion {
       properties.visible = visible;
       this.fieldProperties.set(field, properties);
     });
+    // console.log('DEBUG setFieldsVisibility() DONE fieldProperties: '); this.fieldProperties.forEach(logMapElements); console.dir(this.fieldProperties);
   }
 
   getFieldsWithVisibility (visible, defaultVisibility) {
@@ -56,25 +57,31 @@ export class Fashion {
   }
 
   setFieldsProperty (fieldNames, property, value) {
+    // console.log('DEBUG setFieldsProperty()');
     fieldNames.forEach( field => {
       const properties = this.fieldProperties.get(field) || {};
       properties[property] = value;
       this.fieldProperties.set(field, properties);
     });  
+    // console.log('DEBUG setFieldsProperty() DONE fieldProperties: '); this.fieldProperties.forEach(logMapElements); console.dir(this.fieldProperties);
   }
 
   clearAllFieldsOfProperty (property) {
-    this.fieldProperties.forEach( field => {field[property] = undefined;});  
+    this.fieldProperties.forEach( properties => {
+      if (properties[property] != undefined) delete properties[property];
+    });
+
+    // console.log('DEBUG clearAllFieldsOfProperty() DONE fieldProperties: '); this.fieldProperties.forEach(logMapElements); console.dir(this.fieldProperties);
   }
 
   getFieldsWithProperty (property, value, defaultValue) {
     const matchingFields = [];
-    console.dir(this.fieldProperties);
+    // console.log('DEBUG getFieldsWithProperty(' + property + ')');console.dir(this.fieldProperties);
     this.viewModel.getJsonModelFields().forEach(field => {
       let properties = this.fieldProperties.get(field);
       if ((properties && properties[property] !== undefined ? properties[property] : defaultValue) === value) matchingFields.push(field);
     });
-    // console.log('getFieldsWithProperty(' + property + ', ' + value + ', ' + defaultValue + ')');console.dir(matchingFields);
+    // console.log('DEBUG getFieldsWithProperty(' + property + ', ' + value + ', ' + defaultValue + ')');console.dir(matchingFields);
     return matchingFields;
   }
 
@@ -107,4 +114,9 @@ export class Fashion {
     return (propertyValue < value ? -1 : 
             propertyValue > value ? 1 : 0);
    }
+}
+
+// DEBUG helper
+function logMapElements(value, key, map) {
+  console.log(`m[${key}] = ${JSON.stringify(value)}`);
 }
