@@ -212,7 +212,7 @@ export class VMTable extends ViewModel {
   // Fashion API
   getJsonModelFields () { 
     const jsonModel = this.getJsonModel();
-    return jsonModel.headers ? [...jsonModel.headers] : jsonModel.values[0];
+    return jsonModel.header ? [...jsonModel.header] : jsonModel.values[0];
   }
 
   //// Methods to generate the view model from different inputs
