@@ -246,7 +246,7 @@ const chartSpecNoFlatten = {
   },
   "transform": [
       {"calculate": "toDate(datum.date)", "as": "date"},
-      {"fold": ["France", "Germany", "United States", "United Kingdom"], "as": ["Country", "Deaths"]}
+      {"fold": ["China", "South Korea", "France", "Germany", "United States", "United Kingdom"], "as": ["Country", "Deaths"]}
     ],
   "mark": "line",
   "encoding": {
