@@ -2,7 +2,8 @@
 
 VisLab is an experimental visualisation workbench being built using Svelte. 
 This is a work in progress so nothing fancy yet although potentially useful 
-even now.
+even now, as can be seen from the live demo which loads the latest data 
+COVID-19 data directly from the WHO website.
 
 Feedback and contributions are welcome.
 
@@ -11,10 +12,12 @@ possible with RDF / Linked Data. So 'semantic sources' are the focus, but
 this doesn't mean you can't visualise other data. Many formats will be or
 are already supported from CSV to directly querying of databases.
 
-If you wish to add support for a new data source or format it can be added
-easily, by implementing a couple of JavaScript classes to load the data
-and get it into one of the standard formats used internally for visualisation
-which are defined in the **VisLab JSON ViewModel Specificaiton** (see below).
+If you wish to add support for a new data source or format you can do so by
+implementing a couple of simple JavaScript classes. You can probably use
+or tweak one of the existing classes, which load data from a variety of
+sources, including local files, the web and RDF/SPARQL endpoints. Then
+convert it into one of the standard formats used internally for visualisation
+which are defined in the **VisLab JSON ViewModel Specification** (see below).
 
 ## Plan
 The plan is to start simple but long term aim to allow visualisation
