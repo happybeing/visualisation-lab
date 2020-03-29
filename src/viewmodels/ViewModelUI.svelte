@@ -29,9 +29,9 @@ import ViewVegaVoyager from '../views/ViewVegaVoyager.svelte';
 
 // Views available for selection in UI
 const viewList = [ 
-  { active: true, description: "Graph (ViewNetworkGraphCanvas)", class: ViewNetworkGraphCanvas },
-  { active: true, description: "Table (ViewTable)", class: ViewTable },
   { active: false, description: "Vega Charts (ViewVegaMulti)", class: ViewVegaMulti },
+  { active: true, description: "Table (ViewTable)", class: ViewTable },
+  { active: true, description: "Graph (ViewNetworkGraphCanvas)", class: ViewNetworkGraphCanvas },
   { active: false, description: "Vega Voyager (ViewVegaVoyager)", class: ViewVegaVoyager },
 ];
 
@@ -134,6 +134,13 @@ onMount(() => {
   padding-right: 1cm;
   padding-bottom: 1cm;
 }
+
+.hidden {
+  visibility: hidden;
+  width: 0;
+  height: 0;
+}
+
 </style>
 
 <div class="main">
@@ -149,8 +156,10 @@ onMount(() => {
     {/each}
   </p>
 
-  {#each $activeViews as viewUI, i} 
+  {#each viewList as view, i} 
     <!-- TODO deprecate activeModelsByFormat -->
-    <svelte:component this= {viewUI} {activeModelsByFormat}  {viewModelProxyStore}/>
+    <div class="{view.active ? '' : 'hidden'}">
+      <svelte:component this={view.class} {activeModelsByFormat}  {viewModelProxyStore}/>
+    </div>
   {/each}
 </div>
