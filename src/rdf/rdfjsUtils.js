@@ -1,8 +1,12 @@
 const rdfjs = require('@graphy/core.data.factory');
 
-/** Consume an RDFJS DatasetCore to create a vm-graph-json compatible values object
+/** Consume an RDF/JS DatasetCore to create a vm-graph-json compatible values object
  * 
  */
+export const rdfToGraph = {
+  simple: 'simple',
+  standard: 'standard'
+};
 
 export class RdfToGraph {
   constructor (rdfDataset) {
@@ -28,37 +32,119 @@ export class RdfToGraph {
 
   /** Get graph for current RDF Dataset. Will calculate or return cached object
    * 
-   * @param {Objects} [options]   optional control of mapping to graph
+   * When RDF is mapped to a graph, the VMGraph ViewModel comprises map of 
+   * node objects and a map of link objects, each with properties based on some rules 
+   * for different rdfToGraph mapping types (see options.mapping).
+   * 
+   * options.mapping: rdfToGraph.simple
+   * ----------------------------------
+   * - each Subject and Object value is mapped to a node with property 'id' set to the value.
+   * - each Subject-Object combination is mapped to a link.
+   * 
+   * options.mapping: rdfToGraph.standard (default)
+   * ------------------------------------
+   * - each unique Subject value becomes a node
+   * - each Object whose Object Type is in options.objectsAsNode becomes a node
+   * - any Object value that is also a Subject becomes a link with Subject as 'source' 
+   *   and Object as 'target'
+   * - each link has 'predicates' property corresponding to the triple
+   * - every Object value which does not qualify as a node will become a property on the
+   *   Subject node, based on the predicate. Since each predicate can occur zero or more
+   *   times, such properties are implemented as an array objects (one per occurance of
+   *   the predicate). Each property object has 'type' (the Object Type) and value.
+   * - TODO: MAYBE, in order to handle duplicate predicates per Subject some or all
+   *   properties will have array values, either of the values or of an object per  
+   *   value if additional metadata needs to be retained. Perhaps handle both.
+   * 
+   * TODO: could implement better mapping to links (e.g. based on predicates rather than subject-object)
+   * 
+   * @param {Objects} [options]   [optional] { mapping: simple|standard,
+   *                                           objectsAsNode: [],
+   *                                         }
    * 
    * @returns {Object} a vm-graph-json object
    */
   Graph (options) {
     if (this.graph) return this.graph;
-    this.touch(); // Clear any metadata
+
     console.log('RdfToGraph.Graph()', this.rdf);
-    const graph = {nodes: new Map(), links: new Map() };
     if (this.rdf === undefined) {
       console.warn('RdfToGraph.Graph() - RDF dataset undefined');
       window.notify.warn('No RDF loaded');
       return;
     }
+    this.touch(); // Clear any metadata
+    const graph = {nodes: new Map(), links: new Map() };
+    if (options && options.mapping === rdfToGraph.simple) return this._graphSimple(options);
+
+    // rdfToGraph.standard (default):
     try {
-        for (const quad of this.rdf) {
-          // console.log('Mapping quad: ', quad);
-          // TODO: implement better mapping to links (e.g. based on predicates rather than subject-object)
-          // TODO: probably need utility classes to provide different mappings for use by several ViewModels
+      // console.log('First pass makes one node per Subject...');
+      for (const quad of this.rdf) {
+        // console.log('quad: ', quad);
+        if (!graph.nodes.get(quad.subject.value)) {
           graph.nodes.set(quad.subject.value, {id: quad.subject.value, group: 1});
-          graph.links.set(quad.subject.value + '--LINK--' + quad.object.value, {source: quad.subject.value, target:quad.object.value, value: 1});
-  
-          // TODO: Don't treat all values as nodes as here:
-          graph.nodes.set(quad.object.value, {id: quad.object.value, group: 1});
         }
-        this.graph = graph; // Cache the result
-        return this.graph;
-      } catch (err) {
-        console.log(err);
       }
+
+      // console.log('Second pass - creating links and properties...');
+      for (const quad of this.rdf) {
+        // console.log('quad: ', quad);
+        if (options && options.objectsAsNode.includes(quad.object.termType) ||
+            graph.nodes.has(quad.object.value)) {
+
+          if (!graph.nodes.has(quad.object.value)) {
+            graph.nodes.set(quad.object.value, {id: quad.object.value, group: 2});
+          }
+          // Make a link or increment its 'strength' if already present (TODO: support multiple links between same node pair?)
+          const linkId = quad.subject.value + '--LINK--' + quad.object.value;
+          let link = graph.links.get(linkId);
+          if (link) {
+            link.strength = strength.value + 1;
+          } else {
+            link = {
+              source: quad.subject.value, 
+              target: quad.object.value,
+              predicate: quad.predicate.value,
+              strength: 1
+            };
+            graph.links.set(linkId, link);
+          }
+        } else {
+          // Object is not a node, so becomes a property.
+          // Note that a property is an array of {type:, value:} since the same predicate can apply zero or more times
+          const node = graph.nodes.get(quad.subject.value);
+          const predicate = quad.predicate.value;
+          if (!node[predicate]) node[predicate] = [];
+          node[predicate].push({type: quad.object.termType, value: quad.object.value});
+        }
+      }
+      this.graph = graph; // Cache the result
+      return this.graph;
+    } catch (err) {
+      console.log(err);
     }
+  }
+
+  _graphSimple (options) {
+    console.log('RdfToGraph._graphSimple()', this.rdf);
+    try {
+      for (const quad of this.rdf) {
+        // console.log('Mapping quad: ', quad);
+        // TODO: implement better mapping to links (e.g. based on predicates rather than subject-object)
+        // TODO: probably need utility classes to provide different mappings for use by several ViewModels
+        graph.nodes.set(quad.subject.value, {id: quad.subject.value, group: 1});
+        graph.links.set(quad.subject.value + '--LINK--' + quad.object.value, {source: quad.subject.value, target:quad.object.value, value: 1});
+
+        // TODO: Don't treat all values as nodes as here:
+        graph.nodes.set(quad.object.value, {id: quad.object.value, group: 1});
+      }
+      this.graph = graph; // Cache the result
+      return this.graph;
+    } catch (err) {
+      console.log(err);
+    }
+  }    
 }
 
  /**

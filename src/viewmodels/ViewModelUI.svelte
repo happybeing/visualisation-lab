@@ -29,9 +29,9 @@ import ViewVegaVoyager from '../views/ViewVegaVoyager.svelte';
 
 // Views available for selection in UI
 const viewList = [ 
-  { active: false, description: "Vega Charts (ViewVegaMulti)", class: ViewVegaMulti },
+  { active: true, description: "Graph (ViewNetworkGraphCanvas)", class: ViewNetworkGraphCanvas },
   { active: true, description: "Table (ViewTable)", class: ViewTable },
-  { active: false, description: "Graph (ViewNetworkGraphCanvas)", class: ViewNetworkGraphCanvas },
+  { active: false, description: "Vega Charts (ViewVegaMulti)", class: ViewVegaMulti },
   { active: false, description: "Vega Voyager (ViewVegaVoyager)", class: ViewVegaVoyager },
 ];
 
