@@ -111,7 +111,7 @@ function simulationUpdate () {
     context.lineTo(d.target.x, d.target.y);
     context.globalAlpha = 0.6;
     context.strokeStyle = "#999";
-    context.lineWidth = Math.sqrt(d.value);
+    context.lineWidth = Math.sqrt(d.strength ? d.strength : d.value);
     context.stroke();
     context.globalAlpha = 1;
   });

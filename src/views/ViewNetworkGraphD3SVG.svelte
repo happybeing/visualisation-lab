@@ -74,7 +74,7 @@ if (simulation) {
         .selectAll("line")
         .data(links)
         .join("line")
-        .attr("stroke-width", d => Math.sqrt(d.value));
+        .attr("stroke-width", d => Math.sqrt(d.strength ? d.strength : d.value));
 
     const node = g.append("g")
         .attr("stroke", "#fff")
