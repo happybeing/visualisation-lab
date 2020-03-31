@@ -138,7 +138,7 @@ export class VMGraph extends ViewModel {
     console.log('VMGraph.consumeSourceResult()', rdfResult);
     try {
       let rdfToGraph = new RdfToGraph(rdfResult.getRdfDataset());
-      let graph = rdfToGraph.Graph();
+      let graph = rdfToGraph.Graph(rdfToGraph.simple);
       this.setJsonModel({
         values: graph, 
         modelFormat: modelFormats.VM_GRAPH_JSON,
@@ -152,7 +152,7 @@ export class VMGraph extends ViewModel {
     }
   }
 
-  /** consume GraphJsonSourceResult, create/overwrite viewModel 
+  /** consume vm-graph-json SourceResult, create/overwrite viewModel 
   input:
     @param {Object}    graph in ViewModel vm-graph-json format 
 
@@ -338,7 +338,7 @@ class VMTree extends ViewModel {
     }
   }
 
-  /** consume GraphJsonSourceResult, create/overwrite viewModel 
+  /** consume vm-graph-json SourceResult, create/overwrite viewModel 
     input:
     @param {Object}  jsonData in ViewModel vm-graph-json format
 
