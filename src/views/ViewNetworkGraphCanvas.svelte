@@ -25,7 +25,8 @@ const padding = { top: 20, right: 40, bottom: 40, left: 25 };
 const groupColour = d3.scaleOrdinal(d3.schemeCategory10);
 
 let viewModel;
-let graph = {nodes: [], links: []};
+const emptyGraph =  {nodes: [], links: []};
+let graph = emptyGraph;
 $: graph = updateGraph($activeModelsByFormat);
 
 function updateGraph (activeModelsByFormat) {
@@ -33,9 +34,12 @@ function updateGraph (activeModelsByFormat) {
   if (allModels === undefined) return {nodes: [], links: []};
 
   // TODO how to handle multiple compatible models? (We visualise only the first)
-  viewModel = allModels[0];  
-  const values = viewModel.getJsonModelValues();
-  const graph = {nodes: [...values.nodes.values()], links: [...values.links.values()]};
+  let graph = emptyGraph;
+  try {
+    viewModel = allModels[0];  
+    const values = viewModel.getJsonModelValues();
+    graph = {nodes: [...values.nodes.values()], links: [...values.links.values()]};
+  } catch(e) {console.error(e);}
   return graph;
 } 
 
