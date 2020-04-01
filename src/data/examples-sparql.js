@@ -1,6 +1,90 @@
 export const sparqlExamples =
 [{ description: '<nothing selected>', endpoint: '', options: {}, sparqlText: ''},
 
+{ description: 'Cnut the Great and relatives', endpoint: 'https://dbpedia.org/sparql', options: {}, sparqlText: `PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX dbpedia2: <http://dbpedia.org/property/>
+CONSTRUCT {
+  ?subject rdf:type foaf:Person .
+  ?subject rdf:type ?types .
+  ?subject rdfs:label ?label .
+  ?subject foaf:givenName ?givenName .
+  ?subject foaf:surname ?surname .
+  ?subject foaf:gender ?gender .
+  ?subject dbo:birthDate ?birthDate .
+  ?subject dbo:deathDate ?deathDate .
+  ?subject foaf:homepage ?homepage .
+  ?subject dbpedia2:occupation ?occupation .
+  ?subject foaf:depiction ?depiction .
+  ?subject dbo:thumbnail ?thumbnail .
+  ?subject dbo:child ?child .
+  ?subject dbo:parent ?parent .
+  ?subject dbo:spouse ?spouse .
+  ?subject foaf:gender ?gender .
+  ?personReferringToParent dbo:parent ?subject .
+  ?personReferringToChild dbo:child ?subject .
+  ?personReferringToSpouse dbo:spouse ?subject .
+  ?subject rdfs:comment ?comment .
+}
+WHERE {
+  {
+	?subject rdf:type foaf:Person .
+	FILTER ( 
+	  ?subject = <http://dbpedia.org/resource/Cnut_the_Great> ||
+	  ?subject = <http://dbpedia.org/resource/Sigrid_the_Haughty> ||
+	  ?subject = <http://dbpedia.org/resource/Emma_of_Normandy> ||
+	  ?subject = <http://dbpedia.org/resource/Harthacnut> ||
+	  ?subject = <http://dbpedia.org/resource/Gunhilda_of_Denmark> ||
+	  ?subject = <http://dbpedia.org/resource/%C3%86lfgifu_of_Northampton> ||
+	  ?subject = <http://dbpedia.org/resource/Harold_Harefoot> ||
+	  ?subject = <http://dbpedia.org/resource/Gunhild_of_Wenden> ||
+	  ?subject = <http://dbpedia.org/resource/Emma_of_Normandy> ||
+	  ?subject = <http://dbpedia.org/resource/%C3%86lfgifu_of_Northampton> ||
+	  ?subject = <http://dbpedia.org/resource/Svein_Knutsson> ||
+	  ?subject = <http://dbpedia.org/resource/Thurbrand_the_Hold> ||
+	  ?subject = <http://dbpedia.org/resource/%C5%9Awi%C4%99tos%C5%82awa> ||
+	  ?subject = <http://dbpedia.org/resource/Sweyn_Forkbeard>
+	)
+
+	OPTIONAL { ?subject rdf:type ?types . 
+	  FILTER( ?types = <http://dbpedia.org/class/yago/Aristocrat109807754> || ?types = <http://dbpedia.org/class/yago/Ruler110541229> )
+	}
+	OPTIONAL { ?subject rdfs:label ?label . FILTER langMatches( lang(?label), "en" ) }
+	OPTIONAL { ?subject foaf:givenName ?givenName. FILTER langMatches( lang(?givenName), "en" ) }
+	OPTIONAL { ?subject foaf:surname ?surname . FILTER langMatches( lang(?surname), "en" ) }
+	OPTIONAL { ?subject foaf:gender ?gender . }
+	OPTIONAL { ?subject dbo:birthDate ?birthDate . }
+	OPTIONAL { ?subject dbo:deathDate ?deathDate . }
+	OPTIONAL { ?subject foaf:homepage ?homepage . }
+	OPTIONAL { ?subject dbpedia2:occupation ?occupation . }
+	OPTIONAL { ?subject foaf:depiction ?depiction . }
+	OPTIONAL { ?subject dbo:thumbnail ?thumbnail . }
+	OPTIONAL { ?subject dbo:child ?child . }
+	OPTIONAL { ?subject dbo:parent ?parent . }
+	OPTIONAL { ?subject dbo:spouse ?spouse . }
+	OPTIONAL { ?personReferringToParent dbo:parent ?subject . }
+	OPTIONAL { ?personReferringToChild dbo:child ?subject . }
+	OPTIONAL { ?personReferringToSpouse dbo:spouse ?subject . }
+	OPTIONAL { ?subject rdfs:comment ?comment . 
+	  FILTER langMatches( lang(?comment), "en" )
+	}
+  }
+}`},
+
+{ description: 'Chart Pie (Japanese Prefecture Area)', endpoint: 'https://dbpedia.org/sparql', options: {}, sparqlText: `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX yago: <http://dbpedia.org/class/yago/>
+PREFIX dbpedia-owl: <http://dbpedia.org/ontology/>
+
+SELECT ?pref ?area
+WHERE {
+  ?s a yago:WikicatPrefecturesOfJapan ;
+     rdfs:label ?pref ;
+     dbpedia-owl:areaTotal ?area_total .
+  FILTER (lang(?pref) = 'en')
+  BIND ((?area_total / 1000 / 1000) AS ?area)
+}
+ORDER BY DESC(?area)
+`},
+
 { description: 'Chart Bar (Japanese Prefecture Area)', endpoint: 'https://dbpedia.org/sparql', options: {}, sparqlText: `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX yago: <http://dbpedia.org/class/yago/>
 PREFIX dbpedia-owl: <http://dbpedia.org/ontology/>
