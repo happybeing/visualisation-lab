@@ -100,7 +100,7 @@ export class RdfToGraph {
           const linkId = quad.subject.value + '--LINK--' + quad.object.value;
           let link = graph.links.get(linkId);
           if (link) {
-            link.strength = strength.value + 1;
+            link.strength = link.strength.value + 1;
           } else {
             link = {
               source: quad.subject.value, 
