@@ -103,6 +103,63 @@ function render () {
     .on('zoom', zoomed));    
 }
 
+// TODO This style implementation is for testing using dbPedia RDF properties
+// TODO Change to use styling via the ViewModel (Fashion class?) when implemented
+function nodeColour (node) {
+  const defaultNodeColour = "grey";
+  let colour = defaultNodeColour;
+  
+  if (propertyHasValueEndingWith(node, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'Person'))
+    colour = "rgba(103, 152, 103, 1)";
+   
+  if (propertyHasValue(node, 'http://xmlns.com/foaf/0.1/gender', 'male'))
+    colour = "rgba(0, 155, 255, 1)"; // Pale blue
+  else if (propertyHasValue(node, 'http://xmlns.com/foaf/0.1/gender', 'female'))
+    colour = "pink";
+
+  return colour;
+}
+
+function nodeStrokeStyle (node) {
+  let stroke = "#fff";
+  if (propertyHasValue(node, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/class/yago/Ruler110541229'))
+    stroke = "#100";
+  return stroke;
+}
+
+function nodeLineWidth (node) {
+  let width = 1.5;
+  if (propertyHasValue(node, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://dbpedia.org/class/yago/Ruler110541229'))
+    width *= 2.5;
+  return width;
+}
+
+function linkColour (link) {
+  return "blue";
+}
+
+function nodeImageUrl (node) {
+  let uri = node['http://dbpedia.org/ontology/thumbnail'] ? 
+    node['http://dbpedia.org/ontology/thumbnail'][0].value : undefined;
+
+  // Strip any uri params
+  return uri ? uri.slice(0,uri.indexOf('?')) : undefined; 
+}
+
+function propertyHasValue (item, property, value) {
+  let match = false
+  if(item[property])
+    item[property].forEach(set => match |= set.value === value);
+  return match;
+}
+
+function propertyHasValueEndingWith (item, property, ending) {
+  let match = false
+  if(item[property])
+    item[property].forEach(set => match |= set.value.endsWith(ending));
+  return match;
+}
+
 function simulationUpdate () {
   context.save();
   context.clearRect(0, 0, context.canvas.width, context.canvas.height);
@@ -114,7 +171,7 @@ function simulationUpdate () {
     context.moveTo(d.source.x, d.source.y);
     context.lineTo(d.target.x, d.target.y);
     context.globalAlpha = 0.6;
-    context.strokeStyle = "#999";
+    context.strokeStyle = linkColour(d);//"#999";
     context.lineWidth = Math.sqrt(d.strength ? d.strength : d.value);
     context.stroke();
     context.globalAlpha = 1;
@@ -123,11 +180,26 @@ function simulationUpdate () {
   nodes.forEach((d, i) => {
     context.beginPath();
     context.arc(d.x, d.y, nodeRadius, 0, 2*Math.PI);
-    context.strokeStyle = "#fff";
-    context.lineWidth = 1.5;
+    context.strokeStyle = nodeStrokeStyle(d);//"#fff";
+    context.lineWidth = nodeLineWidth(d);//1.5;
     context.stroke();
-    context.fillStyle = groupColour(d.group);
+    context.fillStyle = nodeColour(d);//groupColour(d.group);
     context.fill();
+    
+    // context.font = "bold 32px Arial";
+    // context.textAlign = "center";
+    // context.textBaseline = "middle";    
+    // context.fillText("Hello World!", d.x, d.y);
+
+    const imageUri = nodeImageUrl(d);
+    if (imageUri) {
+      console.log('node image: ' + imageUri);
+      console.dir(d);
+      let image = new Image;
+      image.src = imageUri;
+      image.alt = "it works!";
+      context.drawImage(image, d.x, d.y, 20, 20);
+    }
   });
   context.restore();
 }
