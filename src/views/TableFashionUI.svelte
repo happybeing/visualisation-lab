@@ -146,7 +146,7 @@ fieldset {
   <p><b>Countries:</b></p>
     <fieldset disabled={!$filterFieldsStore}>
       <Tags
-        setTags={setTags}
+        tags={setTags}
         placeholder={"Enter names of countries"}  
         on:tags={handleFields}
         autoComplete={invisibleFields}
