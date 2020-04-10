@@ -53,6 +53,10 @@ import {modelFormats} from '../modelFormats.js';
     const sourceResult = new SourceResult(this);
     return sourceResult.consumeCsvStream(sourceResultStore, statusTextStore, stream, {mimeType, size});
   }
+  consumeTextStream (sourceResultStore, statusTextStore, stream, {mimeType, size}) {
+    const sourceResult = new SourceResult(this);
+    return sourceResult.consumeTextStream(sourceResultStore, statusTextStore, stream, {mimeType, size});
+  }
 
   // TODO: review the following...
   // TODO: maintain named, id'd list of all SourceInterface objects for SourceUI
@@ -102,6 +106,7 @@ import FileUI from './FileUI.svelte';
 import WebUI from './WebUI.svelte';
 import WebSparqlUI from './WebSparqlUI.svelte';
 import WebQueryUI from './WebQueryUI.svelte';
+import WebSourceTabulatorUI from './WebSourceTabulatorUI.svelte';
 
 // Test UIs:
 // import ManualUI from "./ManualUI";
@@ -123,7 +128,7 @@ const csvParse = require('csv-parse');
  * 
  * The set of ViewModel representations is defined in modelFormats.js
  */
-class SourceResult {
+export class SourceResult {
   constructor (sourceInterface) {
     this.sourceInterface = sourceInterface;
   }
@@ -170,7 +175,7 @@ class SourceResult {
       const graphyReader = ttlReader({
         data (y_quad) {
           rdfDataset.add(y_quad);
-          statusTextStore.set(rdfDataset.size + ' triples loaded');
+          if (statusTextStore) statusTextStore.set(rdfDataset.size + ' triples loaded');
         },
         eof () {
           console.log('done!');
@@ -217,7 +222,7 @@ class SourceResult {
         data(y_quad) {
           console.log(JSON.stringify(y_quad));
           rdfDataset.add(y_quad);
-          statusTextStore.set(rdfDataset.size + ' triples loaded');
+          if (statusTextStore) statusTextStore.set(rdfDataset.size + ' triples loaded');
         },
   
         eof(h_prefixes) {
@@ -255,7 +260,7 @@ class SourceResult {
       const self = this;
       const csvJson = [];
       let records = 1;
-      statusTextStore.set('loading CSV...');
+      if (statusTextStore) statusTextStore.set('loading CSV...');
       const parser = csvParse();
       parser.on('readable', function(){
         let record
@@ -265,14 +270,14 @@ class SourceResult {
             record.forEach((v,i,a) => {if (!isNaN(Number(v))) a[i] = Number(v);});
           }
           csvJson.push(record)
-          statusTextStore.set(records++ + ' records loaded');
+          if (statusTextStore) statusTextStore.set(records++ + ' records loaded');
         }
       })
       parser.on('error', function(err){
         throw(err);
       })
       parser.on('end', function(){
-        statusTextStore.set(records + ' records loaded');
+        if (statusTextStore) statusTextStore.set(records + ' records loaded');
         self.setJsonModel({values: csvJson, modelFormat: modelFormats.VM_TABULAR_JSON});
         self.sourceResultStore.update(v => self);
       })
@@ -292,7 +297,7 @@ class SourceResult {
 
   // TODO: a consumeStream() which uses the options.mimeType param to choose the consume function
   consumeCsvStream (sourceResultStore, statusTextStore, stream, {mimeType, size, stringToNumber}) {
-    console.log('CsvInterface.consumeCsvStream)');
+    console.log('SourceResult.consumeCsvStream)');
     console.dir(stream);
     console.log('Size: ', size);
     this.sourceResultStore = sourceResultStore;
@@ -300,7 +305,7 @@ class SourceResult {
       const self = this;
       const csvJson = [];
       let records = 1;
-      statusTextStore.set('loading CSV...');
+      if (statusTextStore) statusTextStore.set('loading CSV...');
       const parser = csvParse();
       parser.on('readable', function(){
         let record
@@ -309,14 +314,54 @@ class SourceResult {
             record.forEach((v,i,a) => {if (!isNaN(Number(v))) a[i] = Number(v);});
           }
           csvJson.push(record)
-          statusTextStore.set(records++ + ' records loaded');
+          if (statusTextStore) statusTextStore.set(records++ + ' records loaded');
         }
       })
       parser.on('error', function(err){
         throw(err);
       })
       parser.on('end', function(){
-        statusTextStore.set(records + ' records loaded');
+        if (statusTextStore) statusTextStore.set(records + ' records loaded');
+        self.setJsonModel({values: csvJson, modelFormat: modelFormats.VM_TABULAR_JSON});
+        self.sourceResultStore.update(v => self);
+      })
+      readableStreamToConsumer(stream, parser);
+    } catch(e) {
+      console.dir(e);
+      // console.error(e);
+      window.notifications.notifyWarning('Failed to parse CSV result.')
+      return;
+    }
+  }
+
+  // TODO: a consumeStream() which uses the options.mimeType param to choose the consume function
+  consumeTextStream (sourceResultStore, statusTextStore, stream, {mimeType, size, stringToNumber}) {
+    console.log('SourceResult.consumeTextStream)');
+    console.dir(stream);
+    console.log('Size: ', size);
+    this.sourceResultStore = sourceResultStore;
+    try {
+      this.sourceResultStore.set(stream)
+      const self = this;
+      const csvJson = [];
+      let records = 1;
+      if (statusTextStore) statusTextStore.set('loading CSV...');
+      const parser = csvParse();
+      parser.on('readable', function(){
+        let record
+        while (record = parser.read()) {
+          if (stringToNumber) {
+            record.forEach((v,i,a) => {if (!isNaN(Number(v))) a[i] = Number(v);});
+          }
+          csvJson.push(record)
+          if (statusTextStore) statusTextStore.set(records++ + ' records loaded');
+        }
+      })
+      parser.on('error', function(err){
+        throw(err);
+      })
+      parser.on('end', function(){
+        if (statusTextStore) statusTextStore.set(records + ' records loaded');
         self.setJsonModel({values: csvJson, modelFormat: modelFormats.VM_TABULAR_JSON});
         self.sourceResultStore.update(v => self);
       })
@@ -349,7 +394,7 @@ class SourceResult {
     // TODO: consider loading multiple files into separate stores/views
     const file = fileList[0]
     if (file !== undefined) {
-      statusTextStore.set('loading file(s)');
+      if (statusTextStore) statusTextStore.set('loading file(s)');
       try {
         console.log('Loading ', file.size, ' bytes from ', file);
         let mimeType = file.type;
@@ -367,7 +412,7 @@ class SourceResult {
     } else {
       console.warn('No file selected.');
     }
-    statusTextStore.set('');
+    if (statusTextStore) statusTextStore.set('');
   }
 
   /** Fetch RDF from a web URI and parse the result 
@@ -376,13 +421,13 @@ class SourceResult {
    * @param {String} URI 
    */
   loadUri(sourceResultStore, statusTextStore, uri) {
-    console.log('SourceResult.loadUri()');
+    console.log('SourceResult.loadUri(' + uri + ')');
 
     // TODO: load multiple URIs into same store
     // TODO: consider loading multiple URIs into separate stores/views
       
     // Note: firefox with Privacy Badger gives CORS errors when fetching different origin (URI)
-    statusTextStore.set('loading data');
+    if (statusTextStore) statusTextStore.set('loading data');
     fetch(uri, {
       method: 'GET',
       cache: "reload",
@@ -409,6 +454,63 @@ class SourceResult {
         console.warn(warning);
         window.notifications.notifyWarning(warning);
       }
+      if (statusTextStore ) statusTextStore.set('');
+    })
+    .catch(e => {
+      console.error(e);
+      window.notifications.notifyWarning('Query failed.');
+      window.notifications.notifyError(e.message);
+      if (statusTextStore ) statusTextStore.set('');
+    });
+  }
+
+  /** Fetch text from a web URI 
+   * 
+   * @param {Writeable<SourceResult>} sourceResultStore 
+   * @param {String} URI 
+   * 
+   * TODO rationalise this with loadUri() only difference is Accept header and consumeTextStream()
+   */
+  loadUriAsText(sourceResultStore, statusTextStore, uri) {
+    console.log('SourceResult.loadUriAsText(' + uri + ')');
+
+    // Note: firefox with Privacy Badger gives CORS errors when fetching different origin (URI)
+    statusTextStore.set('loading');
+    fetch(uri, {
+      method: 'GET',
+      cache: "reload",
+      pragma: "no-cache",
+      // mode: 'no-cors', // Last examples-sparql.js query not working, this doesn't help
+      headers: {
+        // Need to avoid CORS Pre-flight checks, so avoid
+        // adding headers that will trigger them:
+        // See 'Simple Requests' at https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+
+        // 'Accept': 'text/text', // Needed for SPARQL endpoints that return JSON by default
+        'Accept': 'text/turtle',
+        // 'Accept': 'application/sparql-results+json',
+        // 'Cache-Control': 'no-cache',
+      }})
+    .then(response => {
+      if (response.ok ) {
+        console.log('RESPONSE:');console.dir(response);
+        console.log('Content-Type:' + response.headers.get('Content-Type'))
+        const contentLength = (response.headers.get('Content-Length'));
+        if (response.headers.get('Content-Type').startsWith('text/xcsv')) {
+          this.consumeCsvStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
+        }
+        else if (response.headers.get('Content-Type').startsWith('text')) {
+          statusTextStore.set(contentLength + ' characters loaded'); 
+          response.text().then(text => sourceResultStore.set(text));
+        } 
+        else {
+          this.consumeRdfStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
+        }
+      } else {
+        const warning = 'Failed to load URI.\n' + response.statusText;
+        console.warn(warning);
+        window.notifications.notifyWarning(warning);
+      }
       statusTextStore.set('');
     })
     .catch(e => {
@@ -426,10 +528,23 @@ class SourceResult {
       window.notifications.notifyWarning('Please provide an endpoint');
       return;
     }
-    var url = endpoint + "?query=" + encodeURIComponent(sparqlText) + "&type='text/turtle'";
+    var url = endpoint + "?query=" + encodeURIComponent(sparqlText);// + "&type='text/turtle'";
     console.log('loadSparqlQuery()');
     console.log(url);
     return this.loadUri(sourceResultStore, statusTextStore, url);
+  }
+
+  loadSparqlQueryAsText(sourceResultStore, statusTextStore, endpoint, sparqlText) {
+    console.log('SourceResult.loadSparqlQuery()');
+    if (endpoint === '') {
+      console.warn('No endpoint provided');
+      window.notifications.notifyWarning('Please provide an endpoint');
+      return;
+    }
+    var url = endpoint + "?query=" + encodeURIComponent(sparqlText) + "&type='text'";
+    console.log('loadSparqlQueryAsText()');
+    console.log(url);
+    return this.loadUriAsText(sourceResultStore, statusTextStore, url);
   }
 }
 
@@ -474,10 +589,91 @@ function readableStreamToGraphyReader(readableStream, graphyReader) {
   next();
 }
 
+/** Classes to collect data about a SPARQL endpoint for use in understanding its extent and contents
+
+There's a SparqlStat class to handle simple result types such as number and text, and
+subclasses to handle more complex results such as a tree of ViewModels (for drill down type UI).
+
+A SparqlStat typically runs a query to gather data which it stores as a SourceResult, and
+publishes this by updating the store which refers back to itself.
+
+Options may be provided to customise behaviour, and are available to any associated UI components 
+to customise their behaviour.
+
+*/
+
+import {writable} from 'svelte/store';
+
+export class SparqlStat extends SourceResult {
+  constructor (config) {
+    super(null); // SparqlStat has source URI in config, does not use a SourceInterface
+
+    this.config = config;
+    this.statusText = '-';
+    this.statusTextStore = writable(this.statusText);
+    this.resultStore = writable(this);
+    this.resultText = '-';
+  }
+
+  getStatusTextStore () { return this.statusTextStore; }
+  setStatusText (statusText) { this.statusText = statusText; this.statusTextStore.set(statusText); }
+  getStatusText () { return this.statusText; }
+
+  setResultText (resultText) { this.resultText = resultText; this.resultStore.update(v => this);}
+  getResultText () { return String(this.resultText); }
+  setResultNumber (resultNumber) { this.resultNumber = resultNumber; this.resultStore.update(v => this);}
+  getResultNumber () { return Number(this.resultNumber); }
+
+  updateSparqlStat () {
+    this.loadSparqlQueryAsText(this.resultStore, this.statusTextStore, this.config.endpoint, this.config.query);
+  }
+}
+
+/** Specialist class to determine SPARQL version and capabilities
+ * 
+ */
+// import {SparqlEndpointStat} from '../rdf/rdfUtils.js';
+
+export class SparqlEndpointStat extends SparqlStat {
+  constructor (config) {
+    super(config);
+    console.log('NEW SparqlEndpointStat has config.source.endpoint: ' + this.config.source.endpoint);
+    this.serviceInfoStore = writable(this);  // Use a second store for interim result (Service Description)
+    this.serviceInfo = {
+      version: '-',
+    };
+
+    const self = this;
+    function _updateResultStore (serviceInfoDataset) {
+      console.log('SparqlEndpointStat._updateResultStore()'); console.dir(self);
+
+      if (serviceInfoDataset && serviceInfoDataset.jsonModel) {
+        const dataset = serviceInfoDataset.jsonModel.values;
+        console.log('serviceInfo dataset:'); console.dir(dataset);
+        self.setStatusText('done');
+        self.serviceInfo = {
+          version: '1.1 (inferred)',
+        };
+
+        self.setResultText('SPARQL version: ' + self.serviceInfo.version);
+      }
+    }
+
+    this.unsubscribe = this.serviceInfoStore.subscribe(_updateResultStore);
+  }
+
+  updateSparqlStat () {
+    console.log('SparqlEndpointStat.update()');
+    this.setStatusText('working..');
+    this.loadUri(this.serviceInfoStore, undefined, this.config.source.endpoint, this.config.query)
+  }
+}
+
 // TODO: replace fixed interfaces with an initial set
 // TODO: change uiClass to String and use a 'factory' so I can serialise (research ways to serialise first)
 const testInterfaces = [
   // Test UIs
+  {uiClass: WebSourceTabulatorUI, shortName: "rdf-source-tabulator", description: "Tabulate SPARQL Endpoints", options: {}},
   {uiClass: WebQueryUI, shortName: "rdf-query-sparql", description: "Query Semantic Data Stores", options: {}},
   {uiClass: WebUI, shortName: "test-dbpedia-cnut", description: "Test Cnut dbPedia SPARQL Query", options: {fixedUri: 'http://dbpedia.org/sparql/?query=PREFIX+dbo%3A+<http%3A%2F%2Fdbpedia.org%2Fontology%2F>%0D%0APREFIX+dbpedia2%3A+<http%3A%2F%2Fdbpedia.org%2Fproperty%2F>%0D%0ACONSTRUCT+{%0D%0A++%3Fsubject+rdf%3Atype+foaf%3APerson+.%0D%0A++%3Fsubject+rdf%3Atype+%3Ftypes+.%0D%0A++%3Fsubject+rdfs%3Alabel+%3Flabel+.%0D%0A++%3Fsubject+foaf%3AgivenName+%3FgivenName+.%0D%0A++%3Fsubject+foaf%3Asurname+%3Fsurname+.%0D%0A++%3Fsubject+foaf%3Agender+%3Fgender+.%0D%0A++%3Fsubject+dbo%3AbirthDate+%3FbirthDate+.%0D%0A++%3Fsubject+dbo%3AdeathDate+%3FdeathDate+.%0D%0A++%3Fsubject+foaf%3Ahomepage+%3Fhomepage+.%0D%0A++%3Fsubject+dbpedia2%3Aoccupation+%3Foccupation+.%0D%0A++%3Fsubject+foaf%3Adepiction+%3Fdepiction+.%0D%0A++%3Fsubject+dbo%3Athumbnail+%3Fthumbnail+.%0D%0A++%3Fsubject+dbo%3Achild+%3Fchild+.%0D%0A++%3Fsubject+dbo%3Aparent+%3Fparent+.%0D%0A++%3Fsubject+dbo%3Aspouse+%3Fspouse+.%0D%0A++%3Fsubject+foaf%3Agender+%3Fgender+.%0D%0A++%3FpersonReferringToParent+dbo%3Aparent+%3Fsubject+.%0D%0A++%3FpersonReferringToChild+dbo%3Achild+%3Fsubject+.%0D%0A++%3FpersonReferringToSpouse+dbo%3Aspouse+%3Fsubject+.%0D%0A++%3Fsubject+rdfs%3Acomment+%3Fcomment+.%0D%0A}%0D%0AWHERE+{%0D%0A++{%0D%0A%09%3Fsubject+rdf%3Atype+foaf%3APerson+.%0D%0A%09FILTER+(+%0D%0A%09++%3Fsubject+%3D+<http%3A%2F%2Fdbpedia.org%2Fresource%2FCnut_the_Great>+||%0D%0A%09++%3Fsubject+%3D+<http%3A%2F%2Fdbpedia.org%2Fresource%2FSigrid_the_Haughty>+||%0D%0A%09++%3Fsubject+%3D+<http%3A%2F%2Fdbpedia.org%2Fresource%2FEmma_of_Normandy>+||%0D%0A%09++%3Fsubject+%3D+<http%3A%2F%2Fdbpedia.org%2Fresource%2FHarthacnut>+||%0D%0A%09++%3Fsubject+%3D+<http%3A%2F%2Fdbpedia.org%2Fresource%2FGunhilda_of_Denmark>+||%0D%0A%09++%3Fsubject+%3D+<http%3A%2F%2Fdbpedia.org%2Fresource%2F%25C3%2586lfgifu_of_Northampton>+||%0D%0A%09++%3Fsubject+%3D+<http%3A%2F%2Fdbpedia.org%2Fresource%2FHarold_Harefoot>+||%0D%0A%09++%3Fsubject+%3D+<http%3A%2F%2Fdbpedia.org%2Fresource%2FGunhild_of_Wenden>+||%0D%0A%09++%3Fsubject+%3D+<http%3A%2F%2Fdbpedia.org%2Fresource%2FEmma_of_Normandy>+||%0D%0A%09++%3Fsubject+%3D+<http%3A%2F%2Fdbpedia.org%2Fresource%2F%25C3%2586lfgifu_of_Northampton>+||%0D%0A%09++%3Fsubject+%3D+<http%3A%2F%2Fdbpedia.org%2Fresource%2FSvein_Knutsson>+||%0D%0A%09++%3Fsubject+%3D+<http%3A%2F%2Fdbpedia.org%2Fresource%2FThurbrand_the_Hold>+||%0D%0A%09++%3Fsubject+%3D+<http%3A%2F%2Fdbpedia.org%2Fresource%2F%25C5%259Awi%25C4%2599tos%25C5%2582awa>+||%0D%0A%09++%3Fsubject+%3D+<http%3A%2F%2Fdbpedia.org%2Fresource%2FSweyn_Forkbeard>%0D%0A%09)%0D%0A%0D%0A%09OPTIONAL+{+%3Fsubject+rdf%3Atype+%3Ftypes+.+%0D%0A%09++FILTER(+%3Ftypes+%3D+<http%3A%2F%2Fdbpedia.org%2Fclass%2Fyago%2FAristocrat109807754>+||+%3Ftypes+%3D+<http%3A%2F%2Fdbpedia.org%2Fclass%2Fyago%2FRuler110541229>+)%0D%0A%09}%0D%0A%09OPTIONAL+{+%3Fsubject+rdfs%3Alabel+%3Flabel+.+FILTER+langMatches(+lang(%3Flabel)%2C+"en"+)+}%0D%0A%09OPTIONAL+{+%3Fsubject+foaf%3AgivenName+%3FgivenName.+FILTER+langMatches(+lang(%3FgivenName)%2C+"en"+)+}%0D%0A%09OPTIONAL+{+%3Fsubject+foaf%3Asurname+%3Fsurname+.+FILTER+langMatches(+lang(%3Fsurname)%2C+"en"+)+}%0D%0A%09OPTIONAL+{+%3Fsubject+foaf%3Agender+%3Fgender+.+}%0D%0A%09OPTIONAL+{+%3Fsubject+dbo%3AbirthDate+%3FbirthDate+.+}%0D%0A%09OPTIONAL+{+%3Fsubject+dbo%3AdeathDate+%3FdeathDate+.+}%0D%0A%09OPTIONAL+{+%3Fsubject+foaf%3Ahomepage+%3Fhomepage+.+}%0D%0A%09OPTIONAL+{+%3Fsubject+dbpedia2%3Aoccupation+%3Foccupation+.+}%0D%0A%09OPTIONAL+{+%3Fsubject+foaf%3Adepiction+%3Fdepiction+.+}%0D%0A%09OPTIONAL+{+%3Fsubject+dbo%3Athumbnail+%3Fthumbnail+.+}%0D%0A%09OPTIONAL+{+%3Fsubject+dbo%3Achild+%3Fchild+.+}%0D%0A%09OPTIONAL+{+%3Fsubject+dbo%3Aparent+%3Fparent+.+}%0D%0A%09OPTIONAL+{+%3Fsubject+dbo%3Aspouse+%3Fspouse+.+}%0D%0A%09OPTIONAL+{+%3FpersonReferringToParent+dbo%3Aparent+%3Fsubject+.+}%0D%0A%09OPTIONAL+{+%3FpersonReferringToChild+dbo%3Achild+%3Fsubject+.+}%0D%0A%09OPTIONAL+{+%3FpersonReferringToSpouse+dbo%3Aspouse+%3Fsubject+.+}%0D%0A%09OPTIONAL+{+%3Fsubject+rdfs%3Acomment+%3Fcomment+.+%0D%0A%09++FILTER+langMatches(+lang(%3Fcomment)%2C+"en"+)%0D%0A%09}%0D%0A++}%0D%0A}'}},
   {uiClass: WebUI, shortName: "test-web-csv", description: "Test WHO latest CSV data (Covid19 total_deaths.csv)", options: {fixedUri: 'https://covid.ourworldindata.org/data/ecdc/total_deaths.csv'}},
