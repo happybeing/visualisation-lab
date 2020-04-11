@@ -128,9 +128,29 @@ const csvParse = require('csv-parse');
  * 
  * The set of ViewModel representations is defined in modelFormats.js
  */
+export const fetchStatus = {
+  IDLE: 'source-result-idle',
+  FETCHING: 'source-result-fetching',
+  RESPONSE: 'source-result-response', // SourceResult.response waiting to be consumed
+  COMPLETE: 'source-result-complete', // Response has been consumed
+  FAILED: 'source-result-failed',     // Failed without response (e.g. blocked by CORS)
+};
 export class SourceResult {
   constructor (sourceInterface) {
     this.sourceInterface = sourceInterface;
+    this.fetchStatus = fetchStatus.IDLE;
+  }
+
+  // Status allows handling of errors by subscribers to the sourceResultStore
+  fetchStarting () { this.response = undefined; this.fetchStatus = fetchStatus.FETCHING; }
+  fetchResponded (response) { this.response = response; this.fetchStatus = fetchStatus.RESPONSE; }
+  fetchAbandoned () { this.fetchStatus = fetchStatus.FAILED; }
+  getFetchStatus () { return this.fetchStatus; }
+  consumeFetchResponse () { 
+    const result = this.response; 
+    this.fetchStatus = fetchStatus.COMPLETE; 
+    this.response = undefined; 
+    return result;
   }
 
   getSourceInterface () {return this.sourceInterface;}
@@ -181,6 +201,13 @@ export class SourceResult {
           console.log('done!');
           console.log('rdfDataset size: ', rdfDataset.size);
           self.setJsonModel({values: rdfDataset, modelFormat: modelFormats.RAW_RDFDATASET});
+          self.sourceResultStore.update(v => self);
+          },
+        error (e) {
+          // window.notifications.notifyWarning('Failed to parse RDF result.')
+          console.log('error: ', e);
+          console.log('rdfDataset size: ', rdfDataset.size);
+          self.setJsonModel(undefined);
           self.sourceResultStore.update(v => self);
           }
         });
@@ -235,6 +262,13 @@ export class SourceResult {
           });
           self.sourceResultStore.update(v => self);
         },
+        error (e) {
+          // window.notifications.notifyWarning('Failed to parse RDF text.')
+          console.log('error: ', e);
+          console.log('rdfDataset size: ', rdfDataset.size);
+          self.setJsonModel(undefined);
+          self.sourceResultStore.update(v => self);
+          }
       })
     } catch (e) { 
       console.error(e); 
@@ -428,11 +462,14 @@ export class SourceResult {
       
     // Note: firefox with Privacy Badger gives CORS errors when fetching different origin (URI)
     if (statusTextStore) statusTextStore.set('loading data');
+    this.fetchStarting();
     fetch(uri, {
       method: 'GET',
       cache: "reload",
       pragma: "no-cache",
       // mode: 'no-cors', // Last examples-sparql.js query not working, this doesn't help
+                       // Won't help because response content blocked by browser in opaque response
+                       // See: https://stackoverflow.com/a/54906434/4802953
       headers: {
         // Need to avoid CORS Pre-flight checks, so avoid
         // adding headers that will trigger them:
@@ -443,6 +480,7 @@ export class SourceResult {
         // 'Cache-Control': 'no-cache',
       }})
     .then(response => {
+      this.fetchResponded(response);
       if (response.ok ) {
         const contentLength = (response.headers.get('Content-Length'));
         if (response.headers.get('Content-Type').startsWith('text/csv'))
@@ -451,6 +489,7 @@ export class SourceResult {
           this.consumeRdfStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
       } else {
         const warning = 'Failed to load URI.\n' + response.statusText;
+        console.dir(response);
         console.warn(warning);
         window.notifications.notifyWarning(warning);
       }
@@ -460,7 +499,8 @@ export class SourceResult {
       console.error(e);
       window.notifications.notifyWarning('Query failed.');
       window.notifications.notifyError(e.message);
-      if (statusTextStore ) statusTextStore.set('');
+      this.fetchAbandoned();
+      sourceResultStore.update(v => this);
     });
   }
 
@@ -476,6 +516,7 @@ export class SourceResult {
 
     // Note: firefox with Privacy Badger gives CORS errors when fetching different origin (URI)
     statusTextStore.set('loading');
+    this.fetchStarting();
     fetch(uri, {
       method: 'GET',
       cache: "reload",
@@ -492,6 +533,7 @@ export class SourceResult {
         // 'Cache-Control': 'no-cache',
       }})
     .then(response => {
+      this.fetchResponded(response);
       if (response.ok ) {
         console.log('RESPONSE:');console.dir(response);
         console.log('Content-Type:' + response.headers.get('Content-Type'))
@@ -518,6 +560,8 @@ export class SourceResult {
       window.notifications.notifyWarning('Query failed.');
       window.notifications.notifyError(e.message);
       statusTextStore.set('');
+      this.fetchAbandoned();
+      sourceResultStore.update(v => this);
     });
   }
 
@@ -645,18 +689,46 @@ export class SparqlEndpointStat extends SparqlStat {
 
     const self = this;
     function _updateResultStore (serviceInfoDataset) {
+      console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
+      console.log('self.config.source.endpoint: ' + self.config.source.endpoint);
       console.log('SparqlEndpointStat._updateResultStore()'); console.dir(self);
-
-      if (serviceInfoDataset && serviceInfoDataset.jsonModel) {
+      console.log('fetch status; ' + self.getFetchStatus());
+      if (self.getFetchStatus() === fetchStatus.FAILED) {
+        // The fetch failed without a response (e.g. blocked by CORS)
+        self.setStatusText('failed');
+        self.serviceInfo = {
+          version: 'unknown',
+        };
+      } else if (serviceInfoDataset && serviceInfoDataset.jsonModel) {
+        // Request for service description worked suggests v1.1 but service
+        // descriptions are not reliable so we don't trust/use what it says
         const dataset = serviceInfoDataset.jsonModel.values;
         console.log('serviceInfo dataset:'); console.dir(dataset);
         self.setStatusText('done');
+        // TODO: could extract info from service description (dataset) here
         self.serviceInfo = {
           version: '1.1 (inferred)',
         };
-
-        self.setResultText('SPARQL version: ' + self.serviceInfo.version);
+      } else if (self.getFetchStatus() === fetchStatus.COMPLETE) {
+        // The fetch completed but the response was not understood
+        const response = self.consumeFetchResponse();
+        console.log('Unable to obtain service description');
+        console.log('response:'); console.dir(response);
+        self.setStatusText('done');
+        self.serviceInfo = {
+          version: '1.0 (inferred)',
+        };      
+      } else if (self.getFetchStatus() === fetchStatus.RESPONSE) {
+        // The fetch completed but the response was not consumed
+        const response = self.consumeFetchResponse();
+        console.log('Unable to obtain service description');
+        console.log('response:'); console.dir(response);
+        self.setStatusText('done');
+        self.serviceInfo = {
+          version: '1.0 (inferred)',
+        };      
       }
+      self.setResultText('SPARQL version: ' + self.serviceInfo.version);
     }
 
     this.unsubscribe = this.serviceInfoStore.subscribe(_updateResultStore);
