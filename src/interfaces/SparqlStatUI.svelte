@@ -4,9 +4,10 @@ console.log('======');console.dir(sparqlStat)
 $: statusTextStore = sparqlStat ? sparqlStat.statusTextStore : undefined;
 $: statStatus = statusTextStore ? $statusTextStore : undefined;
 
-$: resultTextStore = sparqlStat ? sparqlStat.resultStore : undefined;
-$: statValueText = resultTextStore && $resultTextStore ? $resultTextStore.getResultText() : undefined;
-
+$: resultTextStore = sparqlStat ? sparqlStat.resultTextStore : undefined;
+$: statValueText = resultTextStore ? $resultTextStore : 'bdfsdjflkfds';
+// $: statValueTextProxy = resultStore ? $resultStore : undefined;
+// $: statValueText = statValueTextProxy ? statValueTextProxy.instance.getResultText() : '';
 </script>
 
 <style>

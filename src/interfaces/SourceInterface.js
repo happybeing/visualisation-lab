@@ -41,11 +41,11 @@ import {modelFormats} from '../modelFormats.js';
     const sourceResult = new SourceResult(this);
     return sourceResult.loadFiles(sourceResultStore, statusTextStore, fileList, options);
   }
-  loadUri(sourceResultStore, statusTextStore, uri) {
+  loadUri (sourceResultStore, statusTextStore, uri) {
     const sourceResult = new SourceResult(this);
     return sourceResult.loadUri(sourceResultStore, statusTextStore, uri);
   }
-  loadSparqlQuery(sourceResultStore, statusTextStore, endpoint, sparqlText) {
+  loadSparqlQuery (sourceResultStore, statusTextStore, endpoint, sparqlText) {
     const sourceResult = new SourceResult(this);
     return sourceResult.loadSparqlQuery(sourceResultStore, statusTextStore, endpoint, sparqlText);
   }
@@ -131,7 +131,7 @@ const csvParse = require('csv-parse');
 export const fetchStatus = {
   IDLE: 'source-result-idle',
   FETCHING: 'source-result-fetching',
-  RESPONSE: 'source-result-response', // SourceResult.response waiting to be consumed
+  RESPONSE: 'source-result-response', // SourceResult.response processed waiting to be consumed
   COMPLETE: 'source-result-complete', // Response has been consumed
   FAILED: 'source-result-failed',     // Failed without response (e.g. blocked by CORS)
 };
@@ -139,18 +139,18 @@ export class SourceResult {
   constructor (sourceInterface) {
     this.sourceInterface = sourceInterface;
     this.fetchStatus = fetchStatus.IDLE;
+    this.responseStore = writable(undefined);
   }
 
   // Status allows handling of errors by subscribers to the sourceResultStore
-  fetchStarting () { this.response = undefined; this.fetchStatus = fetchStatus.FETCHING; }
-  fetchResponded (response) { this.response = response; this.fetchStatus = fetchStatus.RESPONSE; }
+  fetchStarting () { this.fetchStatus = fetchStatus.FETCHING; this.response = undefined; }
+  fetchResponded (response) { this.fetchStatus = fetchStatus.RESPONSE; this.lastResponse = response; this.responseStore.set(response); }
   fetchAbandoned () { this.fetchStatus = fetchStatus.FAILED; }
   getFetchStatus () { return this.fetchStatus; }
-  consumeFetchResponse () { 
-    const result = this.response; 
+  getLastResponse () { return this.lastResponse; }
+  consumeFetchResponse () {
     this.fetchStatus = fetchStatus.COMPLETE; 
-    this.response = undefined; 
-    return result;
+    return this.lastResponse;
   }
 
   getSourceInterface () {return this.sourceInterface;}
@@ -167,6 +167,8 @@ export class SourceResult {
   getJsonModelFormat () {return this.jsonModel ? this.jsonModel.modelFormat : modelFormats.UNDEFINED; }
   getJsonModelValues () {return this.jsonModel ? this.jsonModel.values : undefined;}
 
+  _notifyWarning(w) { if (!this.disableNotify) window.notifications.notifyWarning(w);}
+  _notifyError(e) { if (!this.disableNotify) window.notifications.notifyError(w);}
   // import fetch from '@rdfjs/fetch';
   
   // const label = 'https://www.w3.org/2000/01/rdf-schema#label'
@@ -204,7 +206,7 @@ export class SourceResult {
           self.sourceResultStore.update(v => self);
           },
         error (e) {
-          // window.notifications.notifyWarning('Failed to parse RDF result.')
+          // this._notifyWarning('Failed to parse RDF result.')
           console.log('error: ', e);
           console.log('rdfDataset size: ', rdfDataset.size);
           self.setJsonModel(undefined);
@@ -234,7 +236,7 @@ export class SourceResult {
       // });
     } catch(e) {
       console.error(e);
-      window.notifications.notifyWarning('Failed to parse RDF result.')
+      this._notifyWarning('Failed to parse RDF result.')
     }
   }
 
@@ -263,7 +265,7 @@ export class SourceResult {
           self.sourceResultStore.update(v => self);
         },
         error (e) {
-          // window.notifications.notifyWarning('Failed to parse RDF text.')
+          // this._notifyWarning('Failed to parse RDF text.')
           console.log('error: ', e);
           console.log('rdfDataset size: ', rdfDataset.size);
           self.setJsonModel(undefined);
@@ -272,7 +274,7 @@ export class SourceResult {
       })
     } catch (e) { 
       console.error(e); 
-      window.notifications.notifyWarning(e);
+      this._notifyWarning(e);
     } 
 
   }
@@ -284,7 +286,7 @@ export class SourceResult {
     this.sourceResultStore = sourceResultStore;
 
     this.setJsonModel({values: lesMisData, modelFormat: modelFormats.VM_GRAPH_JSON});
-    this.sourceResultStore.update(v => this);
+    this.sourceResultStore.update(v => {instance: this});
   }
 
   consumeCsvText (sourceResultStore, statusTextStore, csvText, {mimeType, size, stringToNumber}) {
@@ -324,7 +326,7 @@ export class SourceResult {
     } catch(e) {
       console.dir(e);
       // console.error(e);
-      window.notifications.notifyWarning('Failed to parse CSV result.')
+      this._notifyWarning('Failed to parse CSV result.')
       return;
     }
   }
@@ -363,7 +365,7 @@ export class SourceResult {
     } catch(e) {
       console.dir(e);
       // console.error(e);
-      window.notifications.notifyWarning('Failed to parse CSV result.')
+      this._notifyWarning('Failed to parse CSV result.')
       return;
     }
   }
@@ -403,7 +405,7 @@ export class SourceResult {
     } catch(e) {
       console.dir(e);
       // console.error(e);
-      window.notifications.notifyWarning('Failed to parse CSV result.')
+      this._notifyWarning('Failed to parse CSV result.')
       return;
     }
   }
@@ -441,7 +443,7 @@ export class SourceResult {
           this.consumeRdfStream(sourceResultStore, statusTextStore, file.stream(), options);
       } catch(e) {
         console.warn(e);
-        window.notifications.notifyWarning('File load error');
+        this._notifyWarning('File load error');
       }
     } else {
       console.warn('No file selected.');
@@ -454,7 +456,7 @@ export class SourceResult {
    * @param {Writeable<SourceResult>} sourceResultStore 
    * @param {String} URI 
    */
-  loadUri(sourceResultStore, statusTextStore, uri) {
+  loadUri (sourceResultStore, statusTextStore, uri) {
     console.log('SourceResult.loadUri(' + uri + ')');
 
     // TODO: load multiple URIs into same store
@@ -463,6 +465,7 @@ export class SourceResult {
     // Note: firefox with Privacy Badger gives CORS errors when fetching different origin (URI)
     if (statusTextStore) statusTextStore.set('loading data');
     this.fetchStarting();
+    let unProcessedResponse;
     fetch(uri, {
       method: 'GET',
       cache: "reload",
@@ -480,7 +483,7 @@ export class SourceResult {
         // 'Cache-Control': 'no-cache',
       }})
     .then(response => {
-      this.fetchResponded(response);
+      unProcessedResponse = response;
       if (response.ok ) {
         const contentLength = (response.headers.get('Content-Length'));
         if (response.headers.get('Content-Type').startsWith('text/csv'))
@@ -491,17 +494,22 @@ export class SourceResult {
         const warning = 'Failed to load URI.\n' + response.statusText;
         console.dir(response);
         console.warn(warning);
-        window.notifications.notifyWarning(warning);
+        this._notifyWarning(warning);
       }
       if (statusTextStore ) statusTextStore.set('');
-    })
+      unProcessedResponse = undefined;
+      this.fetchResponded(response);
+     })
     .catch(e => {
       console.error(e);
-      window.notifications.notifyWarning('Query failed.');
-      window.notifications.notifyError(e.message);
+      this._notifyWarning('Query failed.');
+      this._notifyError(e.message);
       this.fetchAbandoned();
-      sourceResultStore.update(v => this);
+      sourceResultStore.set(0);
+      this.responseStore.set(0);
     });
+
+    if (unProcessedResponse) this.fetchResponded(unProcessedResponse);
   }
 
   /** Fetch text from a web URI 
@@ -515,8 +523,9 @@ export class SourceResult {
     console.log('SourceResult.loadUriAsText(' + uri + ')');
 
     // Note: firefox with Privacy Badger gives CORS errors when fetching different origin (URI)
-    statusTextStore.set('loading');
+    if (statusTextStore) statusTextStore.set('loading');
     this.fetchStarting();
+    let unProcessedResponse;
     fetch(uri, {
       method: 'GET',
       cache: "reload",
@@ -533,7 +542,7 @@ export class SourceResult {
         // 'Cache-Control': 'no-cache',
       }})
     .then(response => {
-      this.fetchResponded(response);
+      unProcessedResponse = response;
       if (response.ok ) {
         console.log('RESPONSE:');console.dir(response);
         console.log('Content-Type:' + response.headers.get('Content-Type'))
@@ -542,7 +551,7 @@ export class SourceResult {
           this.consumeCsvStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
         }
         else if (response.headers.get('Content-Type').startsWith('text')) {
-          statusTextStore.set(contentLength + ' characters loaded'); 
+          if (statusTextStore) statusTextStore.set(contentLength + ' characters loaded'); 
           response.text().then(text => sourceResultStore.set(text));
         } 
         else {
@@ -551,25 +560,30 @@ export class SourceResult {
       } else {
         const warning = 'Failed to load URI.\n' + response.statusText;
         console.warn(warning);
-        window.notifications.notifyWarning(warning);
+        this._notifyWarning(warning);
       }
-      statusTextStore.set('');
+      if (statusTextStore) statusTextStore.set('');
+      unProcessedResponse = undefined;
+      this.fetchResponded(response);
     })
     .catch(e => {
       console.error(e);
-      window.notifications.notifyWarning('Query failed.');
-      window.notifications.notifyError(e.message);
-      statusTextStore.set('');
+      this._notifyWarning('Query failed.');
+      this._notifyError(e.message);
+      if (statusTextStore) statusTextStore.set('');
       this.fetchAbandoned();
-      sourceResultStore.update(v => this);
+      sourceResultStore.set(0);
+      this.responseStore.set(0);
     });
+
+    if (unProcessedResponse) this.fetchResponded(unProcessedResponse);
   }
 
   loadSparqlQuery(sourceResultStore, statusTextStore, endpoint, sparqlText) {
     console.log('SourceResult.loadSparqlQuery()');
     if (endpoint === '') {
       console.warn('No endpoint provided');
-      window.notifications.notifyWarning('Please provide an endpoint');
+      this._notifyWarning('Please provide an endpoint');
       return;
     }
     var url = endpoint + "?query=" + encodeURIComponent(sparqlText);// + "&type='text/turtle'";
@@ -582,7 +596,7 @@ export class SourceResult {
     console.log('SourceResult.loadSparqlQuery()');
     if (endpoint === '') {
       console.warn('No endpoint provided');
-      window.notifications.notifyWarning('Please provide an endpoint');
+      this._notifyWarning('Please provide an endpoint');
       return;
     }
     var url = endpoint + "?query=" + encodeURIComponent(sparqlText) + "&type='text'";
@@ -653,91 +667,171 @@ export class SparqlStat extends SourceResult {
     super(null); // SparqlStat has source URI in config, does not use a SourceInterface
 
     this.config = config;
-    this.statusText = '-';
+    this.statusText = '-statusText';
+    this.sourceResultStore = writable(undefined);
     this.statusTextStore = writable(this.statusText);
-    this.resultStore = writable(this);
-    this.resultText = '-';
+    this.resultTextStore = writable('');
+    this.disableNotify = true;
   }
 
-  getStatusTextStore () { return this.statusTextStore; }
-  setStatusText (statusText) { this.statusText = statusText; this.statusTextStore.set(statusText); }
-  getStatusText () { return this.statusText; }
-
-  setResultText (resultText) { this.resultText = resultText; this.resultStore.update(v => this);}
-  getResultText () { return String(this.resultText); }
-  setResultNumber (resultNumber) { this.resultNumber = resultNumber; this.resultStore.update(v => this);}
-  getResultNumber () { return Number(this.resultNumber); }
+  setResultText (resultText) { this.resultTextStore.set(resultText);}
+  getResultText () { return String($this.resultTextStore); }
+  // wrong: setResultNumber (resultNumber) { this.resultNumber = resultNumber; this.resultStore.update(v => {instance: this});}
+  // wrong: getResultNumber () { return Number(this.resultNumber); }
 
   updateSparqlStat () {
-    this.loadSparqlQueryAsText(this.resultStore, this.statusTextStore, this.config.endpoint, this.config.query);
+    
+    console.log('SparqlStat.updateSparqlStat()');
+    this.loadSparqlQueryAsText(this.resultStore, this.statusTextStore, this.config.source.endpoint, this.config.query);
+    // this.loadUri(this.serviceInfoStore, undefined, this.config.source.endpoint, this.config.query)
   }
 }
 
-/** Specialist class to determine SPARQL version and capabilities
+/** Specialist class to report if the query succeeds
  * 
  */
-// import {SparqlEndpointStat} from '../rdf/rdfUtils.js';
 
-export class SparqlEndpointStat extends SparqlStat {
+export class SparqlEndpointReportSuccess extends SparqlStat {
   constructor (config) {
     super(config);
-    console.log('NEW SparqlEndpointStat has config.source.endpoint: ' + this.config.source.endpoint);
-    this.serviceInfoStore = writable(this);  // Use a second store for interim result (Service Description)
+    console.log('NEW SparqlEndpointReportSuccess has config.source.endpoint: ' + this.config.source.endpoint);
     this.serviceInfo = {
       version: '-',
     };
 
     const self = this;
-    function _updateResultStore (serviceInfoDataset) {
-      console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
-      console.log('self.config.source.endpoint: ' + self.config.source.endpoint);
-      console.log('SparqlEndpointStat._updateResultStore()'); console.dir(self);
-      console.log('fetch status; ' + self.getFetchStatus());
-      if (self.getFetchStatus() === fetchStatus.FAILED) {
-        // The fetch failed without a response (e.g. blocked by CORS)
-        self.setStatusText('failed');
-        self.serviceInfo = {
-          version: 'unknown',
-        };
-      } else if (serviceInfoDataset && serviceInfoDataset.jsonModel) {
-        // Request for service description worked suggests v1.1 but service
-        // descriptions are not reliable so we don't trust/use what it says
-        const dataset = serviceInfoDataset.jsonModel.values;
-        console.log('serviceInfo dataset:'); console.dir(dataset);
-        self.setStatusText('done');
-        // TODO: could extract info from service description (dataset) here
-        self.serviceInfo = {
-          version: '1.1 (inferred)',
-        };
-      } else if (self.getFetchStatus() === fetchStatus.COMPLETE) {
-        // The fetch completed but the response was not understood
-        const response = self.consumeFetchResponse();
-        console.log('Unable to obtain service description');
-        console.log('response:'); console.dir(response);
-        self.setStatusText('done');
-        self.serviceInfo = {
-          version: '1.0 (inferred)',
-        };      
-      } else if (self.getFetchStatus() === fetchStatus.RESPONSE) {
-        // The fetch completed but the response was not consumed
-        const response = self.consumeFetchResponse();
-        console.log('Unable to obtain service description');
-        console.log('response:'); console.dir(response);
-        self.setStatusText('done');
-        self.serviceInfo = {
-          version: '1.0 (inferred)',
-        };      
+    function _handleResponse (response) {
+      // console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
+      // console.log('self.config.source.endpoint: ' + self.config.source.endpoint);
+      // console.log('SparqlEndpointReportSuccess._handleResponse()'); console.dir(self);console.dir(self.getLastResponse());
+      // console.log('fetch status; ' + self.getFetchStatus());
+
+      if (self.getFetchStatus() === fetchStatus.IDLE ) {
+        self.setResultText('-');
+        return;
       }
-      self.setResultText('SPARQL version: ' + self.serviceInfo.version);
+
+      let success = false;
+      // const response = self.getLastResponse();
+      
+      let unknownResult = response.status >= 400 ? 'error' : undefined; // Errors  we haven't handled as 'unknown' result
+      
+      // Error code ref: https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#4xx_Client_errors
+      if (unknownResult && response.status == 400 /*bad request*/) {
+        unknownResult = undefined; // Unsupported query means result is known (success is false)
+      } else  if (unknownResult && response.statusCode == 408 /*request timeout*/) {
+        // Query not successful
+        unknownResult = 'timeout';
+      } else if (self.getFetchStatus() === fetchStatus.FAILED) {
+        // The fetch failed without a response (e.g. blocked by CORS)
+        unknownResult = 'unknown';
+      } else if (self.getFetchStatus() === fetchStatus.COMPLETE) {
+        // The fetch completed but the response was not understood (regarded as success)
+        success = true;
+      } else if (self.getFetchStatus() === fetchStatus.RESPONSE) {
+        // The fetch completed but the response was not consumed (regarded as success)
+        const response = self.consumeFetchResponse();
+        success = true;
+      }
+      const resultText = unknownResult ? unknownResult : (success ? 'yes' : 'no');
+      self.setResultText(resultText);
     }
 
-    this.unsubscribe = this.serviceInfoStore.subscribe(_updateResultStore);
+    this.unsubscribe = this.responseStore.subscribe(_handleResponse);
   }
 
   updateSparqlStat () {
-    console.log('SparqlEndpointStat.update()');
-    this.setStatusText('working..');
-    this.loadUri(this.serviceInfoStore, undefined, this.config.source.endpoint, this.config.query)
+    console.log('SparqlEndpointReportSuccess.updateSparqlStat()');
+    this.loadSparqlQueryAsText(this.sourceResultStore, undefined, this.config.source.endpoint, this.config.query)
+  }
+}
+
+/** Specialist class to determine SPARQL version and capabilities
+ * 
+ * This stat can't react to the response like SparqlEndpointReportSuccess
+ * because the sourceResult and jsonModel are updated asynchronously and
+ * will not be ready. So we handle update of the sourceResultStore.
+ */
+
+export class SparqlEndpointStat extends SparqlStat {
+  constructor (config) {
+    super(config);
+    console.log('NEW SparqlEndpointStat has config.source.endpoint: ' + this.config.source.endpoint);
+    this.serviceInfo = {
+      version: '-',
+    };
+
+    const self = this;
+    function _handleResponse (sourceResult) {
+
+      // console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
+      // console.log('self.config.source.endpoint: ' + self.config.source.endpoint);
+      // console.log('SparqlEndpointStat._handleResponse()'); console.dir(self);console.dir(self.getLastResponse());
+      // console.log('fetch status; ' + self.getFetchStatus());
+      // console.log('JSON MODEL:');console.dir(self.jsonModel);
+
+      if (self.getFetchStatus() === fetchStatus.IDLE) {
+        self.setResultText('-');
+        return;
+      }
+
+      // Error code ref: https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#4xx_Client_errors
+
+      self.serviceInfo = { version: '1.0 (inferred)' };  // Default unless the result is not valid
+      const response = self.getLastResponse();
+      let unknownResult;  // When set we can't determine the outcome and this holds an explanatory
+      if (!response) {
+        // The fetch failed without a response (e.g. blocked by CORS)
+        unknownResult = 'unknown';
+      } else {
+        unknownResult = response.status >= 400 ? 'error' : undefined; // Errors  we haven't handled as 'unknown' result
+
+        if (unknownResult && response.status == 400 /*bad request*/) {
+          unknownResult = undefined; // Unsupported query means result is known (success is false)
+        } else  if (unknownResult && response.statusCode == 408 /*request timeout*/) {
+          // Query not successful
+          unknownResult = 'timeout';
+        }
+      }
+      if (unknownResult) self.serviceInfo = { version: unknownResult, }
+      
+      // Result can be determined
+      if (unknownResult === undefined) {
+        if (self.jsonModel) {
+          // Request for service description worked suggests v1.1 but service
+          // descriptions are not reliable so we don't trust/use what it says
+          const dataset = self.jsonModel.values;
+          console.log('serviceInfo dataset:'); console.dir(dataset);
+          // TODO: could extract info from service description (dataset) here
+          self.serviceInfo = {
+            version: '1.1 (inferred)',
+          };
+        } else if (self.getFetchStatus() === fetchStatus.COMPLETE) {
+          // The fetch completed but the response was not understood
+          const response = self.consumeFetchResponse();
+          console.log('Unable to obtain service description');
+          self.serviceInfo = {
+            version: '1.0 (inferred)',
+          };      
+        } else if (self.getFetchStatus() === fetchStatus.RESPONSE) {
+          // The fetch completed but the response was not consumed
+          const response = self.consumeFetchResponse();
+          console.log('Unable to obtain service description');
+          self.serviceInfo = {
+            version: '1.0 (inferred)',
+          };      
+        }
+      }
+  
+      self.setResultText(self.serviceInfo.version);
+    }
+
+    this.unsubscribe = this.sourceResultStore.subscribe(_handleResponse);
+  }
+
+  updateSparqlStat () {
+    console.log('SparqlEndpointStat.updateSparqlStat()');
+    this.loadUri(this.sourceResultStore, undefined, this.config.source.endpoint, this.config.query)
   }
 }
 

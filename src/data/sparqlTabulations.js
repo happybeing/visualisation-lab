@@ -7,7 +7,10 @@
 //
 
 export const sparqlTabulations = [
-  { heading: 'Endpoint Stat', type: 'sparql-endpoint-stat', query: `` },
+  { heading: 'SPARQL Version', type: 'sparql-stat', query: `` },
+
+  { heading: 'COUNT', type: 'sparql-count', 
+    query: `SELECT COUNT(?o) AS ?no { <non-existent-subject-yndh5> rdf:type ?o }` },
 
   // { heading: 'Testing Tab', type: 'simple-number',
   //   query: `
