@@ -378,7 +378,7 @@ SELECT DISTINCT ?organism ?label ?length ?genes (COUNT(DISTINCT ?protein) AS ?hk
 ];
 
 export const brokenExamples = [
-
+// This d3coordmap doesn't work at http://biohackathon.org/d3sparql/ either.
 { description: 'No Turtle? Map Coord ()', endpoint: 'http://www.ebi.ac.uk/rdf/services/sparql', options: {}, sparqlText: `PREFIX dc: <http://purl.org/dc/elements/1.1/>
 PREFIX biosd-terms: <http://rdf.ebi.ac.uk/terms/biosd/>
 PREFIX sio: <http://semanticscience.org/resource/>

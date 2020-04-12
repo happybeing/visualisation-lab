@@ -6,7 +6,7 @@ export let statusTextStore;
 
 import {sparqlExamples} from '../data/examples-sparql.js';
 
-// Note re brokenExamples:
+// Note:
 // Source http://togostanza.org/
 // - queries work to http: from http: (but togostanza.org refuses connection from https)
 // -> I can access from localhost with CORS checks bypassed in Firefox 
