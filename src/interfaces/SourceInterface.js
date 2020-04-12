@@ -519,7 +519,7 @@ export class SourceResult {
    * 
    * TODO rationalise this with loadUri() only difference is Accept header and consumeTextStream()
    */
-  loadUriAsText(sourceResultStore, statusTextStore, uri) {
+  loadUriAsText (sourceResultStore, statusTextStore, uri) {
     console.log('SourceResult.loadUriAsText(' + uri + ')');
 
     // Note: firefox with Privacy Badger gives CORS errors when fetching different origin (URI)
@@ -547,12 +547,15 @@ export class SourceResult {
         console.log('RESPONSE:');console.dir(response);
         console.log('Content-Type:' + response.headers.get('Content-Type'))
         const contentLength = (response.headers.get('Content-Length'));
-        if (response.headers.get('Content-Type').startsWith('text/xcsv')) {
+        if (response.headers.get('Content-Type').startsWith('text/csv')) {
           this.consumeCsvStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
         }
         else if (response.headers.get('Content-Type').startsWith('text')) {
           if (statusTextStore) statusTextStore.set(contentLength + ' characters loaded'); 
-          response.text().then(text => sourceResultStore.set(text));
+          response.text().then(text => {
+            console.log('response.text: ' + text);
+            sourceResultStore.set(text);
+          });
         } 
         else {
           this.consumeRdfStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
@@ -599,7 +602,7 @@ export class SourceResult {
       this._notifyWarning('Please provide an endpoint');
       return;
     }
-    var url = endpoint + "?query=" + encodeURIComponent(sparqlText) + "&type='text'";
+    var url = endpoint + "?query=" + encodeURIComponent(sparqlText);// + "&type='text'";
     console.log('loadSparqlQueryAsText()');
     console.log(url);
     return this.loadUriAsText(sourceResultStore, statusTextStore, url);
