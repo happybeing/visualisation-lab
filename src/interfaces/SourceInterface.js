@@ -37,18 +37,6 @@ import {modelFormats} from '../modelFormats.js';
     const sourceResult = new SourceResult(this);
     return sourceResult.consumeJson(sourceResultStore);
   }
-  loadFiles(sourceResultStore, statusTextStore, fileList, options) {
-    const sourceResult = new SourceResult(this);
-    return sourceResult.loadFiles(sourceResultStore, statusTextStore, fileList, options);
-  }
-  loadUri (sourceResultStore, statusTextStore, uri) {
-    const sourceResult = new SourceResult(this);
-    return sourceResult.loadUri(sourceResultStore, statusTextStore, uri);
-  }
-  loadSparqlQuery (sourceResultStore, statusTextStore, endpoint, sparqlText) {
-    const sourceResult = new SourceResult(this);
-    return sourceResult.loadSparqlQuery(sourceResultStore, statusTextStore, endpoint, sparqlText);
-  }
   consumeCsvStream (sourceResultStore, statusTextStore, stream, {mimeType, size}) {
     const sourceResult = new SourceResult(this);
     return sourceResult.consumeCsvStream(sourceResultStore, statusTextStore, stream, {mimeType, size});
@@ -56,6 +44,19 @@ import {modelFormats} from '../modelFormats.js';
   consumeTextStream (sourceResultStore, statusTextStore, stream, {mimeType, size}) {
     const sourceResult = new SourceResult(this);
     return sourceResult.consumeTextStream(sourceResultStore, statusTextStore, stream, {mimeType, size});
+  }
+
+  loadFiles(sourceResultStore, statusTextStore, fileList, options) {
+    const sourceResult = new SourceResult(this);
+    return sourceResult.loadFiles(sourceResultStore, statusTextStore, fileList, options);
+  }
+  loadUri (sourceResultStore, statusTextStore, uri, options) {
+    const sourceResult = new SourceResult(this);
+    return sourceResult.loadUri(sourceResultStore, statusTextStore, uri, options);
+  }
+  loadSparqlQuery (sourceResultStore, statusTextStore, endpoint, sparqlText, options) {
+    const sourceResult = new SourceResult(this);
+    return sourceResult.loadSparqlQuery(sourceResultStore, statusTextStore, endpoint, sparqlText, options);
   }
 
   // TODO: review the following...
@@ -279,6 +280,15 @@ export class SourceResult {
 
   }
 
+  // JSON - this is a placeholder in case I find we need to accept JSON from some services
+  // TODO if necessary, implement parsing JSON-LD response (as above for RDF)
+  consumeJsonStream (sourceResultStore, statusTextStore, stream,  {mimeType, size}) {
+    console.log('SourceResult.consumeJsonStream()');
+    console.dir(stream);
+    console.log('Size: ', size);
+    console.log('RAW JSON: ' + stream.text());
+  }
+
   // JSON - initially just {nodes: [], links []}
   // TODO add a ViewModel type param so any ViewModel can be loaded as JSON (e.g. from file)
   consumeJson (sourceResultStore) {
@@ -453,10 +463,15 @@ export class SourceResult {
 
   /** Fetch RDF from a web URI and parse the result 
    * 
-   * @param {Writeable<SourceResult>} sourceResultStore 
+   * On success saves the content in sourceResultStore.
+   * On failure  
+   * 
+   * @param {writable<SourceResult>} sourceResultStore 
+   * @param {writable<SourceResult>} statusTextStore 
    * @param {String} URI 
+   * @param {Object} options such as request headers
    */
-  loadUri (sourceResultStore, statusTextStore, uri) {
+  loadUri (sourceResultStore, statusTextStore, uri, options) {
     console.log('SourceResult.loadUri(' + uri + ')');
 
     // TODO: load multiple URIs into same store
@@ -466,6 +481,17 @@ export class SourceResult {
     if (statusTextStore) statusTextStore.set('loading data');
     this.fetchStarting();
     let unProcessedResponse;
+    
+    let headers = {
+      // Need to avoid CORS Pre-flight checks, so avoid
+      // adding headers that will trigger them:
+      // See 'Simple Requests' at https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+
+      'Accept': 'text/turtle', // Needed for SPARQL endpoints that return HTML, XML or JSON by default
+    }
+    if (options && options.headers) headers = {...options.headers}; // Allow override of defaults (e.g. of 'Accept')
+    console.log('Request headers: ' + JSON.stringify(headers));
+
     fetch(uri, {
       method: 'GET',
       cache: "reload",
@@ -473,23 +499,27 @@ export class SourceResult {
       // mode: 'no-cors', // Last examples-sparql.js query not working, this doesn't help
                        // Won't help because response content blocked by browser in opaque response
                        // See: https://stackoverflow.com/a/54906434/4802953
-      headers: {
-        // Need to avoid CORS Pre-flight checks, so avoid
-        // adding headers that will trigger them:
-        // See 'Simple Requests' at https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
-
-        'Accept': 'text/turtle', // Needed for SPARQL endpoints that return JSON by default
-        // 'Accept': 'application/sparql-results+json',
-        // 'Cache-Control': 'no-cache',
-      }})
+      headers: headers,
+    })
     .then(response => {
       unProcessedResponse = response;
       if (response.ok ) {
+        console.log('Processing Content-Type: ' + response.headers.get('Content-Type'));
         const contentLength = (response.headers.get('Content-Length'));
         if (response.headers.get('Content-Type').startsWith('text/csv'))
           this.consumeCsvStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
-        else
+        else if (response.headers.get('Content-Type').startsWith('text/turtle'))
           this.consumeRdfStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
+        // else if (response.headers.get('Content-Type').startsWith('application/sparql-results+json'))
+        //   this.consumeJsonStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
+        else {
+          // Unexpected response type
+          const warning = 'Unexpected content type: ' + response.headers.get('Content-Type');
+          console.dir(response);
+          response.text().then(text => console.log(text));
+          if (statusTextStore) statusTextStore.set('Returned: ' + response.headers.get('Content-Type'));
+          throw Error(warning);
+        }        
       } else {
         const warning = 'Failed to load URI.\n' + response.statusText;
         console.dir(response);
@@ -512,77 +542,7 @@ export class SourceResult {
     if (unProcessedResponse) this.fetchResponded(unProcessedResponse);
   }
 
-  /** Fetch text from a web URI 
-   * 
-   * @param {Writeable<SourceResult>} sourceResultStore 
-   * @param {String} URI 
-   * 
-   * TODO rationalise this with loadUri() only difference is Accept header and consumeTextStream()
-   */
-  loadUriAsText (sourceResultStore, statusTextStore, uri) {
-    console.log('SourceResult.loadUriAsText(' + uri + ')');
-
-    // Note: firefox with Privacy Badger gives CORS errors when fetching different origin (URI)
-    if (statusTextStore) statusTextStore.set('loading');
-    this.fetchStarting();
-    let unProcessedResponse;
-    fetch(uri, {
-      method: 'GET',
-      cache: "reload",
-      pragma: "no-cache",
-      // mode: 'no-cors', // Last examples-sparql.js query not working, this doesn't help
-      headers: {
-        // Need to avoid CORS Pre-flight checks, so avoid
-        // adding headers that will trigger them:
-        // See 'Simple Requests' at https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
-
-        // 'Accept': 'text/text', // Needed for SPARQL endpoints that return JSON by default
-        'Accept': 'text/turtle',
-        // 'Accept': 'application/sparql-results+json',
-        // 'Cache-Control': 'no-cache',
-      }})
-    .then(response => {
-      unProcessedResponse = response;
-      if (response.ok ) {
-        console.log('RESPONSE:');console.dir(response);
-        console.log('Content-Type:' + response.headers.get('Content-Type'))
-        const contentLength = (response.headers.get('Content-Length'));
-        if (response.headers.get('Content-Type').startsWith('text/csv')) {
-          this.consumeCsvStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
-        }
-        else if (response.headers.get('Content-Type').startsWith('text')) {
-          if (statusTextStore) statusTextStore.set(contentLength + ' characters loaded'); 
-          response.text().then(text => {
-            console.log('response.text: ' + text);
-            sourceResultStore.set(text);
-          });
-        } 
-        else {
-          this.consumeRdfStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
-        }
-      } else {
-        const warning = 'Failed to load URI.\n' + response.statusText;
-        console.warn(warning);
-        this._notifyWarning(warning);
-      }
-      if (statusTextStore) statusTextStore.set('');
-      unProcessedResponse = undefined;
-      this.fetchResponded(response);
-    })
-    .catch(e => {
-      console.error(e);
-      this._notifyWarning('Query failed.');
-      this._notifyError(e.message);
-      if (statusTextStore) statusTextStore.set('');
-      this.fetchAbandoned();
-      sourceResultStore.set(0);
-      this.responseStore.set(0);
-    });
-
-    if (unProcessedResponse) this.fetchResponded(unProcessedResponse);
-  }
-
-  loadSparqlQuery(sourceResultStore, statusTextStore, endpoint, sparqlText) {
+  loadSparqlQuery (sourceResultStore, statusTextStore, endpoint, sparqlText, options) {
     console.log('SourceResult.loadSparqlQuery()');
     if (endpoint === '') {
       console.warn('No endpoint provided');
@@ -592,20 +552,7 @@ export class SourceResult {
     var url = endpoint + "?query=" + encodeURIComponent(sparqlText);// + "&type='text/turtle'";
     console.log('loadSparqlQuery()');
     console.log(url);
-    return this.loadUri(sourceResultStore, statusTextStore, url);
-  }
-
-  loadSparqlQueryAsText(sourceResultStore, statusTextStore, endpoint, sparqlText) {
-    console.log('SourceResult.loadSparqlQuery()');
-    if (endpoint === '') {
-      console.warn('No endpoint provided');
-      this._notifyWarning('Please provide an endpoint');
-      return;
-    }
-    var url = endpoint + "?query=" + encodeURIComponent(sparqlText);// + "&type='text'";
-    console.log('loadSparqlQueryAsText()');
-    console.log(url);
-    return this.loadUriAsText(sourceResultStore, statusTextStore, url);
+    return this.loadUri(sourceResultStore, statusTextStore, url, options);
   }
 }
 
@@ -679,14 +626,9 @@ export class SparqlStat extends SourceResult {
 
   setResultText (resultText) { this.resultTextStore.set(resultText);}
   getResultText () { return String($this.resultTextStore); }
-  // wrong: setResultNumber (resultNumber) { this.resultNumber = resultNumber; this.resultStore.update(v => {instance: this});}
-  // wrong: getResultNumber () { return Number(this.resultNumber); }
 
   updateSparqlStat () {
-    
-    console.log('SparqlStat.updateSparqlStat()');
-    this.loadSparqlQueryAsText(this.resultStore, this.statusTextStore, this.config.source.endpoint, this.config.query);
-    // this.loadUri(this.serviceInfoStore, undefined, this.config.source.endpoint, this.config.query)
+    console.log('SparqlStat.updateSparqlStat() - ERROR - not implemented in subclass ' + this.constructor.name);
   }
 }
 
@@ -745,7 +687,7 @@ export class SparqlEndpointReportSuccess extends SparqlStat {
 
   updateSparqlStat () {
     console.log('SparqlEndpointReportSuccess.updateSparqlStat()');
-    this.loadSparqlQueryAsText(this.sourceResultStore, undefined, this.config.source.endpoint, this.config.query)
+    this.loadSparqlQuery(this.sourceResultStore, undefined, this.config.source.endpoint, this.config.query, this.config.options)
   }
 }
 
@@ -834,7 +776,7 @@ export class SparqlEndpointStat extends SparqlStat {
 
   updateSparqlStat () {
     console.log('SparqlEndpointStat.updateSparqlStat()');
-    this.loadUri(this.sourceResultStore, undefined, this.config.source.endpoint, this.config.query)
+    this.loadUri(this.sourceResultStore, undefined, this.config.source.endpoint, this.config.query, this.config.options);
   }
 }
 
