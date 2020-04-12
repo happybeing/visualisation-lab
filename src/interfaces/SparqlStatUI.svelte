@@ -20,5 +20,9 @@ $: statValueText = resultTextStore ? $resultTextStore : 'bdfsdjflkfds';
 </style>
 
 <div class="main">
-  {sparqlStat && sparqlStat.config ? sparqlStat.config.heading : 'unknown'}: {statValueText ? statValueText : 'no value'}
+  {sparqlStat && sparqlStat.config ? sparqlStat.config.heading : 'unknown'}: 
+  {#if sparqlStat.siteIconUrl}
+  <img src={sparqlStat.siteIconUrl} height='15px' style='vertical-align: text-top; margin-top: 1px'/>
+  {/if}
+  {statValueText ? statValueText : 'no value'}
 </div>

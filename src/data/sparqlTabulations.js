@@ -7,6 +7,7 @@
 //
 
 export const sparqlTabulations = [
+  { heading: 'Website', type: 'stat-website', query: `` },
   { heading: 'SPARQL Version', type: 'sparql-stat', query: `` },
 
   { heading: 'COUNT', type: 'sparql-count', 

@@ -835,6 +835,33 @@ export class SparqlEndpointStat extends SparqlStat {
   }
 }
 
+/** Get data from website to decorate output (e.g. with favicon and title)
+ * 
+ */
+const {getMetadata} = require('page-metadata-parser');
+const domino = require('domino');
+
+export class StatWebsite extends SparqlStat {
+  constructor (config) {
+    super(config);
+    console.log('NEW SparqlStatWebsite has config.source.endpoint: ' + this.config.source.endpoint);
+  }
+
+  async updateSparqlStat () {
+    console.log('SparqlStatWebsite.updateSparqlStat()');
+    const url = this.config.source.endpoint;
+    fetch(url)
+    .then(response => response.text())
+    .then(html => {
+      const doc = domino.createWindow(html).document;
+      const metadata = getMetadata(doc, url);
+      console.log('METADATA TEST: ' + url);console.dir(metadata);
+        
+      if (metadata.icon) this.siteIconUrl = metadata.icon;
+      this.setResultText(metadata.provider ? metadata.provider : this.config.source.endpoint);
+    });
+  }
+}
 // TODO: replace fixed interfaces with an initial set
 // TODO: change uiClass to String and use a 'factory' so I can serialise (research ways to serialise first)
 const testInterfaces = [

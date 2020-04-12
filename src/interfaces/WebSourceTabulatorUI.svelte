@@ -10,12 +10,12 @@ import {onMount} from 'svelte';
 import {dataSources} from '../data/dataSources.js';
 import {sparqlTabulations} from '../data/sparqlTabulations.js';
 
-import {SparqlStat, SparqlEndpointStat, SparqlEndpointReportSuccess} from '../interfaces/SourceInterface.js';
+import {SparqlStat, SparqlEndpointStat, SparqlEndpointReportSuccess, StatWebsite} from '../interfaces/SourceInterface.js';
 import SparqlStatUI from '../interfaces/SparqlStatUI.svelte';
 // import {SparqlStatTableUI} from '../interfaces/SparqlStatTableUI.svelte';
 
-
 const tabulationTypes = [
+  { type: 'stat-website', value: { uiComponent: SparqlStatUI, tabClass: StatWebsite } },
   { type: 'sparql-stat', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointStat } },
   { type: 'simple-number', value: { uiComponent: SparqlStatUI, tabClass: SparqlStat } },
   { type: 'sparql-count', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointReportSuccess } },
