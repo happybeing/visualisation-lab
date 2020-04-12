@@ -17,10 +17,11 @@ import SparqlStatUI from '../interfaces/SparqlStatUI.svelte';
 const tabulationTypes = [
   { type: 'stat-website', value: { uiComponent: SparqlStatUI, tabClass: StatWebsite } },
   { type: 'sparql-stat', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointStat } },
-  { type: 'simple-number', value: { uiComponent: SparqlStatUI, tabClass: SparqlStat } },
   { type: 'sparql-construct', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointReportSuccess } },
   { type: 'sparql-construct-test', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointReportSuccess } },
   { type: 'sparql-count', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointReportSuccess } },
+
+  { type: 'test-success', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointReportSuccess } },
 ];
 
 const tabulationTypesMap = new Map();
