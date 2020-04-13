@@ -843,7 +843,7 @@ export class StatWebsite extends SparqlStat {
   constructor (config) {
     super(config);
     console.log('NEW SparqlStatWebsite has config.source.endpoint: ' + this.config.source.endpoint);
-    this.setResultText(this.makeWebsiteName());
+    this.setResultText(this.makeWebsiteName() + ' '); // Add a space so updateSparqlStat() will set different string
   }
 
   async updateSparqlStat () {
@@ -862,7 +862,7 @@ export class StatWebsite extends SparqlStat {
   }
 
   makeWebsiteName (provider) {
-    let websiteName //= this.config.source.name;
+    let websiteName = this.config.source.name;
     
     if (!websiteName) {
       websiteName = this.config.source.endpoint;
