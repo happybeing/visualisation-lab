@@ -862,14 +862,21 @@ export class StatWebsite extends SparqlStat {
   }
 
   makeWebsiteName (provider) {
-    let websiteName = this.config.source.endpoint
-    if (this.config.source.endpoint.indexOf('//') > 0) 
-      websiteName = this.config.source.endpoint.substring(this.config.source.endpoint.indexOf('//') + 2);
+    let websiteName //= this.config.source.name;
+    
+    if (!websiteName) {
+      websiteName = this.config.source.endpoint;
+      if (websiteName[websiteName.length-1] === '/') websiteName = websiteName.substring(0, websiteName.length-1);
 
-    if (provider) {
-      const names = provider.split(' ');
-      if (names.length) websiteName = names[names.length - 1];
+      if (websiteName.indexOf('//') > 0) 
+        websiteName = websiteName.substring(websiteName.indexOf('//') + 2);
+
+      if (provider) {
+        const names = provider.split(' ');
+        if (names.length) websiteName = names[names.length - 1];
+      }
     }
+
     return websiteName;
   }
 }
