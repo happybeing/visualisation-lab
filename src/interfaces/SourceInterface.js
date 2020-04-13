@@ -304,7 +304,7 @@ export class SourceResult {
     console.log('Size: ', xmlText.length);
     const xmlJson = xmlParser.convertToJson(xmlText);
     this.sourceResultStore = sourceResultStore;
-    this.setJsonModel({values: xmlJson, modelFormat: modelFormats.RAW_XML});
+    this.setJsonModel({values: xmlJson, modelFormat: modelFormats.RAW_JSON});
     this.sourceResultStore.update(v => {instance: this});    
   }
 
