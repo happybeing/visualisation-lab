@@ -9,16 +9,19 @@ $: statValueText = resultTextStore ? $resultTextStore : undefined;
 </script>
 
 <style>
-.main { 
+.main {
   background: rgba(0, 255, 146, 0.582);
   border: 1px solid;
   border-radius: 1cm;
   padding-left: 0.5cm;
   padding-right: 0.5cm;
+}
+.valueno {
+  background: rgba(248, 179, 188, 0.782)  ;
 } 
 </style>
 
-<div class="main">
+  <div class={statValueText !== 'no' ? 'main' : 'main valueno'}>
   {#if sparqlStat.siteIconUrl}
     <img alt='' src={sparqlStat.siteIconUrl} height='15px' style='vertical-align: text-top; margin-top: 1px'/>
   {/if}
