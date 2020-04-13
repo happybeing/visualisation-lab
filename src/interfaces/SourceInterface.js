@@ -124,6 +124,7 @@ const RdfDataset = require('@graphy/memory.dataset.fast');
 // CSV Support
 // import {parser as csvParse} from 'csv-parse';
 const csvParse = require('csv-parse');
+const xmlParser = require('fast-xml-parser');
 
 /** Load multiple external data formats into a JSON ViewModel representation
  * 
@@ -283,7 +284,7 @@ export class SourceResult {
 
   }
 
-  // JSON - currently only used to check for JSON
+  // JSON - currently only used to check for JSON response body
   // TODO consider supporting queries that return JSON (e.g. wikidata won't provides JSON and XML, but not CSV)
   consumeJsonText (sourceResultStore, statusTextStore, jsonText,  {mimeType, size}) {
     console.log('SourceResult.consumeJsonText()');
@@ -291,7 +292,19 @@ export class SourceResult {
     console.log('Size: ', jsonText.length);
     const json = JSON.parse(jsonText);
     this.sourceResultStore = sourceResultStore;
-    this.setJsonModel({values: json, modelFormat: modelFormats.VM_RAWJSON});
+    this.setJsonModel({values: json, modelFormat: modelFormats.RAW_JSON});
+    this.sourceResultStore.update(v => {instance: this});    
+  }
+
+  // XML - currently only used to check for valid XML response body
+  // TODO consider supporting queries that return XML (e.g. wikidata won't provides JSON and XML, but not CSV)
+  consumeXmlText (sourceResultStore, statusTextStore, xmlText,  {mimeType, size}) {
+    console.log('SourceResult.consumeXmlText()');
+    console.dir({xmlText});
+    console.log('Size: ', xmlText.length);
+    const xmlJson = xmlParser.convertToJson(xmlText);
+    this.sourceResultStore = sourceResultStore;
+    this.setJsonModel({values: xmlJson, modelFormat: modelFormats.RAW_XML});
     this.sourceResultStore.update(v => {instance: this});    
   }
 
@@ -537,31 +550,19 @@ export class SourceResult {
       } else if (response.headers.get('Content-Type').startsWith('text/turtle')) {
         this.consumeRdfStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
         if (statusTextStore ) statusTextStore.set('');
-        this.fetchResponded(response);    
-      } else {
-        if (response.headers.get('Content-Type').startsWith('application/sparql-results+json'))
-          response.text()
-          .then(text => {
-            this.consumeJsonText(sourceResultStore, statusTextStore, text, {size: contentLength})
-            if (statusTextStore ) statusTextStore.set('');
-            this.fetchResponded(response);    
-          })
-          .catch(e => {
-            console.error(e);
-            this._notifyWarning('Query failed.');
-            this._notifyError(e.message);
-            this.consumeFetchResponse(false);  // Response failed to be processed
-            sourceResultStore.set(0);
-            this.responseStore.set(0);
-          });
-        else {
-          // Unexpected response type
-          const warning = 'Unexpected content type: ' + response.headers.get('Content-Type');
-          console.dir(response);
-          response.text().then(text => console.dir({text}));
-          if (statusTextStore) statusTextStore.set('Returned: ' + response.headers.get('Content-Type'));
-          throw Error(warning);
-        }
+        this.fetchResponded(response);
+      } else if (response.headers.get('Content-Type').startsWith('application/sparql-results+json')) {
+        this._processTextResponseUsing(sourceResultStore, statusTextStore, response, {size: contentLength}, this.consumeJsonText);
+      } else if (response.headers.get('Content-Type').startsWith('application/sparql-results+xml')) {
+        this._processTextResponseUsing(sourceResultStore, statusTextStore, response, {size: contentLength}, this.consumeXmlText);
+      }
+      else {
+        // Unexpected response type
+        const warning = 'Unexpected content type: ' + response.headers.get('Content-Type');
+        console.dir(response);
+        response.text().then(text => console.dir({text}));
+        if (statusTextStore) statusTextStore.set('Returned: ' + response.headers.get('Content-Type'));
+        throw Error(warning);
       }
     }
     catch(e) {
@@ -572,6 +573,23 @@ export class SourceResult {
       sourceResultStore.set(0);
       this.responseStore.set(0);
     }
+  }
+
+  _processTextResponseUsing(sourceResultStore, statusTextStore, response, {size: contentLength}, textProcessor) {
+    response.text()
+    .then(text => {
+      this[textProcessor.name](sourceResultStore, statusTextStore, text, {size: contentLength})
+      if (statusTextStore ) statusTextStore.set('');
+      this.fetchResponded(response);    
+    })
+    .catch(e => {
+      console.error(e);
+      this._notifyWarning('Query failed.');
+      this._notifyError(e.message);
+      this.consumeFetchResponse(false);  // Response failed to be processed
+      sourceResultStore.set(0);
+      this.responseStore.set(0);
+    });
   }
 
   loadSparqlQuery (sourceResultStore, statusTextStore, endpoint, sparqlText, options) {

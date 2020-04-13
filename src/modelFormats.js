@@ -19,6 +19,7 @@ export const modelFormats = {
   // Types for SourceResult output / ViewModel input:
   RAW_RDFDATASET: 'raw-rdfdataset',
   RAW_JSON:       'raw-json', // For non-RDF JSON returned by wikidata for example.
+  RAW_XML:       'raw-xml',   // For non-RDF XML returned by wikidata for example.
 
   // Types for ViewModel output:
   VM_TABULAR_JSON: 'vm-tabular-json',

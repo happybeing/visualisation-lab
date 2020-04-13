@@ -45,6 +45,7 @@
     "d3-zoom": "^1.8.3",
     "datavoyager": "^2.0.0-alpha.24",
     "domino": "^2.1.4",
+    "fast-xml-parser": "^3.16.0",
     "file-loader": "^5.1.0",
     "font-awesome": "^4.7.0",
     "graphy": "^4.0.3",
