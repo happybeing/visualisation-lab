@@ -133,6 +133,7 @@ export const fetchStatus = {
   IDLE: 'source-result-idle',
   FETCHING: 'source-result-fetching',
   RESPONSE: 'source-result-response', // SourceResult.response processed waiting to be consumed
+  BAD_RESPONSE: 'source-result-badresponse', // SourceResult.response failed to be processed
   COMPLETE: 'source-result-complete', // Response has been consumed
   FAILED: 'source-result-failed',     // Failed without response (e.g. blocked by CORS)
 };
@@ -149,8 +150,8 @@ export class SourceResult {
   fetchAbandoned () { this.fetchStatus = fetchStatus.FAILED; }
   getFetchStatus () { return this.fetchStatus; }
   getLastResponse () { return this.lastResponse; }
-  consumeFetchResponse () {
-    this.fetchStatus = fetchStatus.COMPLETE; 
+  consumeFetchResponse (responseAccepted) {
+    this.fetchStatus = responseAccepted ? fetchStatus.COMPLETE : fetchStatus.BAD_RESPONSE; 
     return this.lastResponse;
   }
 
@@ -238,6 +239,7 @@ export class SourceResult {
     } catch(e) {
       console.error(e);
       this._notifyWarning('Failed to parse RDF result.')
+      throw e;
     }
   }
 
@@ -276,25 +278,28 @@ export class SourceResult {
     } catch (e) { 
       console.error(e); 
       this._notifyWarning(e);
+      throw e;
     } 
 
   }
 
-  // JSON - this is a placeholder in case I find we need to accept JSON from some services
-  // TODO if necessary, implement parsing JSON-LD response (as above for RDF)
-  consumeJsonStream (sourceResultStore, statusTextStore, stream,  {mimeType, size}) {
-    console.log('SourceResult.consumeJsonStream()');
-    console.dir(stream);
-    console.log('Size: ', size);
-    console.log('RAW JSON: ' + stream.text());
+  // JSON - currently only used to check for JSON
+  // TODO consider supporting queries that return JSON (e.g. wikidata won't provides JSON and XML, but not CSV)
+  consumeJsonText (sourceResultStore, statusTextStore, jsonText,  {mimeType, size}) {
+    console.log('SourceResult.consumeJsonText()');
+    console.dir({jsonText});
+    console.log('Size: ', jsonText.length);
+    const json = JSON.parse(jsonText);
+    this.sourceResultStore = sourceResultStore;
+    this.setJsonModel({values: json, modelFormat: modelFormats.VM_RAWJSON});
+    this.sourceResultStore.update(v => {instance: this});    
   }
 
-  // JSON - initially just {nodes: [], links []}
+  // JSON - initially just used to load a JSON graph test file into the resultStore as VM_GRAPH_JSON
   // TODO add a ViewModel type param so any ViewModel can be loaded as JSON (e.g. from file)
   consumeJson (sourceResultStore) {
     console.log('SourceResult.consumeJson()');
     this.sourceResultStore = sourceResultStore;
-
     this.setJsonModel({values: lesMisData, modelFormat: modelFormats.VM_GRAPH_JSON});
     this.sourceResultStore.update(v => {instance: this});
   }
@@ -337,7 +342,7 @@ export class SourceResult {
       console.dir(e);
       // console.error(e);
       this._notifyWarning('Failed to parse CSV result.')
-      return;
+      throw e;
     }
   }
 
@@ -376,7 +381,7 @@ export class SourceResult {
       console.dir(e);
       // console.error(e);
       this._notifyWarning('Failed to parse CSV result.')
-      return;
+      throw e;
     }
   }
 
@@ -416,7 +421,7 @@ export class SourceResult {
       console.dir(e);
       // console.error(e);
       this._notifyWarning('Failed to parse CSV result.')
-      return;
+      throw e;
     }
   }
 
@@ -480,7 +485,6 @@ export class SourceResult {
     // Note: firefox with Privacy Badger gives CORS errors when fetching different origin (URI)
     if (statusTextStore) statusTextStore.set('loading data');
     this.fetchStarting();
-    let unProcessedResponse;
     
     let headers = {
       // Need to avoid CORS Pre-flight checks, so avoid
@@ -500,37 +504,16 @@ export class SourceResult {
                        // Won't help because response content blocked by browser in opaque response
                        // See: https://stackoverflow.com/a/54906434/4802953
       headers: headers,
-    })
-    .then(response => {
-      unProcessedResponse = response;
+    }).then(response => {
       if (response.ok ) {
-        console.log('Processing Content-Type: ' + response.headers.get('Content-Type'));
-        const contentLength = (response.headers.get('Content-Length'));
-        if (response.headers.get('Content-Type').startsWith('text/csv'))
-          this.consumeCsvStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
-        else if (response.headers.get('Content-Type').startsWith('text/turtle'))
-          this.consumeRdfStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
-        // else if (response.headers.get('Content-Type').startsWith('application/sparql-results+json'))
-        //   this.consumeJsonStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
-        else {
-          // Unexpected response type
-          const warning = 'Unexpected content type: ' + response.headers.get('Content-Type');
-          console.dir(response);
-          response.text().then(text => console.log(text));
-          if (statusTextStore) statusTextStore.set('Returned: ' + response.headers.get('Content-Type'));
-          throw Error(warning);
-        }        
+        this._processResponse(response, sourceResultStore, statusTextStore) 
       } else {
         const warning = 'Failed to load URI.\n' + response.statusText;
         console.dir(response);
         console.warn(warning);
         this._notifyWarning(warning);
       }
-      if (statusTextStore ) statusTextStore.set('');
-      unProcessedResponse = undefined;
-      this.fetchResponded(response);
-     })
-    .catch(e => {
+    }).catch(e => {
       console.error(e);
       this._notifyWarning('Query failed.');
       this._notifyError(e.message);
@@ -538,8 +521,57 @@ export class SourceResult {
       sourceResultStore.set(0);
       this.responseStore.set(0);
     });
+  }
 
-    if (unProcessedResponse) this.fetchResponded(unProcessedResponse);
+  _processResponse(response, sourceResultStore, statusTextStore) {
+    try {
+      console.log('Processing Content-Type: ' + response.headers.get('Content-Type'));
+      console.dir(response);
+      console.log('length: ' + response.headers.get('Content-Length'));
+      const contentLength = (response.headers.get('Content-Length'));
+
+      if (response.headers.get('Content-Type').startsWith('text/csv')) {
+        this.consumeCsvStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
+        if (statusTextStore ) statusTextStore.set('');
+        this.fetchResponded(response);    
+      } else if (response.headers.get('Content-Type').startsWith('text/turtle')) {
+        this.consumeRdfStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
+        if (statusTextStore ) statusTextStore.set('');
+        this.fetchResponded(response);    
+      } else {
+        if (response.headers.get('Content-Type').startsWith('application/sparql-results+json'))
+          response.text()
+          .then(text => {
+            this.consumeJsonText(sourceResultStore, statusTextStore, text, {size: contentLength})
+            if (statusTextStore ) statusTextStore.set('');
+            this.fetchResponded(response);    
+          })
+          .catch(e => {
+            console.error(e);
+            this._notifyWarning('Query failed.');
+            this._notifyError(e.message);
+            this.consumeFetchResponse(false);  // Response failed to be processed
+            sourceResultStore.set(0);
+            this.responseStore.set(0);
+          });
+        else {
+          // Unexpected response type
+          const warning = 'Unexpected content type: ' + response.headers.get('Content-Type');
+          console.dir(response);
+          response.text().then(text => console.dir({text}));
+          if (statusTextStore) statusTextStore.set('Returned: ' + response.headers.get('Content-Type'));
+          throw Error(warning);
+        }
+      }
+    }
+    catch(e) {
+      console.error(e);
+      this._notifyWarning('Query failed.');
+      this._notifyError(e.message);
+      this.consumeFetchResponse(false);  // Response failed to be processed
+      sourceResultStore.set(0);
+      this.responseStore.set(0);
+    }
   }
 
   loadSparqlQuery (sourceResultStore, statusTextStore, endpoint, sparqlText, options) {
@@ -675,8 +707,11 @@ export class SparqlEndpointReportSuccess extends SparqlStat {
         success = true;
       } else if (self.getFetchStatus() === fetchStatus.RESPONSE) {
         // The fetch completed but the response was not consumed (regarded as success)
-        const response = self.consumeFetchResponse();
+        const response = self.consumeFetchResponse(true);
         success = true;
+      } else if (self.getFetchStatus() === fetchStatus.BAD_RESPONSE) {
+        // The fetch completed but the response was not appropriate, so we fail
+        success = false;
       }
       const resultText = unknownResult ? unknownResult : (success ? 'yes' : 'no');
       self.setResultText(resultText);
@@ -753,14 +788,14 @@ export class SparqlEndpointStat extends SparqlStat {
           };
         } else if (self.getFetchStatus() === fetchStatus.COMPLETE) {
           // The fetch completed but the response was not understood
-          const response = self.consumeFetchResponse();
+          const response = self.consumeFetchResponse(true);
           console.log('Unable to obtain service description');
           self.serviceInfo = {
             version: '1.0 (inferred)',
           };      
         } else if (self.getFetchStatus() === fetchStatus.RESPONSE) {
           // The fetch completed but the response was not consumed
-          const response = self.consumeFetchResponse();
+          const response = self.consumeFetchResponse(true);
           console.log('Unable to obtain service description');
           self.serviceInfo = {
             version: '1.0 (inferred)',
@@ -790,6 +825,7 @@ export class StatWebsite extends SparqlStat {
   constructor (config) {
     super(config);
     console.log('NEW SparqlStatWebsite has config.source.endpoint: ' + this.config.source.endpoint);
+    this.setResultText(this.makeWebsiteName());
   }
 
   async updateSparqlStat () {
@@ -803,8 +839,20 @@ export class StatWebsite extends SparqlStat {
       console.log('METADATA TEST: ' + url);console.dir(metadata);
         
       if (metadata.icon) this.siteIconUrl = metadata.icon;
-      this.setResultText(metadata.provider ? metadata.provider : this.config.source.endpoint);
+      this.setResultText(this.makeWebsiteName(metadata.provider));
     });
+  }
+
+  makeWebsiteName (provider) {
+    let websiteName = this.config.source.endpoint
+    if (this.config.source.endpoint.indexOf('//') > 0) 
+      websiteName = this.config.source.endpoint.substring(this.config.source.endpoint.indexOf('//') + 2);
+
+    if (provider) {
+      const names = provider.split(' ');
+      if (names.length) websiteName = names[names.length - 1];
+    }
+    return websiteName;
   }
 }
 // TODO: replace fixed interfaces with an initial set

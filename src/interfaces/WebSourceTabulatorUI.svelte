@@ -3,7 +3,7 @@
 TODO: extend this from SPARQL endpoints to support other kinds of Web data source
 -->
 <script>
-import {onMount} from 'svelte';
+import {onDestroy} from 'svelte';
 
 // TODO: add ability to add/remove sources using UI
 // TODO: add ability for gathered data to be saved (in dataSources.js?)
@@ -42,6 +42,12 @@ dataSources.forEach(source => {
   });
 });
 
+// To avoid memory leak destroy each source.sparqlStats because the above creates circular refs:
+//   tableEntry->source, source.sparqlStats->stat, stat->tableEntry
+onDestroy( () => {
+  dataSources.forEach(source => source.sparqlStats = undefined);
+});
+
 let uri;
 let lastError;
 
@@ -65,30 +71,35 @@ function updateAll (sources) {
   border-radius: 1cm;
   padding-left: 1cm;
 }
-div.query {max-width:1000px;padding-right: 1cm;}
 </style>
 
 <div class="main">
-  <datalist id="example-endpoints">
-  </datalist>
+  <datalist id="example-endpoints"></datalist>
   <div>
-    <h2>&lt;WebSourceTabulatorUI&gt;</h2>
-    <div class="query">
-      {#each dataSources as source}
-        <h2>{source.endpoint}</h2>
-        {#each source.sparqlStats as stat}
-          stat.config.source.endpoint: {stat.config.source.endpoint}
-          <svelte:component this={stat.uiComponent} sparqlStat={stat}/>
-        {/each}
-      {/each}
+    <div>
+    <b>&lt;WebSourceTabulatorUI&gt;</b>
+      <button 
+        on:click={() => updateAll(dataSources)}>
+        Update All
+      </button>
+      <text enabled={lastError !== undefined}>{lastError}</text>
     </div>
+    <table>
+    <tr>
+      {#each dataSources[0].sparqlStats as stat}
+        <th>{stat.config.heading}</th>
+      {/each}
+    </tr>
+      {#each dataSources as source}
+      <tr>
+        {#each source.sparqlStats as stat}
+          <td>
+          <!-- stat.config.source.endpoint: {stat.config.source.endpoint} -->
+          <svelte:component this={stat.uiComponent} sparqlStat={stat}/>
+          </td>
+        {/each}
+      </tr>
+      {/each}
+    </table>
   </div>
-  <div>
-    <button 
-      on:click={() => updateAll(dataSources)}>
-      Update All
-    </button>
-    <text enabled={lastError !== undefined}>{lastError}</text>
-  </div>
-
 </div>
