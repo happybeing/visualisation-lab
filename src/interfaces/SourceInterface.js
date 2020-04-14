@@ -857,11 +857,11 @@ export class StatWebsite extends SparqlStat {
       console.log('METADATA TEST: ' + url);console.dir(metadata);
         
       if (metadata.icon) this.siteIconUrl = metadata.icon;
-      this.setResultText(this.makeWebsiteName(metadata.provider));
+      this.setResultText(this.makeWebsiteName());
     });
   }
 
-  makeWebsiteName (provider) {
+  makeWebsiteName () {
     let websiteName = this.config.source.name;
     
     if (!websiteName) {
@@ -870,11 +870,8 @@ export class StatWebsite extends SparqlStat {
 
       if (websiteName.indexOf('//') > 0) 
         websiteName = websiteName.substring(websiteName.indexOf('//') + 2);
-
-      if (provider) {
-        const names = provider.split(' ');
-        if (names.length) websiteName = names[names.length - 1];
-      }
+      if (websiteName.indexOf('/') > 0)
+        websiteName = websiteName.substring(0, websiteName.indexOf('/'));
     }
 
     return websiteName;
