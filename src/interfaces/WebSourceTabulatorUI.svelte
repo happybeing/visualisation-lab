@@ -130,7 +130,7 @@ function updateAll () {
   if (extraEndpointsInputChecked) {
     extraDataSources = makeSourcesFromTextList(extraEndpointsInput);
     makeSourceTabulations(extraDataSources);
-    activeDataSources = extraDataSources;
+    activeDataSources = extraDataSources ? extraDataSources : [];
   } else {
     activeDataSources = dataSources;
   }
