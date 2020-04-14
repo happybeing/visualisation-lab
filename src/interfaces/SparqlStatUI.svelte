@@ -32,7 +32,7 @@ function statClass(text) {
   {#if statValueText && sparqlStat.siteIconUrl}
     <img alt='' src={sparqlStat.siteIconUrl} height='15px' style='vertical-align: text-top; margin-top: 1px'/>
   {/if}
-  {#if sparqlStat.constructor.name === 'StatWebsite'}
+  {#if sparqlStat.config.type === 'stat-website'}
     <a href={sparqlStat.config.source.endpoint}>{statValueText ? statValueText : 'no value'}</a>
   {:else}
     {statValueText ? statValueText : 'no value'}
