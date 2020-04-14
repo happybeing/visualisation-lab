@@ -143,6 +143,8 @@ export class SourceResult {
     this.sourceInterface = sourceInterface;
     this.fetchStatus = fetchStatus.IDLE;
     this.responseStore = writable(undefined);
+    this.useStreams = true;  // Disabling streams allows tabulator UI to display response body
+                            // as a tooltip but increases memory use and slows performance
   }
 
   // Status allows handling of errors by subscribers to the sourceResultStore
@@ -546,9 +548,8 @@ export class SourceResult {
 
       const contentLength = (response.headers.get('Content-Length'));
       const responseType = this.responseType = response.headers.get('Content-Type');
-      let useStreams = false; // Disabling streams allows tabulator UI to display response body as a tooltip
       if (responseType.startsWith('text/csv')) {
-        if (useStreams) {
+        if (this.useStreams) {
           this.consumeCsvStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
           if (statusTextStore ) statusTextStore.set('');
           this.fetchResponded(response);    
@@ -557,7 +558,7 @@ export class SourceResult {
           this._processTextResponseUsing(sourceResultStore, statusTextStore, response, {size: contentLength}, this.consumeCsvText);
         }
       } else if (responseType.startsWith('text/turtle')) {
-        if (useStreams) {
+        if (this.useStreams) {
           this.consumeRdfStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
           if (statusTextStore ) statusTextStore.set('');
           this.fetchResponded(response);
@@ -689,6 +690,8 @@ export class SparqlStat extends SourceResult {
     this.statusTextStore = writable(this.statusText);
     this.resultTextStore = writable('');
     this.disableNotify = true;
+    this.useStreams = false;  // Disabling streams allows tabulator UI to display response body
+                              // as a tooltip but increases memory use and slows performance
   }
 
   setResultText (resultText) { this.resultTextStore.set(resultText);}
