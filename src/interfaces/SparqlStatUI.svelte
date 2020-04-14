@@ -30,4 +30,7 @@ $: statValueText = resultTextStore ? $resultTextStore : undefined;
   {:else}
     {statValueText ? statValueText : 'no value'}
   {/if}
+  {#if statValueText === 'yes' || statValueText === 'no' ||  statValueText === 'unknown' }
+    <span title={sparqlStat.responseText}>{sparqlStat.responseText ? sparqlStat.responseTypeAbbrev : ''}</span>
+  {/if}
 </div>

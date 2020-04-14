@@ -24,14 +24,14 @@ import {modelFormats} from '../modelFormats.js';
     const sourceResult = new SourceResult(this);
     return sourceResult.consumeRdfStream(sourceResultStore, statusTextStore, stream, {mimeType, size});
   }
-  consumeRdfTextTtl (sourceResultStore, statusTextStore, textTtl) {
+  consumeRdfTtlText (sourceResultStore, statusTextStore, textTtl, {mimeType, size}) {
     const sourceResult = new SourceResult(this);
-    return sourceResult.consumeRdfTextTtl(sourceResultStore, statusTextStore, textTtl);
+    return sourceResult.consumeRdfTtlText(sourceResultStore, statusTextStore, textTtl, {mimeType, size});
   }
-  consumeCsvText (sourceResultStore, statusTextStore, csvText, options) {
+  consumeCsvText (sourceResultStore, statusTextStore, csvText, {mimeType, size}, options) {
     if (options === undefined) options = {};
     const sourceResult = new SourceResult(this);
-    return sourceResult.consumeCsvText(sourceResultStore, statusTextStore, csvText, options);
+    return sourceResult.consumeCsvText(sourceResultStore, statusTextStore, csvText, {mimeType, size}, options);
   }
   consumeJson (sourceResultStore) {
     const sourceResult = new SourceResult(this);
@@ -244,8 +244,8 @@ export class SourceResult {
     }
   }
 
-  consumeRdfTextTtl (sourceResultStore, statusTextStore, textTtl) {
-    console.log('SourceResult.consumeRdfTextTtl()');
+  consumeRdfTtlText (sourceResultStore, statusTextStore, textTtl) {
+    console.log('SourceResult.consumeRdfTtlText()');
     this.sourceResultStore = sourceResultStore;
 
     try {
@@ -497,6 +497,8 @@ export class SourceResult {
       
     // Note: firefox with Privacy Badger gives CORS errors when fetching different origin (URI)
     if (statusTextStore) statusTextStore.set('loading data');
+    this.responseText = undefined;
+    this.responseType = '';
     this.fetchStarting();
     
     let headers = {
@@ -541,27 +543,41 @@ export class SourceResult {
       console.log('Processing Content-Type: ' + response.headers.get('Content-Type'));
       console.dir(response);
       console.log('length: ' + response.headers.get('Content-Length'));
-      const contentLength = (response.headers.get('Content-Length'));
 
-      if (response.headers.get('Content-Type').startsWith('text/csv')) {
-        this.consumeCsvStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
-        if (statusTextStore ) statusTextStore.set('');
-        this.fetchResponded(response);    
-      } else if (response.headers.get('Content-Type').startsWith('text/turtle')) {
-        this.consumeRdfStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
-        if (statusTextStore ) statusTextStore.set('');
-        this.fetchResponded(response);
-      } else if (response.headers.get('Content-Type').startsWith('application/sparql-results+json')) {
+      const contentLength = (response.headers.get('Content-Length'));
+      const responseType = this.responseType = response.headers.get('Content-Type');
+      let useStreams = false; // Disabling streams allows tabulator UI to display response body as a tooltip
+      if (responseType.startsWith('text/csv')) {
+        if (useStreams) {
+          this.consumeCsvStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
+          if (statusTextStore ) statusTextStore.set('');
+          this.fetchResponded(response);    
+        } else {
+          this.responseTypeAbbrev = 'CSV';
+          this._processTextResponseUsing(sourceResultStore, statusTextStore, response, {size: contentLength}, this.consumeCsvText);
+        }
+      } else if (responseType.startsWith('text/turtle')) {
+        if (useStreams) {
+          this.consumeRdfStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
+          if (statusTextStore ) statusTextStore.set('');
+          this.fetchResponded(response);
+        } else {
+          this.responseTypeAbbrev = 'Ttl';
+          this._processTextResponseUsing(sourceResultStore, statusTextStore, response, {size: contentLength}, this.consumeRdfTtlText);
+        }
+      } else if (responseType.startsWith('application/sparql-results+json')) {
+        this.responseTypeAbbrev = 'Json';
         this._processTextResponseUsing(sourceResultStore, statusTextStore, response, {size: contentLength}, this.consumeJsonText);
-      } else if (response.headers.get('Content-Type').startsWith('application/sparql-results+xml')) {
+      } else if (responseType.startsWith('application/sparql-results+xml')) {
+        this.responseTypeAbbrev = 'XML';
         this._processTextResponseUsing(sourceResultStore, statusTextStore, response, {size: contentLength}, this.consumeXmlText);
       }
       else {
         // Unexpected response type
-        const warning = 'Unexpected content type: ' + response.headers.get('Content-Type');
+        const warning = 'Unexpected content type: ' + responseType;
         console.dir(response);
         response.text().then(text => console.dir({text}));
-        if (statusTextStore) statusTextStore.set('Returned: ' + response.headers.get('Content-Type'));
+        if (statusTextStore) statusTextStore.set('Returned: ' + responseType);
         throw Error(warning);
       }
     }
@@ -578,6 +594,7 @@ export class SourceResult {
   _processTextResponseUsing(sourceResultStore, statusTextStore, response, {size: contentLength}, textProcessor) {
     response.text()
     .then(text => {
+      this.responseText = text; // Saved for use by tabulation UI but could be expensive on memory
       this[textProcessor.name](sourceResultStore, statusTextStore, text, {size: contentLength})
       if (statusTextStore ) statusTextStore.set('');
       this.fetchResponded(response);    

@@ -33,6 +33,8 @@ export const sparqlTabulations = [
   { heading: 'CONSTRUCT', type: 'sparql-construct', 
   query: `CONSTRUCT { <non-existent-subject-yndh5> rdf:type ?o } { <non-existent-subject-yndh5> rdf:type ?o }` },
 
+  /////////////////////// Tests
+  //
   // { heading: 'Testing Tab', type: 'test-success',
   //   query: `
   //   CONSTRUCT

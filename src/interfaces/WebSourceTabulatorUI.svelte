@@ -21,12 +21,38 @@ const tabulationTypes = [
   { type: 'sparql-construct', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointReportSuccess } },
   { type: 'sparql-count', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointReportSuccess } },
 
+  { type: 'sparql-custom', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointReportSuccess } },
   { type: 'test-success', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointReportSuccess } },
 ];
 
+let validEndpointsInput = `https://dbpedia.org/sparql
+https://query.wikidata.org/sparql
+https://data.europa.eu/euodp/sparqlep
+https://data.open.ac.uk/query
+http://data.europeana.eu/
+https://sparql.uniprot.org/
+https://data.carnegiehall.org/sparql
+http://os.rkbexplorer.com/sparql/`;
+
+// These are not valid, so should not show any valid results
+let invalidEndpointTests = `
+https://data.open.ac.uk/queryx
+`;
+
+// Failing to be investigated
+let toTest = 'https://data.open.ac.uk/query';
+let testDbpedia = 'https://data.open.ac.uk/query';
+
 let lastError;
-let extraEndpointsInput;
-let extraEndpointsInputChecked = true;
+let extraEndpointsInputChecked = false;
+let extraEndpointsInput = '';//invalidEndpointTests;
+
+let customQueryInput;
+const customTabulation = { heading: 'Custom Query', type: 'sparql-custom', query: `
+ASK {
+  FILTER(2 NOT IN ())
+}`
+};
 
 let extraDataSources = [];
 let activeDataSources = makeSourceTabulations(dataSources);
@@ -41,7 +67,7 @@ function makeSourcesFromTextList(text){
 
     lines.forEach(line => {
       const url = line.trim();
-      sources.push({ endpoint: url });
+      if (line.length) sources.push({ endpoint: url });
     });
     console.log('SOURCES:');console.dir(sources);
   }
@@ -67,6 +93,23 @@ function makeSourceTabulations (sources) {
       stat.uiComponent = tabTypes.uiComponent;
       source.sparqlStats.push(stat);
     });
+
+    
+    if (extraEndpointsInputChecked){
+      let query;
+      if (customQueryInput && customQueryInput.trim().length) query = customQueryInput;
+      if (!query && customTabulation.query && customTabulation.query.trim().length) query = customTabulation.query;
+      if (query) {
+        if (!customQueryInput || customQueryInput.length !== query.length) customQueryInput = query;
+        customTabulation.source = source;
+        customTabulation.query = query;
+        const tabTypes = tabulationTypesMap.get(customTabulation.type);
+
+        const stat = new tabTypes.tabClass(customTabulation, undefined);
+        stat.uiComponent = tabTypes.uiComponent;
+        source.sparqlStats.push(stat);
+      }
+    }
   });
 
   return sources;
@@ -123,7 +166,16 @@ function updateAll () {
         hidden={!extraEndpointsInputChecked} 
         type=textarea 
         bind:value={extraEndpointsInput} 
-        placeholder='Enter endpoint URLs, one per line'/>
+        placeholder='Enter endpoint URLs, one per line'
+        />
+      <textarea 
+        style='width: 30%'
+        rows='5' 
+        hidden={!extraEndpointsInputChecked} 
+        type=textarea 
+        bind:value={customQueryInput}
+        placeholder="Optional 'Custom' SPARQL to include below."
+        />
       </div>
       <div>
       <br/>
