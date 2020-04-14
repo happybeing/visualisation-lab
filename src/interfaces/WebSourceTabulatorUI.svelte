@@ -17,50 +17,86 @@ import SparqlStatUI from '../interfaces/SparqlStatUI.svelte';
 const tabulationTypes = [
   { type: 'stat-website', value: { uiComponent: SparqlStatUI, tabClass: StatWebsite } },
   { type: 'sparql-stat', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointStat } },
+  { type: 'sparql-api', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointReportSuccess } },
   { type: 'sparql-construct', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointReportSuccess } },
-  { type: 'sparql-construct-test', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointReportSuccess } },
   { type: 'sparql-count', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointReportSuccess } },
 
   { type: 'test-success', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointReportSuccess } },
 ];
 
-const tabulationTypesMap = new Map();
-tabulationTypes.forEach(tabType => tabulationTypesMap.set(tabType.type, tabType.value));
+let lastError;
+let extraEndpointsInput;
+let extraEndpointsInputChecked = true;
 
-console.log('WebSouceTabulatorUI.Inisitalising Tabulation Data..');
-dataSources.forEach(source => {
-  source.sparqlStats = [];
-  // console.log('sparqlTabulations');console.dir(sparqlTabulations);
-  sparqlTabulations.forEach(tableEntry => {
-    const newTableEnty = {...tableEntry};
-    newTableEnty.source = source;
-    const tabTypes = tabulationTypesMap.get(newTableEnty.type);
+let extraDataSources = [];
+let activeDataSources = makeSourceTabulations(dataSources);
 
-    const stat = new tabTypes.tabClass(newTableEnty, undefined);
-    stat.uiComponent = tabTypes.uiComponent;
-    source.sparqlStats.push(stat);
+function makeSourcesFromTextList(text){
+  console.log('makeSourcesFromTextList()');console.dir(text);
+
+  const sources = [];
+  if (text) {
+    const lines = text.split('\n');
+    console.dir(lines);
+
+    lines.forEach(line => {
+      const url = line.trim();
+      sources.push({ endpoint: url });
+    });
+    console.log('SOURCES:');console.dir(sources);
+  }
+  return sources;
+}
+
+function makeSourceTabulations (sources) {
+  destroySources(sources);
+
+  const tabulationTypesMap = new Map();
+  tabulationTypes.forEach(tabType => tabulationTypesMap.set(tabType.type, tabType.value));
+
+  console.log('WebSouceTabulatorUI.Inisitalising Tabulation Data..');
+  sources.forEach(source => {
+    source.sparqlStats = [];
+    // console.log('sparqlTabulations');console.dir(sparqlTabulations);
+    sparqlTabulations.forEach(tableEntry => {
+      const newTableEnty = {...tableEntry};
+      newTableEnty.source = source;
+      const tabTypes = tabulationTypesMap.get(newTableEnty.type);
+
+      const stat = new tabTypes.tabClass(newTableEnty, undefined);
+      stat.uiComponent = tabTypes.uiComponent;
+      source.sparqlStats.push(stat);
+    });
   });
-});
+
+  return sources;
+}
 
 // To avoid memory leak destroy each source.sparqlStats because the above creates circular refs:
 //   tableEntry->source, source.sparqlStats->stat, stat->tableEntry
+function destroySources(sources) {
+  sources.forEach(source => source.sparqlStats = undefined);
+}
+
 onDestroy( () => {
-  dataSources.forEach(source => source.sparqlStats = undefined);
+  destroySources(activeDataSources);
+  destroySources(extraDataSources);
 });
 
-let uri;
-let lastError;
+function updateAll () {
+  if (extraEndpointsInputChecked) {
+    extraDataSources = makeSourcesFromTextList(extraEndpointsInput);
+    makeSourceTabulations(extraDataSources);
+    activeDataSources = extraDataSources;
+  } else {
+    activeDataSources = dataSources;
+  }
 
-let selected = dataSources[0];
-let sparql = selected;
-let endpoint;
-let endpointCheckbox = false;
-
-function updateAll (sources) {
-  sources.forEach(source => 
-{  console.log('DEBUG source:');console.dir(source)
+  activeDataSources.forEach(source => {  
+    console.log('DEBUG source:');console.dir(source)
     source.sparqlStats.forEach(stat => stat.updateSparqlStat());
-})}
+  });
+}
 
 </script>
 
@@ -77,20 +113,31 @@ function updateAll (sources) {
   <datalist id="example-endpoints"></datalist>
   <div>
     <div>
-    <b>&lt;WebSourceTabulatorUI&gt;</b>
-      <button 
-        on:click={() => updateAll(dataSources)}>
-        Update All
-      </button>
+      <b>&lt;WebSourceTabulatorUI&gt;</b><br/>
+      <br/>
+      <div style='width: 90%'>
+      <label><input type=checkbox bind:checked={extraEndpointsInputChecked}/>Provide endpoints manually:<label>
+      <textarea 
+        style='width: 60%'
+        rows='5' 
+        hidden={!extraEndpointsInputChecked} 
+        type=textarea 
+        bind:value={extraEndpointsInput} 
+        placeholder='Enter endpoint URLs, one per line'/>
+      </div>
+      <div>
+      <br/>
+      <button style='vertical-align: top' on:click={() => updateAll()}>Update Table:</button>
+      </div>
       <text enabled={lastError !== undefined}>{lastError}</text>
     </div>
     <table>
     <tr>
-      {#each dataSources[0].sparqlStats as stat}
+      {#each activeDataSources[0].sparqlStats as stat}
         <th>{stat.config.heading}</th>
       {/each}
     </tr>
-      {#each dataSources as source}
+      {#each activeDataSources as source}
       <tr>
         {#each source.sparqlStats as stat}
           <td>

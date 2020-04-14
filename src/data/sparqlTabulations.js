@@ -22,19 +22,16 @@ export const sparqlTabulations = [
   { heading: 'Website', type: 'stat-website', query: `` },
   { heading: 'SPARQL Version', type: 'sparql-stat', query: `` },
 
+  { heading: 'API', type: 'sparql-api', 
+  query: `SELECT * WHERE { <non-existent-subject-yndh5> rdf:type ?o }` },
+
   { heading: 'COUNT', type: 'sparql-count', 
-    query: `
-      SELECT (COUNT(?o) AS ?no) WHERE { <non-existent-subject-yndh5> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?o }`
-    },
+  query: `
+    SELECT (COUNT(?o) AS ?no) WHERE { <non-existent-subject-yndh5> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?o }`
+  },
 
-    { heading: 'CONSTRUCT', type: 'sparql-construct', 
-    query: `CONSTRUCT { <non-existent-subject-yndh5> rdf:type ?o } { <non-existent-subject-yndh5> rdf:type ?o }` },
-
-    // { heading: 'TEST', type: 'sparql-construct-test', 
-    // query: `  PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-    // SELECT * WHERE {
-    //   <http://data.carnegiehall.org/names/26911> ?p ?o
-    // }` },
+  { heading: 'CONSTRUCT', type: 'sparql-construct', 
+  query: `CONSTRUCT { <non-existent-subject-yndh5> rdf:type ?o } { <non-existent-subject-yndh5> rdf:type ?o }` },
 
   // { heading: 'Testing Tab', type: 'test-success',
   //   query: `

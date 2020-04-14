@@ -22,7 +22,7 @@ $: statValueText = resultTextStore ? $resultTextStore : undefined;
 </style>
 
   <div class={statValueText !== 'no' ? 'main' : 'main valueno'}>
-  {#if sparqlStat.siteIconUrl}
+  {#if statValueText && sparqlStat.siteIconUrl}
     <img alt='' src={sparqlStat.siteIconUrl} height='15px' style='vertical-align: text-top; margin-top: 1px'/>
   {/if}
   {#if 1}
