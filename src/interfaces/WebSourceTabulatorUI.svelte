@@ -130,17 +130,19 @@ function updateAll () {
   if (extraEndpointsInputChecked) {
     extraDataSources = makeSourcesFromTextList(extraEndpointsInput);
     makeSourceTabulations(extraDataSources);
-    activeDataSources = extraDataSources ? extraDataSources : [];
+    if (extraDataSources && extraDataSources[0]) updateSources(extraDataSources);
   } else {
-    activeDataSources = dataSources;
+    updateSources(dataSources);
   }
+}
 
+function updateSources (sources) {
+  activeDataSources = sources;
   activeDataSources.forEach(source => {  
     console.log('DEBUG source:');console.dir(source)
     source.sparqlStats.forEach(stat => stat.updateSparqlStat());
   });
 }
-
 </script>
 
 <style>
