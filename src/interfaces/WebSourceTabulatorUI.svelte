@@ -163,7 +163,7 @@ function updateSources (sources) {
       <div style='width: 90%'>
       <label><input type=checkbox bind:checked={extraEndpointsInputChecked}/>Provide endpoints manually:<label>
       <textarea 
-        style='width: 60%'
+        style='width: 40%'
         rows='5' 
         hidden={!extraEndpointsInputChecked} 
         type=textarea 
@@ -176,7 +176,7 @@ function updateSources (sources) {
         hidden={!extraEndpointsInputChecked} 
         type=textarea 
         bind:value={customQueryInput}
-        placeholder="Optional 'Custom' SPARQL to include below."
+        placeholder="Optional 'Custom' SPARQL query to include below."
         />
       </div>
       <div>
