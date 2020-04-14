@@ -57,6 +57,10 @@ ASK {
 let extraDataSources = [];
 let activeDataSources = makeSourceTabulations(dataSources);
 
+let typeChecked = []; // For column header checkboxes
+sparqlTabulations.forEach(tab => typeChecked[tab.type] = true);
+console.log('typeChecked initialised:');console.dir(typeChecked);
+
 function makeSourcesFromTextList(text){
   console.log('makeSourcesFromTextList()');console.dir(text);
 
@@ -140,8 +144,15 @@ function updateSources (sources) {
   activeDataSources = sources;
   activeDataSources.forEach(source => {  
     console.log('DEBUG source:');console.dir(source)
-    source.sparqlStats.forEach(stat => stat.updateSparqlStat());
+    source.sparqlStats.forEach(stat => {
+      if (typeChecked[stat.config.type]) stat.updateSparqlStat();
+    });
   });
+}
+
+function updateStatEnable(statType) {
+  console.log('updateStatEnable(' + statType + ')');
+  console.dir(typeChecked);
 }
 </script>
 
@@ -161,7 +172,7 @@ function updateSources (sources) {
       <b>&lt;WebSourceTabulatorUI&gt;</b><br/>
       <br/>
       <div style='width: 90%'>
-      <label><input type=checkbox bind:checked={extraEndpointsInputChecked}/>Provide endpoints manually:<label>
+      <label><input type=checkbox bind:checked={extraEndpointsInputChecked}/>Provide endpoints manually{#if extraEndpointsInputChecked}:{/if}<label>
       <textarea 
         style='width: 40%'
         rows='5' 
@@ -188,7 +199,7 @@ function updateSources (sources) {
     <table>
     <tr>
       {#each activeDataSources[0].sparqlStats as stat}
-        <th>{stat.config.heading}</th>
+        <th>{#if stat.config.type !== 'stat-website'}<input type=checkbox bind:checked={typeChecked[stat.config.type]} on:change={() => updateStatEnable(stat.config.type)}/>{/if}{stat.config.heading}</th>
       {/each}
     </tr>
       {#each activeDataSources as source}
@@ -196,7 +207,7 @@ function updateSources (sources) {
         {#each source.sparqlStats as stat}
           <td>
           <!-- stat.config.source.endpoint: {stat.config.source.endpoint} -->
-          <svelte:component this={stat.uiComponent} sparqlStat={stat}/>
+          <div hidden={!typeChecked[stat.config.type]}><svelte:component this={stat.uiComponent} sparqlStat={stat}/></div>
           </td>
         {/each}
       </tr>
