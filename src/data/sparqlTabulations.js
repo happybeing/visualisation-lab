@@ -20,7 +20,7 @@
 
 export const sparqlTabulations = [
   { heading: 'Website', type: 'stat-website', query: `` },
-  { heading: 'SPARQL Version', type: 'sparql-stat', query: `` },
+  { heading: 'SPARQL', type: 'sparql-stat', query: `` },
 
   { heading: 'API', type: 'sparql-api', 
   query: `SELECT * WHERE { <non-existent-subject-yndh5> rdf:type ?o }` },
