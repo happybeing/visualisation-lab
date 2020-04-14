@@ -6,6 +6,10 @@ $: statStatus = statusTextStore ? $statusTextStore : undefined;
 
 $: resultTextStore = sparqlStat ? sparqlStat.resultTextStore : undefined;
 $: statValueText = resultTextStore ? $resultTextStore : undefined;
+
+function statClass(text) {
+  return text === 'no' ? 'main value-no' : (text === 'unknown' || text === '-' ? 'main value-unknown' : 'main');
+}
 </script>
 
 <style>
@@ -16,16 +20,19 @@ $: statValueText = resultTextStore ? $resultTextStore : undefined;
   padding-left: 0.5cm;
   padding-right: 0.5cm;
 }
-.valueno {
+.value-no {
   background: rgba(248, 179, 188, 0.782)  ;
+} 
+.value-unknown {
+  background: rgba(30, 179, 188, 0.782)  ;
 } 
 </style>
 
-  <div class={statValueText !== 'no' ? 'main' : 'main valueno'}>
+  <div class={statClass(statValueText)}>
   {#if statValueText && sparqlStat.siteIconUrl}
     <img alt='' src={sparqlStat.siteIconUrl} height='15px' style='vertical-align: text-top; margin-top: 1px'/>
   {/if}
-  {#if 1}
+  {#if sparqlStat.constructor.name === 'StatWebsite'}
     <a href={sparqlStat.config.source.endpoint}>{statValueText ? statValueText : 'no value'}</a>
   {:else}
     {statValueText ? statValueText : 'no value'}
