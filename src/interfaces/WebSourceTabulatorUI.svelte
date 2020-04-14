@@ -54,7 +54,9 @@ ASK {
 }`
 };
 
-let extraDataSources = [];
+$: extraDataSources = makeSourcesFromTextList(extraEndpointsInput);
+$: haveExtraSources = extraDataSources && extraDataSources[0];
+
 let activeDataSources = makeSourceTabulations(dataSources);
 
 let typeChecked = []; // For column header checkboxes
@@ -132,9 +134,9 @@ onDestroy( () => {
 
 function updateAll () {
   if (extraEndpointsInputChecked) {
-    extraDataSources = makeSourcesFromTextList(extraEndpointsInput);
+    
     makeSourceTabulations(extraDataSources);
-    if (extraDataSources && extraDataSources[0]) updateSources(extraDataSources);
+    if (haveExtraSources) updateSources(extraDataSources);
   } else {
     updateSources(dataSources);
   }
@@ -192,7 +194,7 @@ function updateStatEnable(statType) {
       </div>
       <div>
       <br/>
-      <button style='vertical-align: top' on:click={() => updateAll()}>Update Table:</button>
+      <button disabled={!haveExtraSources && extraEndpointsInputChecked} style='vertical-align: top' on:click={() => updateAll()}>Update Table:</button>
       </div>
       <text enabled={lastError !== undefined}>{lastError}</text>
     </div>
