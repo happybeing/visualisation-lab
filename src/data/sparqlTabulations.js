@@ -19,7 +19,7 @@
 // text/csv
 
 export const sparqlTabulations = [
-  { heading: 'Website', type: 'stat-website', query: `` },
+  { heading: 'SPARQL Endpoint', type: 'stat-website', query: `` },
   { heading: 'SPARQL', type: 'sparql-stat', query: `` },
 
   { heading: 'API', type: 'sparql-api', 
