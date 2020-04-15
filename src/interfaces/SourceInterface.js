@@ -694,8 +694,8 @@ export class SparqlStat extends SourceResult {
                               // as a tooltip but increases memory use and slows performance
   }
 
-  setResultText (resultText) { this.resultTextStore.set(resultText);}
-  getResultText () { return String($this.resultTextStore); }
+  setResultText (resultText) { this.resultText = resultText; this.resultTextStore.set(resultText);}
+  getResultText () { return this.resultText; }
 
   updateSparqlStat () {
     console.log('SparqlStat.updateSparqlStat() - ERROR - not implemented in subclass ' + this.constructor.name);
@@ -895,7 +895,7 @@ export class StatWebsite extends SparqlStat {
       this.setResultText(this.makeWebsiteName());
     });
   }
-
+  
   makeWebsiteName () {
     let websiteName = this.config.source.name;
     

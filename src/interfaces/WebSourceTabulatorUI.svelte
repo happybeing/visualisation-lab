@@ -156,6 +156,51 @@ function updateStatEnable(statType) {
   console.log('updateStatEnable(' + statType + ')');
   console.dir(typeChecked);
 }
+
+function copyTabulationToClipboard () {
+  console.log('copyTabulationToClipboard()');
+  navigator.permissions.query({name: "clipboard-write"}).then(result => {
+    const tabulationText = getTabulationAsTextCsv();
+
+    if (result.state == "granted" || result.state == "prompt") {
+      navigator.clipboard.writeText(tabulationText).then(function() {
+        window.notifications.notify('Tabulation written to clipboard.', {removeAfter: 1000});
+      }, function() {
+        window.notifications.notifyWarning('Write to clipboard failed.');
+      });
+    }
+    else
+        window.notifications.notifyWarning('Permission to write to clipboard was denied.');
+  });
+}
+
+function getTabulationAsTextCsv () {
+  const separator = ',';
+  
+  // First line is header and we pre-pend a column for the Endpoint URL
+  let csv = 'Endpoint URL';
+  activeDataSources[0].sparqlStats.forEach(stat => {
+    if (stat.config.type !== 'stat-website' || typeChecked[stat.config.type]) {
+      csv += separator + stat.config.heading;
+    }
+  });
+  csv += '\n';
+
+// One row per source
+  activeDataSources.forEach(source => {
+    csv += source.endpoint;
+    source.sparqlStats.forEach(stat => {
+      if (stat.config.type === 'stat-website')
+        csv += separator + ( stat.getResultText() ? stat.getResultText().trim() : source.name );
+      else if (typeChecked[stat.config.type])
+        csv += separator + stat.resultText;
+    });
+    csv += '\n';
+  });
+
+  return csv;
+}
+
 </script>
 
 <style>
@@ -215,5 +260,6 @@ function updateStatEnable(statType) {
       </tr>
       {/each}
     </table>
+    <a on:click={copyTabulationToClipboard}>Copy table</a> (to clipboard (as CSV)
   </div>
 </div>
