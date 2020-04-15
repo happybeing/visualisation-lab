@@ -35,13 +35,18 @@ Usage - inside component:
   // and...
   <button on:click={() => window.notifications.notifySuccess('Well done!')}>Notify me</button>
 
+  // You can override the options for an individual message, for example to set the time before
+  // removal:
+
+  window.notifications.notify('This will display for a second', {removeAfter: 1000});
+
 BUG: Notifications that don't disappear and can't be dismissed with a click.
 This can occur when creating multiple notifications in succession. I was not able to replicate 
 this in my src/svelte/test-svelte-notifications repo. It happens every time if I have the 
 following code in the Visualisation Lab WebSparqlUI.loadSparqlQuery() method AND I 
 click 'Run Query' multiple times:
 
-  window.notifications.notify('Blimey');
+  window.notifications.notify('Blimey', {removeAfter: 1000});
   window.notifications.notifyWarning('Warn');
   window.notifications.notifyError('Err');
   window.notifications.notifySuccess('Succ');
@@ -80,20 +85,20 @@ class AppNotifications {
   getOptions () {return this.notificationOptions;}
   setOptions (options) { Object.assign(this.notificationOptions, options);}
 
-  notify(message) {
-    this._notify(Object.assign({key: this.nextKey++}, this.notificationOptions,  {text: message, type: 'default'}));
+  notify(message, options) {
+    this._notify({...this.notificationOptions, ...{text: message, type: 'default'}, ...(options ? options : {})});
   }
 
   notifySuccess(message) {
-    this._notify(Object.assign({key: this.nextKey++}, this.notificationOptions,  {text: message, type: 'success'}));
+    this._notify({...this.notificationOptions, ...{text: message, type: 'success'}, ...(options ? options : {})});
   }
 
   notifyWarning(message) {
-    this._notify(Object.assign({key: this.nextKey++}, this.notificationOptions,  {text: message, type: 'warning'}));
+    this._notify({...this.notificationOptions, ...{text: message, type: 'warning'}, ...(options ? options : {})});
   }
 
   notifyError(message) {
-    this._notify(Object.assign({key: this.nextKey++}, this.notificationOptions,  {text: message, type: 'danger'}));
+    this._notify({...this.notificationOptions, ...{text: message, type: 'danger'}, ...(options ? options : {})});
   }
     
   removeNotification (id) {
