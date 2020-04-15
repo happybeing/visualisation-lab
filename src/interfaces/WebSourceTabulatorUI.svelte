@@ -157,14 +157,17 @@ function updateStatEnable(statType) {
   console.dir(typeChecked);
 }
 
-function copyTabulationToClipboard () {
-  console.log('copyTabulationToClipboard()');
+function copyTabulationToClipboardAsCsv () { copyTabulationToClipboard('CSV'); }
+function copyTabulationToClipboardAsJson () { copyTabulationToClipboard('JSON'); }
+
+function copyTabulationToClipboard (type) {
+  console.log('copyTabulationToClipboard()');console.dir(type);
   navigator.permissions.query({name: "clipboard-write"}).then(result => {
-    const tabulationText = getTabulationAsTextCsv();
+    const tabulationText = (type === 'JSON' ? getTabulationAsTextCsv() : getTabulationAsTextJson());
 
     if (result.state == "granted" || result.state == "prompt") {
       navigator.clipboard.writeText(tabulationText).then(function() {
-        window.notifications.notify('Tabulation written to clipboard.', {removeAfter: 1000});
+        window.notifications.notify('Tabulation written to clipboard as ' + type, {removeAfter: 1000});
       }, function() {
         window.notifications.notifyWarning('Write to clipboard failed.');
       });
@@ -200,6 +203,34 @@ function getTabulationAsTextCsv () {
 
   return csv;
 }
+
+function getTabulationAsTextJson () {
+  const separator = ',';
+  
+  // First line is header and we pre-pend a column for the Endpoint URL
+  let csv = 'Endpoint URL';
+  activeDataSources[0].sparqlStats.forEach(stat => {
+    if (stat.config.type !== 'stat-website' || typeChecked[stat.config.type]) {
+      csv += separator + stat.config.heading;
+    }
+  });
+  csv += '\n';
+
+// One row per source
+  activeDataSources.forEach(source => {
+    csv += source.endpoint;
+    source.sparqlStats.forEach(stat => {
+      if (stat.config.type === 'stat-website')
+        csv += separator + ( stat.getResultText() ? stat.getResultText().trim() : source.name );
+      else if (typeChecked[stat.config.type])
+        csv += separator + stat.resultText;
+    });
+    csv += '\n';
+  });
+
+  return csv;
+}
+
 
 </script>
 
@@ -238,28 +269,33 @@ function getTabulationAsTextCsv () {
         />
       </div>
       <div>
-      <br/>
-      <button disabled={!haveExtraSources && extraEndpointsInputChecked} style='vertical-align: top' on:click={() => updateAll()}>Update Table:</button>
       </div>
       <text enabled={lastError !== undefined}>{lastError}</text>
     </div>
-    <table>
-    <tr>
-      {#each activeDataSources[0].sparqlStats as stat}
-        <th><label>{#if stat.config.type !== 'stat-website'}<input type=checkbox bind:checked={typeChecked[stat.config.type]} on:change={() => updateStatEnable(stat.config.type)}/><br/>{/if}{stat.config.heading}</label></th>
-      {/each}
-    </tr>
-      {#each activeDataSources as source}
+    <div>
+      <br/>
+      <table><tr><td colspan='100'>
+      <button disabled={!haveExtraSources && extraEndpointsInputChecked} style='vertical-align: top' on:click={() => updateAll()}>Update Table</button>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      Copy table to clipboard as: 
+      <a on:click={copyTabulationToClipboardAsCsv}>CSV</a>
+      </td></tr>
       <tr>
-        {#each source.sparqlStats as stat}
-          <td>
-          <!-- stat.config.source.endpoint: {stat.config.source.endpoint} -->
-          <div hidden={!typeChecked[stat.config.type]}><svelte:component this={stat.uiComponent} sparqlStat={stat}/></div>
-          </td>
+        {#each activeDataSources[0].sparqlStats as stat}
+          <th><label>{#if stat.config.type !== 'stat-website'}<input type=checkbox bind:checked={typeChecked[stat.config.type]} on:change={() => updateStatEnable(stat.config.type)}/><br/>{/if}{stat.config.heading}</label></th>
         {/each}
       </tr>
-      {/each}
-    </table>
-    <a on:click={copyTabulationToClipboard}>Copy table</a> (to clipboard (as CSV)
+        {#each activeDataSources as source}
+        <tr>
+          {#each source.sparqlStats as stat}
+            <td>
+            <!-- stat.config.source.endpoint: {stat.config.source.endpoint} -->
+            <div hidden={!typeChecked[stat.config.type]}><svelte:component this={stat.uiComponent} sparqlStat={stat}/></div>
+            </td>
+          {/each}
+        </tr>
+        {/each}
+      </table>
+    </div>
   </div>
 </div>
