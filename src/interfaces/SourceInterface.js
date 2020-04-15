@@ -870,7 +870,22 @@ export class StatWebsite extends SparqlStat {
     console.log('SparqlStatWebsite.updateSparqlStat()');
     const url = this.config.source.endpoint;
     fetch(url)
-    .then(response => response.text())
+    .then(response => 
+      {response.text()}   // This works for debug and production builds
+      // response.text()  // This works for debug, but the production build gives this error:
+      //
+      //   bundle.js:28 Uncaught (in promise) TypeError: Right-hand side of 'instanceof' is not an object
+      // at dt (bundle.js:28)
+      // at ct (bundle.js:28)
+      // at Jn (bundle.js:28)
+      // at Jn (bundle.js:28)
+      // at Kn (bundle.js:28)
+      // at we (bundle.js:28)
+      // at Ie.insertToken (bundle.js:28)
+      // at nt (bundle.js:28)
+      // at sn (bundle.js:28)
+      // at Ue (bundle.js:28)
+    )
     .then(html => {
       const doc = domino.createWindow(html).document;
       const metadata = getMetadata(doc, url);
