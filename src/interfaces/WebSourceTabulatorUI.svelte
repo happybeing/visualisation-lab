@@ -201,7 +201,7 @@ function updateStatEnable(statType) {
     <table>
     <tr>
       {#each activeDataSources[0].sparqlStats as stat}
-        <th>{#if stat.config.type !== 'stat-website'}<input type=checkbox bind:checked={typeChecked[stat.config.type]} on:change={() => updateStatEnable(stat.config.type)}/>{/if}{stat.config.heading}</th>
+        <th><label>{#if stat.config.type !== 'stat-website'}<input type=checkbox bind:checked={typeChecked[stat.config.type]} on:change={() => updateStatEnable(stat.config.type)}/><br/>{/if}{stat.config.heading}</label></th>
       {/each}
     </tr>
       {#each activeDataSources as source}
