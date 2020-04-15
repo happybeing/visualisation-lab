@@ -163,7 +163,7 @@ function copyTabulationToClipboardAsJson () { copyTabulationToClipboard('JSON');
 function copyTabulationToClipboard (type) {
   console.log('copyTabulationToClipboard()');console.dir(type);
   navigator.permissions.query({name: "clipboard-write"}).then(result => {
-    const tabulationText = (type === 'JSON' ? getTabulationAsTextCsv() : getTabulationAsTextJson());
+    const tabulationText = (type === 'JSON' ? getTabulationAsTextJson() : getTabulationAsTextCsv());
 
     if (result.state == "granted" || result.state == "prompt") {
       navigator.clipboard.writeText(tabulationText).then(function() {
@@ -205,33 +205,18 @@ function getTabulationAsTextCsv () {
 }
 
 function getTabulationAsTextJson () {
-  const separator = ',';
   
-  // First line is header and we pre-pend a column for the Endpoint URL
-  let csv = 'Endpoint URL';
-  activeDataSources[0].sparqlStats.forEach(stat => {
-    if (stat.config.type !== 'stat-website' || typeChecked[stat.config.type]) {
-      csv += separator + stat.config.heading;
-    }
-  });
-  csv += '\n';
+  let json = `export const dataSources =
+[
+`;
 
-// One row per source
   activeDataSources.forEach(source => {
-    csv += source.endpoint;
-    source.sparqlStats.forEach(stat => {
-      if (stat.config.type === 'stat-website')
-        csv += separator + ( stat.getResultText() ? stat.getResultText().trim() : source.name );
-      else if (typeChecked[stat.config.type])
-        csv += separator + stat.resultText;
-    });
-    csv += '\n';
+    json += "  { name: '" + source.name + "', endpoint: '" + source.endpoint + "', options: " + JSON.stringify(source.options) + '},\n';
   });
 
-  return csv;
+  json += '];'
+  return json;
 }
-
-
 </script>
 
 <style>
@@ -278,7 +263,8 @@ function getTabulationAsTextJson () {
       <button disabled={!haveExtraSources && extraEndpointsInputChecked} style='vertical-align: top' on:click={() => updateAll()}>Update Table</button>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
       Copy table to clipboard as: 
-      <a on:click={copyTabulationToClipboardAsCsv}>CSV</a>
+      <a on:click={copyTabulationToClipboardAsCsv}>CSV</a> or 
+      <a on:click={copyTabulationToClipboardAsJson}>JSON</a>
       </td></tr>
       <tr>
         {#each activeDataSources[0].sparqlStats as stat}
