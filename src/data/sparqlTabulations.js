@@ -205,9 +205,9 @@ export const queryPaper1_1 = [
 
 export const tabulationGroups = {
   'Basic Queries': basicTabulations,
-  'Test Queries': testTabulations,
-  'v1.0 Queries': queryPaper1_0, 
-  'v1.1 Queries': queryPaper1_1,
+  'Testing': testTabulations,
+  'SPARQL 1.0': queryPaper1_0, 
+  'SPARQL 1.1': queryPaper1_1,
   'Custom Query': customTabulation,
 };
 

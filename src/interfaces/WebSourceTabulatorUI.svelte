@@ -51,14 +51,14 @@ let extraEndpointsInput = '';//invalidEndpointTests;
 let customQueryInput;
 
 let optionalTabulations = [
-  'Test Queries',
-  'v1.0 Queries', 
-  'v1.1 Queries',
+  'Testing',
+  'SPARQL 1.0', 
+  'SPARQL 1.1',
   'Custom Query'
   ];
 
 let allTabulationGroups = ['Basic Queries', ...optionalTabulations];
-let chosenTabulations = ['Test Queries'];
+let chosenTabulations = ['Testing'];
 
 $: tabulationGroupsToCollect = ['Basic Queries', ...chosenTabulations];
 
@@ -253,7 +253,7 @@ function getTabulationAsTextJson () {
     <br/>
     <div style='width: 100%;'>
       <div style='width: 15%; margin-right: 5%; display: inline-block;'>
-        <label>Query Groups:</label>
+        <label>Select Queries:</label>
         <select style='' multiple bind:value={chosenTabulations}>
           {#each optionalTabulations as tabulationOption}
             <option value={tabulationOption}>
