@@ -760,7 +760,8 @@ export class SparqlEndpointReportSuccess extends SparqlStat {
 
   updateSparqlStat () {
     console.log('SparqlEndpointReportSuccess.updateSparqlStat()');
-    this.loadSparqlQuery(this.sourceResultStore, undefined, this.config.source.endpoint, this.config.query, this.config.options)
+    if (this.config.query.trim().length)
+      this.loadSparqlQuery(this.sourceResultStore, undefined, this.config.source.endpoint, this.config.query, this.config.options)
   }
 }
 
@@ -849,7 +850,8 @@ export class SparqlEndpointStat extends SparqlStat {
 
   updateSparqlStat () {
     console.log('SparqlEndpointStat.updateSparqlStat()');
-    this.loadUri(this.sourceResultStore, undefined, this.config.source.endpoint, this.config.query, this.config.options);
+    if (this.config.query.trim().length)
+     this.loadUri(this.sourceResultStore, undefined, this.config.source.endpoint, this.config.query, this.config.options);
   }
 }
 
