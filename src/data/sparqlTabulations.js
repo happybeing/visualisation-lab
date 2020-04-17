@@ -23,6 +23,10 @@ export const basicTabulations = [
   { heading: 'Version', type: 'sparql-stat', query: `` },
 ];
 
+export const customTabulation = [
+  { heading: 'Custom Query', type: 'sparql-custom', query: `` }
+];
+
 /////////////////////// My Tests
 
 export const testTabulations = [
@@ -203,6 +207,7 @@ export const tabulationGroups = {
   'Basic Queries': basicTabulations,
   'Test Queries': testTabulations,
   'v1.0 Queries': queryPaper1_0, 
-  'v1.1 Queries': queryPaper1_1, 
+  'v1.1 Queries': queryPaper1_1,
+  'Custom Query': customTabulation,
 };
 
