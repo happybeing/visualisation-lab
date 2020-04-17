@@ -18,10 +18,15 @@
 // text/turtle
 // text/csv
 
-export const sparqlTabulations = [
+export const basicTabulations = [
   { heading: 'SPARQL Endpoint', type: 'stat-website', query: `` },
-  { heading: 'SPARQL', type: 'sparql-stat', query: `` },
+  { heading: 'Version', type: 'sparql-stat', query: `` },
+];
 
+/////////////////////// My Tests
+
+export const testTabulations = [
+  
   { heading: 'API', type: 'sparql-api', 
   query: `SELECT * WHERE { <non-existent-subject-yndh5> rdf:type ?o }` },
 
@@ -98,3 +103,106 @@ export const sparqlTabulations = [
   //   query: `` 
   // },
 ];
+
+/////////////////////// SPARQL Web-Querying Paper
+
+export const queryPaper1_0 = [
+  //
+  // SPARQL 1.0
+  //
+
+  { heading: '1.0 ASK[.]', type: 'sparql-wqp-1.0', query: `
+  PREFIX owl: <http://www.w3.org/2002/07/owl#>
+  ASK {
+  ?s ?o owl:Thing
+  }` },
+
+  { heading: '1.0 CON[.]', type: 'sparql-wqp-1.0', query: `
+  PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+  CONSTRUCT { ?x rdf:type ?o }
+  WHERE
+  {
+    ?x rdf:type ?o .
+  } LIMIT 100` },
+
+  { heading: '1.0 CON[JOIN]', type: 'sparql-wqp-1.0', query: `
+  PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+  CONSTRUCT { ?x rdf:type ?v }
+  WHERE
+  {
+    ?x rdf:type ?o .
+    ?o rdf:type ?x
+  } LIMIT 100
+  ` },
+
+  { heading: '1.0 CON[OPT]', type: 'sparql-wqp-1.0', query: `
+  PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+  CONSTRUCT { ?x rdf:type ?v }
+  WHERE
+  {
+    ?x rdf:type ?o .
+    OPTIONAL {?o rdf:type ?v }
+  } LIMIT 100
+  ` },
+
+  // { heading: '1.0 ???', type: 'sparql-wqp-1.0', query: `` },
+];
+
+export const queryPaper1_1 = [
+  //
+  // SPARQL 1.1
+  //
+
+  { heading: '1.1 ASK[FIL(!IN)]', type: 'sparql-wqp-1.1', query: `
+  ASK {
+    FILTER(2 NOT IN ())
+  }
+  ` },
+  
+  { heading: '1.1 CON-[.]', type: 'sparql-wqp-1.1', query: `
+  PREFIX : <http://example.org/>
+  CONSTRUCT WHERE { ?s ?p ?o} LIMIT 100
+  ` },
+  
+  { heading: '1.1 SEL[AVG]', type: 'sparql-wqp-1.1', query: `
+  PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+  SELECT (AVG(?o) AS ?avg)
+  WHERE {
+    ?s rdf:type ?o
+  } LIMIT 100
+  ` },
+
+  { heading: '1.1 SEL[BIND]', type: 'sparql-wqp-1.1', query: `
+  PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+  SELECT ?z
+  {
+    ?s rdf:type ?o .
+    BIND(?o+10 AS ?z)
+  } LIMIT 100
+  ` },
+
+  { heading: '1.1 SEL[FIL(!EXISTS)]', type: 'sparql-wqp-1.1', query: `
+  PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+  PREFIX owl: <http://www.w3.org/2002/07/owl#>
+  # SPARQL 1.1
+  SELECT *
+  WHERE
+  {	?p rdf:type ?type .
+    FILTER NOT EXISTS {
+      ?p owl:sameAs ?same
+    }
+  } LIMIT 100
+  ` },
+
+  // { heading: '1.1 ???', type: 'sparql-wqp-1.1', query: `` },
+  // { heading: '1.1 ???', type: 'sparql-wqp-1.1', query: `` },
+  // { heading: '1.1 ???', type: 'sparql-wqp-1.1', query: `` },
+];
+
+export const tabulationGroups = {
+  'Basic Queries': basicTabulations,
+  'Test Queries': testTabulations,
+  'v1.0 Queries': queryPaper1_0, 
+  'v1.1 Queries': queryPaper1_1, 
+};
+

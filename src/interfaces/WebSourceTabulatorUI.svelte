@@ -8,7 +8,7 @@ import {onDestroy} from 'svelte';
 // TODO: add ability to add/remove sources using UI
 // TODO: add ability for gathered data to be saved (in dataSources.js?)
 import {dataSources} from '../data/dataSources.js';
-import {sparqlTabulations} from '../data/sparqlTabulations.js';
+import {tabulationGroups} from '../data/sparqlTabulations.js';
 
 import {SparqlStat, SparqlEndpointStat, SparqlEndpointReportSuccess, StatWebsite} from '../interfaces/SourceInterface.js';
 import SparqlStatUI from '../interfaces/SparqlStatUI.svelte';
@@ -22,6 +22,8 @@ const tabulationTypes = [
   { type: 'sparql-count', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointReportSuccess } },
 
   { type: 'sparql-custom', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointReportSuccess } },
+  { type: 'sparql-wqp-1.0', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointReportSuccess } },
+  { type: 'sparql-wqp-1.1', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointReportSuccess } },
   { type: 'test-success', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointReportSuccess } },
 ];
 
@@ -48,20 +50,44 @@ let extraEndpointsInputChecked = false;
 let extraEndpointsInput = '';//invalidEndpointTests;
 
 let customQueryInput;
-const customTabulation = { heading: 'Custom Query', type: 'sparql-custom', query: `
-ASK {
-  FILTER(2 NOT IN ())
-}`
-};
+const customTabulation = { heading: 'Custom Query', type: 'sparql-custom', query: `` };
+
+let optionalTabulations = [
+  'Test Queries',
+  'v1.0 Queries', 
+  'v1.1 Queries',
+  ];
+
+let chosenTabulations = ['Test Queries'];
+$: tabulationGroupsToShow = ['Basic Queries', ...chosenTabulations];
 
 $: extraDataSources = makeSourcesFromTextList(extraEndpointsInput);
 $: haveExtraSources = extraDataSources && extraDataSources[0];
 
-let activeDataSources = makeSourceTabulations(dataSources);
+$: tabulationsToShow = makeTabulationsToShow(tabulationGroupsToShow);
+$: activeDataSources = makeSourceTabulations(dataSources, tabulationsToShow);
 
-let typeChecked = []; // For column header checkboxes
-sparqlTabulations.forEach(tab => typeChecked[tab.type] = true);
-console.log('typeChecked initialised:');console.dir(typeChecked);
+let typeChecked = []; // Column header checkbox state
+
+function makeTabulationsToShow(groups) {
+  console.log('makeTabulationsToShow()');console.dir(groups);
+  console.dir(tabulationGroups);
+  let tabulationsToShow = [];
+  groups.forEach(group => {
+    console.log('group: ' + group); console.dir(group);
+    tabulationGroups[group].forEach(tabulation => {
+      tabulation.group = group;
+      tabulationsToShow.push(tabulation)
+    });
+  })
+  console.log('tabulationsToShow updated:');console.log(tabulationsToShow);
+
+  if (typeChecked[customTabulation.heading] === undefined ) typeChecked[customTabulation.heading] = true;
+
+  tabulationsToShow.forEach(tab => {if (typeChecked[tab.heading] === undefined) typeChecked[tab.heading] = true;} );
+  console.log('typeChecked initialised:');console.dir(typeChecked);
+  return tabulationsToShow;
+}
 
 function makeSourcesFromTextList(text){
   console.log('makeSourcesFromTextList()');console.dir(text);
@@ -80,22 +106,66 @@ function makeSourcesFromTextList(text){
   return sources;
 }
 
-function makeSourceTabulations (sources) {
+// function makeSourceTabulations (sources, tabulationsToShow) {
+//   destroySources(sources);
+
+//   const tabulationTypesMap = new Map();
+//   tabulationTypes.forEach(tabType => tabulationTypesMap.set(tabType.type, tabType.value));
+
+//   console.log('WebSouceTabulatorUI.Initialising Tabulation Data..');
+//   sources.forEach(source => {
+//     source.sparqlStats = [];
+//     // console.log('tabulationsToShow');console.dir(tabulationsToShow);
+//     tabulationsToShow.forEach(tableEntry => {
+//       const newTableEntry = {...tableEntry};
+//       newTableEntry.source = source;
+//       const tabTypes = tabulationTypesMap.get(newTableEntry.type);
+//       if (!tabTypes) {
+//         console.error('tabTypes not present in tabulationsTypesMap for \'' + newTableEntry.type + '\'');
+//         console.dir(newTableEntry);console.dir(tableEntry);
+//       }
+//       const stat = new tabTypes.tabClass(newTableEntry, undefined);
+//       stat.uiComponent = tabTypes.uiComponent;
+//       source.sparqlStats.push(stat);
+//     });
+
+    
+//     if (extraEndpointsInputChecked){
+//       let query;
+//       if (customQueryInput && customQueryInput.trim().length) query = customQueryInput;
+
+//       if (!customQueryInput || customQueryInput.length !== query.length) customQueryInput = query;
+//       customTabulation.source = source;
+//       customTabulation.query = query;
+//       const tabTypes = tabulationTypesMap.get(customTabulation.type);
+//       const stat = new tabTypes.tabClass(customTabulation, undefined);
+//       stat.uiComponent = tabTypes.uiComponent;
+//       source.sparqlStats.push(stat);
+//     }
+//   });
+
+//   return sources;
+// }
+
+function makeSourceTabulations (sources, tabulationsToShow) {
   destroySources(sources);
 
   const tabulationTypesMap = new Map();
   tabulationTypes.forEach(tabType => tabulationTypesMap.set(tabType.type, tabType.value));
 
-  console.log('WebSouceTabulatorUI.Inisitalising Tabulation Data..');
+  console.log('WebSouceTabulatorUI.Initialising Tabulation Data..');
   sources.forEach(source => {
     source.sparqlStats = [];
-    // console.log('sparqlTabulations');console.dir(sparqlTabulations);
-    sparqlTabulations.forEach(tableEntry => {
-      const newTableEnty = {...tableEntry};
-      newTableEnty.source = source;
-      const tabTypes = tabulationTypesMap.get(newTableEnty.type);
-
-      const stat = new tabTypes.tabClass(newTableEnty, undefined);
+    // console.log('tabulationsToShow');console.dir(tabulationsToShow);
+    tabulationsToShow.forEach(tableEntry => {
+      const newTableEntry = {...tableEntry};
+      newTableEntry.source = source;
+      const tabTypes = tabulationTypesMap.get(newTableEntry.type);
+      if (!tabTypes) {
+        console.error('tabTypes not present in tabulationsTypesMap for \'' + newTableEntry.type + '\'');
+        console.dir(newTableEntry);console.dir(tableEntry);
+      }
+      const stat = new tabTypes.tabClass(newTableEntry, undefined);
       stat.uiComponent = tabTypes.uiComponent;
       source.sparqlStats.push(stat);
     });
@@ -104,17 +174,14 @@ function makeSourceTabulations (sources) {
     if (extraEndpointsInputChecked){
       let query;
       if (customQueryInput && customQueryInput.trim().length) query = customQueryInput;
-      if (!query && customTabulation.query && customTabulation.query.trim().length) query = customTabulation.query;
-      if (query) {
-        if (!customQueryInput || customQueryInput.length !== query.length) customQueryInput = query;
-        customTabulation.source = source;
-        customTabulation.query = query;
-        const tabTypes = tabulationTypesMap.get(customTabulation.type);
 
-        const stat = new tabTypes.tabClass(customTabulation, undefined);
-        stat.uiComponent = tabTypes.uiComponent;
-        source.sparqlStats.push(stat);
-      }
+      if (!customQueryInput || customQueryInput.length !== query.length) customQueryInput = query;
+      customTabulation.source = source;
+      customTabulation.query = query;
+      const tabTypes = tabulationTypesMap.get(customTabulation.type);
+      const stat = new tabTypes.tabClass(customTabulation, undefined);
+      stat.uiComponent = tabTypes.uiComponent;
+      source.sparqlStats.push(stat);
     }
   });
 
@@ -135,7 +202,7 @@ onDestroy( () => {
 function updateAll () {
   if (extraEndpointsInputChecked) {
     
-    makeSourceTabulations(extraDataSources);
+    makeSourceTabulations(extraDataSources, tabulationsToShow);
     if (haveExtraSources) updateSources(extraDataSources);
   } else {
     updateSources(dataSources);
@@ -147,7 +214,7 @@ function updateSources (sources) {
   activeDataSources.forEach(source => {  
     console.log('DEBUG source:');console.dir(source)
     source.sparqlStats.forEach(stat => {
-      if (typeChecked[stat.config.type]) stat.updateSparqlStat();
+      if (typeChecked[stat.config.heading]) stat.updateSparqlStat();
     });
   });
 }
@@ -183,7 +250,7 @@ function getTabulationAsTextCsv () {
   // First line is header and we pre-pend a column for the Endpoint URL
   let csv = 'Endpoint URL';
   activeDataSources[0].sparqlStats.forEach(stat => {
-    if (stat.config.type !== 'stat-website' || typeChecked[stat.config.type]) {
+    if (stat.config.type !== 'stat-website' || typeChecked[stat.config.heading]) {
       csv += separator + stat.config.heading;
     }
   });
@@ -195,7 +262,7 @@ function getTabulationAsTextCsv () {
     source.sparqlStats.forEach(stat => {
       if (stat.config.type === 'stat-website')
         csv += separator + ( stat.getResultText() ? stat.getResultText().trim() : source.name );
-      else if (typeChecked[stat.config.type])
+      else if (typeChecked[stat.config.heading])
         csv += separator + stat.resultText;
     });
     csv += '\n';
@@ -226,40 +293,53 @@ function getTabulationAsTextJson () {
   border-radius: 1cm;
   padding-left: 1cm;
 }
+.tabconfig {
+  background: rgba(0, 196, 25, 0.582);
+  height: 100px
+}
 </style>
 
 <div class="main">
   <datalist id="example-endpoints"></datalist>
   <div>
-    <div>
-      <b>&lt;WebSourceTabulatorUI&gt;</b><br/>
-      <br/>
-      <div style='width: 90%'>
-      <label><input type=checkbox bind:checked={extraEndpointsInputChecked}/>Provide endpoints manually{#if extraEndpointsInputChecked}:{/if}<label>
-      <textarea 
-        style='width: 40%'
-        rows='5' 
-        hidden={!extraEndpointsInputChecked} 
-        type=textarea 
-        bind:value={extraEndpointsInput} 
-        placeholder='Enter endpoint URLs, one per line'
-        />
-      <textarea 
-        style='width: 30%'
-        rows='5' 
-        hidden={!extraEndpointsInputChecked} 
-        type=textarea 
-        bind:value={customQueryInput}
-        placeholder="Optional 'Custom' SPARQL query to include below."
-        />
+    <b>&lt;WebSourceTabulatorUI&gt;</b><br/>
+    <br/>
+    <div style='width: 100%;'>
+      <div style='width: 15%; margin-right: 5%; display: inline-block;'>
+        <label>Query Groups:</label>
+        <select style='' multiple bind:value={chosenTabulations}>
+          {#each optionalTabulations as tabulationOption}
+            <option value={tabulationOption}>
+              {tabulationOption}
+            </option>
+          {/each}
+        </select>
       </div>
-      <div>
+      <div style='width: 70%; padding-left: 5%; display: inline-block;'>
+        <label style='position: relative; '><input type=checkbox bind:checked={extraEndpointsInputChecked}/>Specify endpoints{#if extraEndpointsInputChecked}:{/if}</label>
+
+        <textarea 
+          style='width: 40%;'
+          rows='4' 
+          hidden={!extraEndpointsInputChecked} 
+          type=textarea 
+          bind:value={extraEndpointsInput} 
+          placeholder='Enter endpoint URLs, one per line'
+          />
+        <textarea 
+          style='width: 45%;'
+          rows='4' 
+          hidden={!extraEndpointsInputChecked} 
+          type=textarea 
+          bind:value={customQueryInput}
+          placeholder="Optional 'Custom' SPARQL query"
+          />
       </div>
-      <text enabled={lastError !== undefined}>{lastError}</text>
     </div>
-    <div>
-      <br/>
-      <table><tr><td colspan='100'>
+    <text enabled={lastError !== undefined}>{lastError}</text>
+    <div style='width: 800px; height: 10px;display: block;'></div>
+    <div style='width: 100%; display: block;'>
+      <table style='xwidth: 100%'><tr><td colspan='100'>
       <button disabled={!haveExtraSources && extraEndpointsInputChecked} style='vertical-align: top' on:click={() => updateAll()}>Update Table</button>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
       Copy table to clipboard as: 
@@ -268,7 +348,7 @@ function getTabulationAsTextJson () {
       </td></tr>
       <tr>
         {#each activeDataSources[0].sparqlStats as stat}
-          <th><label>{#if stat.config.type !== 'stat-website'}<input type=checkbox bind:checked={typeChecked[stat.config.type]} on:change={() => updateStatEnable(stat.config.type)}/><br/>{/if}{stat.config.heading}</label></th>
+          <th><label>{#if stat.config.type !== 'stat-website'}<input type=checkbox bind:checked={typeChecked[stat.config.heading]} on:change={() => updateStatEnable(stat.config.type)}/><br/>{/if}{stat.config.heading}</label></th>
         {/each}
       </tr>
         {#each activeDataSources as source}
@@ -276,7 +356,7 @@ function getTabulationAsTextJson () {
           {#each source.sparqlStats as stat}
             <td>
             <!-- stat.config.source.endpoint: {stat.config.source.endpoint} -->
-            <div hidden={!typeChecked[stat.config.type]}><svelte:component this={stat.uiComponent} sparqlStat={stat}/></div>
+            <div hidden={!typeChecked[stat.config.heading]}><svelte:component this={stat.uiComponent} sparqlStat={stat}/></div>
             </td>
           {/each}
         </tr>
