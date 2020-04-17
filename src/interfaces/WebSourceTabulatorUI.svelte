@@ -89,18 +89,23 @@ let allTabulations = [];
 }
 
 function makeSourcesFromTextList(text){
-  console.log('makeSourcesFromTextList()');console.dir(text);
+  console.log('makeSourcesFromTextList()');
 
   const sources = [];
   if (text) {
     const lines = text.split('\n');
-    console.dir(lines);
 
+    let urls = [];
     lines.forEach(line => {
-      const url = line.trim();
-      if (line.length) sources.push({ endpoint: url });
+      let url = line.toLowerCase().trim();
+      if (url.endsWith('/')) url = url.substring(0, url.length-1);
+
+      if (line.length && !urls.includes(url)) {
+        urls.push(url);
+        sources.push({ endpoint: url });
+      }
     });
-    console.log('SOURCES:');console.dir(sources);
+    // console.log('SOURCES:');console.dir(sources);
   }
   return sources;
 }
@@ -203,7 +208,7 @@ function getTabulationAsTextCsv () {
   });
   csv += '\n';
 
-// One row per source
+  // One row per source
   activeDataSources.forEach(source => {
     csv += source.endpoint;
     source.sparqlStats.forEach(stat => {
@@ -287,9 +292,10 @@ function getTabulationAsTextJson () {
       <table style='xwidth: 100%'><tr><td colspan='100'>
       <button disabled={!haveExtraSources && extraEndpointsInputChecked} style='vertical-align: top' on:click={() => updateAll()}>Update Table</button>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      Copy table to clipboard as: 
-      <a on:click={copyTabulationToClipboardAsCsv}>CSV</a> or 
-      <a on:click={copyTabulationToClipboardAsJson}>JSON</a>
+      Copy table to clipboard: 
+      as results (<a on:click={copyTabulationToClipboardAsCsv}>CSV</a>)
+      or VisLab dataSources.js 
+      (<a on:click={copyTabulationToClipboardAsJson}>JSON</a>)
       </td></tr>
       <tr>
         {#each activeDataSources[0].sparqlStats as stat}
