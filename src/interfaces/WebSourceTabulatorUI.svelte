@@ -294,7 +294,7 @@ function getTabulationAsTextJson () {
       <tr>
         {#each activeDataSources[0].sparqlStats as stat}
           {#if tabulationGroupsToCollect.includes(stat.config.group)}
-            <th><label>{#if stat.config.type !== 'stat-website'}<input type=checkbox bind:checked={typeChecked[stat.config.heading]} on:change={() => updateStatEnable(stat.config.type)}/><br/>{/if}{stat.config.heading}</label></th>
+            <th><label title={stat.config.query}>{#if stat.config.type !== 'stat-website'}<input type=checkbox bind:checked={typeChecked[stat.config.heading]} on:change={() => updateStatEnable(stat.config.type)}/><br/>{/if}{stat.config.heading}</label></th>
           {/if}
         {/each}
       </tr>
