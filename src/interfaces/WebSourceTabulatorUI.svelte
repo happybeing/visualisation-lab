@@ -240,9 +240,8 @@ function getTabulationAsTextJson () {
   border-radius: 1cm;
   padding-left: 1cm;
 }
-.tabconfig {
-  background: rgba(0, 196, 25, 0.582);
-  height: 100px
+.vspace {
+  margin-top: 8px;
 }
 </style>
 
@@ -252,7 +251,7 @@ function getTabulationAsTextJson () {
     <b>&lt;WebSourceTabulatorUI&gt;</b><br/>
     <br/>
     <div style='width: 100%;'>
-      <div style='width: 15%; margin-right: 5%; display: inline-block;'>
+      <div style='margin-right: 20px; display: inline-block;'>
         <label>Select Queries:</label>
         <select style='' multiple bind:value={chosenTabulations}>
           {#each optionalTabulations as tabulationOption}
@@ -262,26 +261,25 @@ function getTabulationAsTextJson () {
           {/each}
         </select>
       </div>
-      <div style='width: 70%; padding-left: 5%; display: inline-block;'>
-        <label style='position: relative; '><input type=checkbox bind:checked={extraEndpointsInputChecked}/>Specify endpoints{#if extraEndpointsInputChecked}:{/if}</label>
-
         <textarea 
-          style='width: 40%;'
-          rows='4' 
-          hidden={!extraEndpointsInputChecked} 
-          type=textarea 
-          bind:value={extraEndpointsInput} 
-          placeholder='Enter endpoint URLs, one per line'
-          />
-        <textarea 
-          style='width: 45%;'
-          rows='4' 
-          hidden={!extraEndpointsInputChecked} 
+          style='vertical-align: bottom; display: inline-block;'
+          rows='4'
+          cols='40' 
           type=textarea 
           bind:value={customQueryInput}
           placeholder="Optional 'Custom' SPARQL query"
           />
-      </div>
+    </div>
+    <div class='vspace'>
+      <label style='position: relative; '><input type=checkbox bind:checked={extraEndpointsInputChecked}/>Specify endpoints{#if extraEndpointsInputChecked}:{/if}</label>
+      <textarea 
+        rows='4' 
+        cols='40'
+        hidden={!extraEndpointsInputChecked} 
+        type=textarea 
+        bind:value={extraEndpointsInput} 
+        placeholder='Enter endpoint URLs, one per line'
+        />
     </div>
     <text enabled={lastError !== undefined}>{lastError}</text>
     <div style='width: 800px; height: 10px;display: block;'></div>
