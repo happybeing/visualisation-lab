@@ -4,12 +4,13 @@ TODO: extend this from SPARQL endpoints to support other kinds of Web data sourc
 -->
 <script>
 import {onDestroy} from 'svelte';
+import {writable} from 'svelte/store';
 
 // TODO: add ability for gathered data to be saved (in dataSources.js?)
 import {dataSources} from '../data/dataSources.js';
 import {tabulationGroups} from '../data/sparqlTabulations.js';
 
-import {SparqlStat, SparqlEndpointStat, SparqlEndpointReportSuccess, StatWebsite} from '../interfaces/SourceInterface.js';
+import {SparqlStat, SparqlEndpointStat, SparqlEndpointReportSuccess, StatWebsite, FetchMonitor} from '../interfaces/SourceInterface.js';
 import SparqlStatUI from '../interfaces/SparqlStatUI.svelte';
 // import {SparqlStatTableUI} from '../interfaces/SparqlStatTableUI.svelte';
 
@@ -44,7 +45,13 @@ https://data.open.ac.uk/queryx
 let toTest = 'https://data.open.ac.uk/query';
 let testDbpedia = 'https://data.open.ac.uk/query';
 
-let lastError;
+const webSourceTabulatorStatusStore = writable(0);
+const fetchMonitor = new FetchMonitor(webSourceTabulatorStatusStore);
+window.fetchMonitor = fetchMonitor; // For access to fetchMonitor.dump() etc in browser console
+
+$: statusText = $webSourceTabulatorStatusStore ? $webSourceTabulatorStatusStore : 'idle';
+let statusText = 'idle';
+
 let extraEndpointsInputChecked = false;
 let extraEndpointsInput = '';//invalidEndpointTests;
 
@@ -58,7 +65,7 @@ let optionalTabulations = [
   ];
 
 let allTabulationGroups = ['Basic Queries', ...optionalTabulations];
-let chosenTabulations = ['Testing'];
+let chosenTabulations = [];//['SPARQL 1.1'];
 
 $: tabulationGroupsToCollect = ['Basic Queries', ...chosenTabulations];
 
@@ -107,7 +114,14 @@ function makeSourcesFromTextList(text){
     });
     // console.log('SOURCES:');console.dir(sources);
   }
-  return sources;
+
+/* TODO: sort by TLD, domain, subdomains, protocol
+  // Sort ignoring protocol
+  sources.sort((s1, s2) => {
+
+  });
+*/
+return sources;
 }
 
 function makeSourceTabulations (sources) {
@@ -131,7 +145,7 @@ function makeSourceTabulations (sources) {
       if (newTableEntry.group === 'Custom Query') {
         if (customQueryInput && customQueryInput.trim().length) newTableEntry.query = customQueryInput;
       }
-      const stat = new tabTypes.tabClass(newTableEntry, undefined);
+      const stat = new tabTypes.tabClass(newTableEntry, fetchMonitor);
       stat.uiComponent = tabTypes.uiComponent;
       source.sparqlStats.push(stat);
     });
@@ -142,8 +156,17 @@ function makeSourceTabulations (sources) {
 
 // To avoid memory leak destroy each source.sparqlStats because the above creates circular refs:
 //   tableEntry->source, source.sparqlStats->stat, stat->tableEntry
+// The fetchMonitor has an array of the SparqlStats so must be re-initialised to release its refs
 function destroySources(sources) {
-  sources.forEach(source => source.sparqlStats = undefined);
+  sources.forEach(source => {
+    if (source.sparqlStats)
+      source.sparqlStats.forEach(stat => {
+        if (stat.unsubscribge) stat.unsubscribe();
+        stat.unsubscribe = undefined;
+      });
+    source.sparqlStats = undefined
+  });
+  fetchMonitor.reset();
 }
 
 onDestroy( () => {
@@ -152,6 +175,7 @@ onDestroy( () => {
 });
 
 function updateAll () {
+  fetchMonitor.reset();
   if (extraEndpointsInputChecked) {
     
     makeSourceTabulations(extraDataSources);
@@ -286,16 +310,18 @@ function getTabulationAsTextJson () {
         placeholder='Enter endpoint URLs, one per line'
         />
     </div>
-    <text enabled={lastError !== undefined}>{lastError}</text>
-    <div style='width: 800px; height: 10px;display: block;'></div>
-    <div style='width: 100%; display: block;'>
-      <table style='xwidth: 100%'><tr><td colspan='100'>
-      <button disabled={!haveExtraSources && extraEndpointsInputChecked} style='vertical-align: top' on:click={() => updateAll()}>Update Table</button>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      Copy table to clipboard: 
-      as results (<a on:click={copyTabulationToClipboardAsCsv}>CSV</a>)
-      or VisLab dataSources.js 
-      (<a on:click={copyTabulationToClipboardAsJson}>JSON</a>)
+    <div style='width: 100%; display: block; padding-top: 8px;'>
+      <table style=''>
+      <tr><td colspan='100'>
+        <button disabled={!haveExtraSources && extraEndpointsInputChecked} style='vertical-align: top' on:click={() => updateAll()}>Update Table</button>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        Copy table to clipboard: 
+        as results (<a on:click={copyTabulationToClipboardAsCsv}>CSV</a>)
+        or VisLab dataSources.js 
+        (<a on:click={copyTabulationToClipboardAsJson}>JSON</a>)
+      </td></tr>
+      <tr><td style='padding-top: 8px;' colspan='100'>
+        <b>Status: </b>{statusText}
       </td></tr>
       <tr>
         {#each activeDataSources[0].sparqlStats as stat}

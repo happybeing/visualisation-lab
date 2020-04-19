@@ -142,20 +142,48 @@ export class SourceResult {
   constructor (sourceInterface) {
     this.sourceInterface = sourceInterface;
     this.fetchStatus = fetchStatus.IDLE;
-    this.responseStore = writable(undefined);
+    this.responseStore = writable(undefined); // { response: response, error: error }
     this.useStreams = true;  // Disabling streams allows tabulator UI to display response body
                             // as a tooltip but increases memory use and slows performance
   }
 
   // Status allows handling of errors by subscribers to the sourceResultStore
-  fetchStarting () { this.fetchStatus = fetchStatus.FETCHING; this.response = undefined; }
-  fetchResponded (response) { this.fetchStatus = fetchStatus.RESPONSE; this.lastResponse = response; this.responseStore.set(response); }
-  fetchAbandoned () { this.fetchStatus = fetchStatus.FAILED; }
+  fetchStarting () { 
+    this.fetchStatus = fetchStatus.FETCHING; 
+    this.response = undefined; 
+    if (this.fetchMonitor) this.fetchMonitor.fetchStarted(this);
+  }
+
+  fetchResponseReceived (response) {
+    this.fetchStatus = fetchStatus.RESPONSE; 
+    this.lastFetchResponse = response;
+  }
+
+  fetchResponded (response) {
+    this.updateResponseStore({response: response}); 
+  }
+
   getFetchStatus () { return this.fetchStatus; }
-  getLastResponse () { return this.lastResponse; }
+  getLastFetchResponse () { return this.lastFetchResponse; }
+  getLastFetchError () { return this.lastFetchError; }
+  getLastFetchErrorCaller () { return this.lastFetchErrorCaller; }
+  updateResponseStore(responseOrErrorObject) { this.responseStore.set(responseOrErrorObject ? Object.assign({}, responseOrErrorObject) : 0); }
+
+  // Two ways to complete a fetch: 
+  // 
+  // consumeFetchResponse() = process response which can be an error (200, 400 etc) or 
+  // fetchAbandond encounter a hard error (e.g. parsing or bug)
   consumeFetchResponse (responseAccepted) {
-    this.fetchStatus = responseAccepted ? fetchStatus.COMPLETE : fetchStatus.BAD_RESPONSE; 
-    return this.lastResponse;
+    this.fetchStatus = responseAccepted ? fetchStatus.COMPLETE : fetchStatus.BAD_RESPONSE;
+    if (this.fetchMonitor) this.fetchMonitor.fetchConsumed(this);
+  
+    return this.lastFetchResponse;
+  }
+  abandonFetchResponse (caller, e) { 
+    this.lastFetchErrorCaller = caller; 
+    this.lastFetchError = e; 
+    this.fetchStatus = fetchStatus.FAILED;
+    if (this.fetchMonitor) this.fetchMonitor.fetchAbandoned(this);
   }
 
   getSourceInterface () {return this.sourceInterface;}
@@ -522,6 +550,7 @@ export class SourceResult {
                        // See: https://stackoverflow.com/a/54906434/4802953
       headers: headers,
     }).then(response => {
+      this.fetchResponseReceived(response);
       if (response.ok ) {
         this._processResponse(response, sourceResultStore, statusTextStore) 
       } else {
@@ -529,14 +558,16 @@ export class SourceResult {
         console.dir(response);
         console.warn(warning);
         this._notifyWarning(warning);
+        sourceResultStore.set(0);
+        this.fetchResponded(response);
       }
     }).catch(e => {
       console.error(e);
       this._notifyWarning('Query failed.');
       this._notifyError(e.message);
-      this.fetchAbandoned();
+      this.abandonFetchResponse('SourceResult.loadUri()', e);
       sourceResultStore.set(0);
-      this.responseStore.set(0);
+      this.updateResponseStore({error: e});
     });
   }
 
@@ -588,7 +619,7 @@ export class SourceResult {
       this._notifyError(e.message);
       this.consumeFetchResponse(false);  // Response failed to be processed
       sourceResultStore.set(0);
-      this.responseStore.set(0);
+      this.updateResponseStore({error: e, response: response});
     }
   }
 
@@ -606,7 +637,7 @@ export class SourceResult {
       this._notifyError(e.message);
       this.consumeFetchResponse(false);  // Response failed to be processed
       sourceResultStore.set(0);
-      this.responseStore.set(0);
+      this.updateResponseStore({error: e, response: response});
     });
   }
 
@@ -680,9 +711,133 @@ to customise their behaviour.
 
 import {writable} from 'svelte/store';
 
+/** Class to hold aggregate summary data for SparqlStat activity (such as outstanding fetch operations)
+
+Used to help generate aggregate status for a UI such as:
+
+  'Status: fetch operations completed 123, outstanding 34, errors 2'
+*/
+export class FetchMonitor {
+  constructor (statusTextStore) {
+    this.reset();
+    this.statusTextStore = statusTextStore; // Text updated by each fetchStarted(), fetchConsumed() etc call (or every N calls?)
+  }
+
+  reset () {
+    this.fetchesStarted = 0;
+    this.fetchesConsumed = 0;
+    this.fetchesAbandoned = 0;
+    this.fetchBadResponses = 0;
+
+    this.responseCodes = [];
+    this.abandonCallers = [];
+    this.abandonErrors = [];
+    this.sparqlStats = [];
+  }
+
+  fetchesStarted () {return this.fetchesStarted;}
+  fetchesConsumed () {return this.fetchesConsumed;}
+  fetchesAbandoned () {return this.fetchesAbandoned;}
+  fetchesCompleted () {return this.fetchesConsumed + this.fetchesAbandoned;}
+  fetchBadResponses () {return this.fetchBadResponses;}
+
+  fetchesOutstanding () {return this.fetchesStarted - this.fetchesConsumed - this.fetchesAbandoned;}
+
+  simpleTextStatus () {
+    return ' fetch operations: ' + String(this.fetchesConsumed + this.fetchesAbandoned).padStart(4, ' ') + ' completed, ' +
+    String(this.fetchesOutstanding()).padStart(4, ' ') + ' outstanding, ' +
+    String(this.fetchBadResponses + this.fetchesAbandoned) + ' errors.';
+  }
+
+  fetchStarted (sparqlStat) {
+    if (!this.sparqlStats.includes(sparqlStat))  this.sparqlStats.push(sparqlStat);
+    this.fetchesStarted++;
+    if (this.statusTextStore) return this.statusTextStore.set(this.simpleTextStatus());
+  }
+
+  fetchConsumed (sparqlStat) {
+    this.fetchesConsumed++;
+    this._endFetch(sparqlStat);
+    if (this.statusTextStore) return this.statusTextStore.set(this.simpleTextStatus());
+  }
+
+  fetchAbandoned (sparqlStat) {
+    this.fetchesAbandoned++;
+    this._endFetch(sparqlStat);
+    if (this.statusTextStore) return this.statusTextStore.set(this.simpleTextStatus());
+  }
+
+  /* TODO ...
+  ??? need to provide the consume/abandon functions with granularity which can be passed to the fetchMonitor 
+  ??? to collect all the stats I want for UI status, development and testing. 
+  For example:
+  - responses that are accepted = ok, content ok, >= 400 code which the SparqlStat regards as not an error
+    -> add a ignoreFetchAbandon (etc) flags to SparqlStat saying its ok for the current fetch to fail which prevents errors being counted as errors
+  - responses with >= 400 error codes that are errors
+    -> record the error code, the URI, log these plus SparqlStat to console
+  - responses which fail during processing 
+    -> record the failure when known (parsing, and what was being parsed) the URI, 
+       or the error object if not known, 
+       log these plus SparqlStat to console 
+  - timeouts, CORS and other errors that need to be classified as well as counted as errors
+    -> record the error type, the URI, log these plus SparqlStat to console
+  - add a debug command to:
+    - print a summary of the stats and response code counts
+    - tabulate the fetch status of all SparqlStats in the fetchMonitor by URI, by tabulation etc
+  */
+
+  _endFetch(sparqlStat) {
+    const response = sparqlStat.getLastFetchResponse();
+    if (response) {
+      if (!this.responseCodes[response.status]) 
+        this.responseCodes[response.status] = 1;
+      else 
+        this.responseCodes[response.status]++;
+
+      if (sparqlStat.getFetchStatus === fetchStatus.BAD_RESPONSE) this.fetchBadResponses++;
+    }
+
+    const error = sparqlStat.getLastFetchError();
+    if (error) {
+      const caller = sparqlStat.getLastFetchErrorCaller();
+      if (!this.abandonCallers[caller]) 
+        this.abandonCallers[caller] = 1;
+      else
+        this.abandonCallers[caller]++;
+
+      this.abandonErrors.push({caller: caller, error: error, response: response});
+    }
+  }
+
+    dump () {
+    let stats ='DMP ==== fetchMonitor Stats Dump ====';
+    stats += '\nDMP Fetches:';
+    stats += '\nDMP  started:    ' + this.fetchesStarted;
+    stats += '\nDMP  consumed:   ' + this.fetchesConsumed;
+    stats += '\nDMP  abandoned:  ' + this.fetchesAbandoned;
+    stats += '\nDMP  incomplete: ' + this.fetchesOutstanding();
+    stats += '\nDMP ';
+    stats += '\nDMP Response codes:';
+    this.responseCodes.forEach((count, code) => {
+      stats += '\nDMP ' + code + ': ' + count;
+    });
+    console.log(stats);
+
+    this.abandonErrors.forEach((error) => {
+      console.log('\nDMP caller: ' + error.caller);
+      console.log(' response/error:');
+      console.dir(error.response);
+      console.dir(error.error);
+    });
+    console.log('DMP SparqlStats:');
+    console.dir(this.sparqlStats);
+  }
+}
+
 export class SparqlStat extends SourceResult {
-  constructor (config) {
+  constructor (config, fetchMonitor) {
     super(null); // SparqlStat has source URI in config, does not use a SourceInterface
+    this.fetchMonitor = fetchMonitor; // Generates status text and helps testing and development
 
     this.config = config;
     this.statusText = '-statusText';
@@ -707,19 +862,35 @@ export class SparqlStat extends SourceResult {
  */
 
 export class SparqlEndpointReportSuccess extends SparqlStat {
-  constructor (config) {
-    super(config);
+  constructor (config, fetchMonitor) {
+    super(config, fetchMonitor);
     console.log('NEW SparqlEndpointReportSuccess has config.source.endpoint: ' + this.config.source.endpoint);
     this.serviceInfo = {
       version: '-',
     };
 
     const self = this;
-    function _handleResponse (response) {
+    function _handleResponse (responseOrErrorObject) {
       // console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
       // console.log('self.config.source.endpoint: ' + self.config.source.endpoint);
-      // console.log('SparqlEndpointReportSuccess._handleResponse()'); console.dir(self);console.dir(self.getLastResponse());
+      // console.log('SparqlEndpointReportSuccess._handleResponse()'); console.dir(self);console.dir(responseOrErrorObject);
       // console.log('fetch status; ' + self.getFetchStatus());
+      // console.log('DATA MODEL:');console.dir(self.jsonModel);
+        
+      let response;
+      let error;
+      if (responseOrErrorObject) { 
+        response = responseOrErrorObject.response;
+        error = responseOrErrorObject.error;
+      }
+
+      if (error) {
+        console.log('TODO: ' + this.constructor.name + '_handleResponse()\nTODO url: ' + 
+          (response ? response.url : '') + 
+          '\nTODO: error: ' + error + 
+          '\nTODO: response object: ');
+          console.dir(response);
+      }
 
       if (self.getFetchStatus() === fetchStatus.IDLE ) {
         self.setResultText('-');
@@ -727,9 +898,7 @@ export class SparqlEndpointReportSuccess extends SparqlStat {
       }
 
       let success = false;
-      // const response = self.getLastResponse();
-      
-      let unknownResult = response.status >= 400 ? 'error' : undefined; // Errors  we haven't handled as 'unknown' result
+      let unknownResult = response && response.status >= 400 ? 'error' : undefined; // Errors  we haven't handled as 'unknown' result
       
       // Error code ref: https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#4xx_Client_errors
       if (unknownResult && response.status == 400 /*bad request*/) {
@@ -773,21 +942,28 @@ export class SparqlEndpointReportSuccess extends SparqlStat {
  */
 
 export class SparqlEndpointStat extends SparqlStat {
-  constructor (config) {
-    super(config);
+  constructor (config, fetchMonitor) {
+    super(config, fetchMonitor);
     console.log('NEW SparqlEndpointStat has config.source.endpoint: ' + this.config.source.endpoint);
     this.serviceInfo = {
       version: '-',
     };
 
     const self = this;
-    function _handleResponse (sourceResult) {
+    function _handleResponse (responseOrErrorObject) {
 
-      // console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
-      // console.log('self.config.source.endpoint: ' + self.config.source.endpoint);
-      // console.log('SparqlEndpointStat._handleResponse()'); console.dir(self);console.dir(self.getLastResponse());
-      // console.log('fetch status; ' + self.getFetchStatus());
-      // console.log('JSON MODEL:');console.dir(self.jsonModel);
+      console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
+      console.log('self.config.source.endpoint: ' + self.config.source.endpoint);
+      console.log('SparqlEndpointStat._handleResponse()'); console.dir(self);console.dir(responseOrErrorObject);
+      console.log('fetch status; ' + self.getFetchStatus());
+      console.log('DATA MODEL:');console.dir(self.jsonModel);
+
+      let response;
+      let error;
+      if (responseOrErrorObject) { 
+        response = responseOrErrorObject.response;
+        error = responseOrErrorObject.error;
+      }
 
       if (self.getFetchStatus() === fetchStatus.IDLE) {
         self.setResultText('-');
@@ -797,7 +973,6 @@ export class SparqlEndpointStat extends SparqlStat {
       // Error code ref: https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#4xx_Client_errors
 
       self.serviceInfo = { version: '1.0 (inferred)' };  // Default unless the result is not valid
-      const response = self.getLastResponse();
       let unknownResult;  // When set we can't determine the outcome and this holds an explanatory
       if (!response) {
         // The fetch failed without a response (e.g. blocked by CORS)
@@ -807,7 +982,7 @@ export class SparqlEndpointStat extends SparqlStat {
 
         if (unknownResult && response.status == 400 /*bad request*/) {
           unknownResult = undefined; // Unsupported query means result is known (success is false)
-        } else  if (unknownResult && response.statusCode == 408 /*request timeout*/) {
+        } else  if (unknownResult && response.status == 408 /*request timeout*/) {
           // Query not successful
           unknownResult = 'timeout';
         }
@@ -845,13 +1020,12 @@ export class SparqlEndpointStat extends SparqlStat {
       self.setResultText(self.serviceInfo.version);
     }
 
-    this.unsubscribe = this.sourceResultStore.subscribe(_handleResponse);
+    this.unsubscribe = this.responseStore.subscribe(_handleResponse);
   }
 
   updateSparqlStat () {
     console.log('SparqlEndpointStat.updateSparqlStat()');
-    if (this.config.query.trim().length)
-     this.loadUri(this.sourceResultStore, undefined, this.config.source.endpoint, this.config.query, this.config.options);
+    this.loadUri(this.sourceResultStore, undefined, this.config.source.endpoint, this.config.options);
   }
 }
 
@@ -862,8 +1036,8 @@ const {getMetadata} = require('page-metadata-parser');
 const domino = require('domino');
 
 export class StatWebsite extends SparqlStat {
-  constructor (config) {
-    super(config);
+  constructor (config, fetchMonitor) {
+    super(config, fetchMonitor);
     console.log('NEW SparqlStatWebsite has config.source.endpoint: ' + this.config.source.endpoint);
     this.setResultText(this.makeWebsiteName() + ' '); // Add a space so updateSparqlStat() will set different string
   }
