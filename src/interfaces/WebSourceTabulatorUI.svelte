@@ -163,6 +163,7 @@ function destroySources(sources) {
       source.sparqlStats.forEach(stat => {
         if (stat.unsubscribge) stat.unsubscribe();
         stat.unsubscribe = undefined;
+        stat.fetchMonitor = undefined;
       });
     source.sparqlStats = undefined
   });
@@ -175,10 +176,12 @@ onDestroy( () => {
 });
 
 function updateAll () {
+  // Remake source SparqlStats to ignore any pending fetch responses
+  makeSourceTabulations(dataSources);
+  if (haveExtraSources) makeSourceTabulations(extraDataSources);
+
   fetchMonitor.reset();
   if (extraEndpointsInputChecked) {
-    
-    makeSourceTabulations(extraDataSources);
     if (haveExtraSources) updateSources(extraDataSources);
   } else {
     updateSources(dataSources);

@@ -150,7 +150,8 @@ export class SourceResult {
   // Status allows handling of errors by subscribers to the sourceResultStore
   fetchStarting () { 
     this.fetchStatus = fetchStatus.FETCHING; 
-    this.response = undefined; 
+    this.lastFetchResponse = undefined; 
+    this.lastFetchResponseError = undefined; 
     if (this.fetchMonitor) this.fetchMonitor.fetchStarted(this);
   }
 
@@ -159,15 +160,22 @@ export class SourceResult {
     this.lastFetchResponse = response;
   }
 
-  fetchResponded (response) {
-    this.updateResponseStore({response: response}); 
-  }
-
   getFetchStatus () { return this.fetchStatus; }
   getLastFetchResponse () { return this.lastFetchResponse; }
   getLastFetchError () { return this.lastFetchError; }
   getLastFetchErrorCaller () { return this.lastFetchErrorCaller; }
-  updateResponseStore(responseOrErrorObject) { this.responseStore.set(responseOrErrorObject ? Object.assign({}, responseOrErrorObject) : 0); }
+  
+  responseProcessingComplete(error) {
+    this.lastFetchError = error;
+    if (this.fetchStatus === fetchStatus.COMPLETE || 
+        this.fetchStatus === fetchStatus.BAD_RESPONSE ||
+        this.fetchStatus === fetchStatus.FAILED) {
+      const responseOrErrorObject = {error: error, response: this.lastFetchResponse};
+
+      if (this.fetchMonitor) this.fetchMonitor.fetchCompleted(this);
+      this.responseStore.set(responseOrErrorObject);
+    }
+  }
 
   // Two ways to complete a fetch: 
   // 
@@ -175,9 +183,6 @@ export class SourceResult {
   // fetchAbandond encounter a hard error (e.g. parsing or bug)
   consumeFetchResponse (responseAccepted) {
     this.fetchStatus = responseAccepted ? fetchStatus.COMPLETE : fetchStatus.BAD_RESPONSE;
-    if (this.fetchMonitor) this.fetchMonitor.fetchConsumed(this);
-  
-    return this.lastFetchResponse;
   }
   abandonFetchResponse (caller, e) { 
     this.lastFetchErrorCaller = caller; 
@@ -237,6 +242,7 @@ export class SourceResult {
           console.log('rdfDataset size: ', rdfDataset.size);
           self.setJsonModel({values: rdfDataset, modelFormat: modelFormats.RAW_RDFDATASET});
           self.sourceResultStore.update(v => self);
+          self.responseProcessingComplete();
           },
         error (e) {
           // this._notifyWarning('Failed to parse RDF result.')
@@ -244,6 +250,7 @@ export class SourceResult {
           console.log('rdfDataset size: ', rdfDataset.size);
           self.setJsonModel(undefined);
           self.sourceResultStore.update(v => self);
+          self.responseProcessingComplete(e);
           }
         });
         readableStreamToGraphyReader(stream, graphyReader);
@@ -297,6 +304,7 @@ export class SourceResult {
             sourceInterface: this,
           });
           self.sourceResultStore.update(v => self);
+          self.responseProcessingComplete();
         },
         error (e) {
           // this._notifyWarning('Failed to parse RDF text.')
@@ -304,6 +312,7 @@ export class SourceResult {
           console.log('rdfDataset size: ', rdfDataset.size);
           self.setJsonModel(undefined);
           self.sourceResultStore.update(v => self);
+          self.responseProcessingComplete(e);
           }
       })
     } catch (e) { 
@@ -324,6 +333,7 @@ export class SourceResult {
     this.sourceResultStore = sourceResultStore;
     this.setJsonModel({values: json, modelFormat: modelFormats.RAW_JSON});
     this.sourceResultStore.update(v => {instance: this});    
+    this.responseProcessingComplete();
   }
 
   // XML - currently only used to check for valid XML response body
@@ -336,6 +346,7 @@ export class SourceResult {
     this.sourceResultStore = sourceResultStore;
     this.setJsonModel({values: xmlJson, modelFormat: modelFormats.RAW_JSON});
     this.sourceResultStore.update(v => {instance: this});    
+    this.responseProcessingComplete();
   }
 
   // JSON - initially just used to load a JSON graph test file into the resultStore as VM_GRAPH_JSON
@@ -345,6 +356,7 @@ export class SourceResult {
     this.sourceResultStore = sourceResultStore;
     this.setJsonModel({values: lesMisData, modelFormat: modelFormats.VM_GRAPH_JSON});
     this.sourceResultStore.update(v => {instance: this});
+    this.responseProcessingComplete();
   }
 
   consumeCsvText (sourceResultStore, statusTextStore, csvText, {mimeType, size, stringToNumber}) {
@@ -374,6 +386,7 @@ export class SourceResult {
         if (statusTextStore) statusTextStore.set(records + ' records loaded');
         self.setJsonModel({values: csvJson, modelFormat: modelFormats.VM_TABULAR_JSON});
         self.sourceResultStore.update(v => self);
+        self.responseProcessingComplete();
       })
       // Pass the text to the parser
       csvText.split('\n').forEach(line => {
@@ -418,6 +431,7 @@ export class SourceResult {
         if (statusTextStore) statusTextStore.set(records + ' records loaded');
         self.setJsonModel({values: csvJson, modelFormat: modelFormats.VM_TABULAR_JSON});
         self.sourceResultStore.update(v => self);
+        self.responseProcessingComplete();
       })
       readableStreamToConsumer(stream, parser);
     } catch(e) {
@@ -458,6 +472,7 @@ export class SourceResult {
         if (statusTextStore) statusTextStore.set(records + ' records loaded');
         self.setJsonModel({values: csvJson, modelFormat: modelFormats.VM_TABULAR_JSON});
         self.sourceResultStore.update(v => self);
+        self.responseProcessingComplete(e);
       })
       readableStreamToConsumer(stream, parser);
     } catch(e) {
@@ -559,7 +574,7 @@ export class SourceResult {
         console.warn(warning);
         this._notifyWarning(warning);
         sourceResultStore.set(0);
-        this.fetchResponded(response);
+        this.responseProcessingComplete();
       }
     }).catch(e => {
       console.error(e);
@@ -567,7 +582,7 @@ export class SourceResult {
       this._notifyError(e.message);
       this.abandonFetchResponse('SourceResult.loadUri()', e);
       sourceResultStore.set(0);
-      this.updateResponseStore({error: e});
+      this.responseProcessingComplete(e);
     });
   }
 
@@ -580,33 +595,36 @@ export class SourceResult {
       const contentLength = (response.headers.get('Content-Length'));
       const responseType = this.responseType = response.headers.get('Content-Type');
       if (responseType.startsWith('text/csv')) {
+        this.consumeFetchResponse(true);
         if (this.useStreams) {
           this.consumeCsvStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
           if (statusTextStore ) statusTextStore.set('');
-          this.fetchResponded(response);    
         } else {
           this.responseTypeAbbrev = 'CSV';
           this._processTextResponseUsing(sourceResultStore, statusTextStore, response, {size: contentLength}, this.consumeCsvText);
         }
       } else if (responseType.startsWith('text/turtle')) {
+        this.consumeFetchResponse(true);
         if (this.useStreams) {
           this.consumeRdfStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
           if (statusTextStore ) statusTextStore.set('');
-          this.fetchResponded(response);
         } else {
           this.responseTypeAbbrev = 'Ttl';
           this._processTextResponseUsing(sourceResultStore, statusTextStore, response, {size: contentLength}, this.consumeRdfTtlText);
         }
       } else if (responseType.startsWith('application/sparql-results+json')) {
+        this.consumeFetchResponse(true);
         this.responseTypeAbbrev = 'Json';
         this._processTextResponseUsing(sourceResultStore, statusTextStore, response, {size: contentLength}, this.consumeJsonText);
       } else if (responseType.startsWith('application/sparql-results+xml')) {
+        this.consumeFetchResponse(true);
         this.responseTypeAbbrev = 'XML';
         this._processTextResponseUsing(sourceResultStore, statusTextStore, response, {size: contentLength}, this.consumeXmlText);
       }
       else {
         // Unexpected response type
         const warning = 'Unexpected content type: ' + responseType;
+        this.consumeFetchResponse(false);  // Response failed to be processed
         console.dir(response);
         response.text().then(text => console.dir({text}));
         if (statusTextStore) statusTextStore.set('Returned: ' + responseType);
@@ -619,7 +637,7 @@ export class SourceResult {
       this._notifyError(e.message);
       this.consumeFetchResponse(false);  // Response failed to be processed
       sourceResultStore.set(0);
-      this.updateResponseStore({error: e, response: response});
+      this.responseProcessingComplete(e);
     }
   }
 
@@ -629,7 +647,6 @@ export class SourceResult {
       this.responseText = text; // Saved for use by tabulation UI but could be expensive on memory
       this[textProcessor.name](sourceResultStore, statusTextStore, text, {size: contentLength})
       if (statusTextStore ) statusTextStore.set('');
-      this.fetchResponded(response);    
     })
     .catch(e => {
       console.error(e);
@@ -637,7 +654,7 @@ export class SourceResult {
       this._notifyError(e.message);
       this.consumeFetchResponse(false);  // Response failed to be processed
       sourceResultStore.set(0);
-      this.updateResponseStore({error: e, response: response});
+      this.responseProcessingComplete(e);
     });
   }
 
@@ -725,7 +742,7 @@ export class FetchMonitor {
 
   reset () {
     this.fetchesStarted = 0;
-    this.fetchesConsumed = 0;
+    this.fetchesCompleted = 0;
     this.fetchesAbandoned = 0;
     this.fetchBadResponses = 0;
 
@@ -736,15 +753,14 @@ export class FetchMonitor {
   }
 
   fetchesStarted () {return this.fetchesStarted;}
-  fetchesConsumed () {return this.fetchesConsumed;}
+  fetchesCompleted () {return this.fetchesCompleted;}
   fetchesAbandoned () {return this.fetchesAbandoned;}
-  fetchesCompleted () {return this.fetchesConsumed + this.fetchesAbandoned;}
   fetchBadResponses () {return this.fetchBadResponses;}
 
-  fetchesOutstanding () {return this.fetchesStarted - this.fetchesConsumed - this.fetchesAbandoned;}
+  fetchesOutstanding () {return this.fetchesStarted - this.fetchesCompleted;}
 
   simpleTextStatus () {
-    return ' fetch operations: ' + String(this.fetchesConsumed + this.fetchesAbandoned).padStart(4, ' ') + ' completed, ' +
+    return ' fetch operations: ' + String(this.fetchesCompleted).padStart(4, ' ') + ' completed, ' +
     String(this.fetchesOutstanding()).padStart(4, ' ') + ' outstanding, ' +
     String(this.fetchBadResponses + this.fetchesAbandoned) + ' errors.';
   }
@@ -755,14 +771,13 @@ export class FetchMonitor {
     if (this.statusTextStore) return this.statusTextStore.set(this.simpleTextStatus());
   }
 
-  fetchConsumed (sparqlStat) {
-    this.fetchesConsumed++;
-    this._endFetch(sparqlStat);
+  fetchAbandoned (sparqlStat) {
+    this.fetchesAbandoned++;
     if (this.statusTextStore) return this.statusTextStore.set(this.simpleTextStatus());
   }
 
-  fetchAbandoned (sparqlStat) {
-    this.fetchesAbandoned++;
+  fetchCompleted (sparqlStat) {
+    this.fetchesCompleted++;
     this._endFetch(sparqlStat);
     if (this.statusTextStore) return this.statusTextStore.set(this.simpleTextStatus());
   }
@@ -813,7 +828,7 @@ export class FetchMonitor {
     let stats ='DMP ==== fetchMonitor Stats Dump ====';
     stats += '\nDMP Fetches:';
     stats += '\nDMP  started:    ' + this.fetchesStarted;
-    stats += '\nDMP  consumed:   ' + this.fetchesConsumed;
+    stats += '\nDMP  consumed:   ' + this.fetchesCompleted;
     stats += '\nDMP  abandoned:  ' + this.fetchesAbandoned;
     stats += '\nDMP  incomplete: ' + this.fetchesOutstanding();
     stats += '\nDMP ';
@@ -914,7 +929,7 @@ export class SparqlEndpointReportSuccess extends SparqlStat {
         success = true;
       } else if (self.getFetchStatus() === fetchStatus.RESPONSE) {
         // The fetch completed but the response was not consumed (regarded as success)
-        const response = self.consumeFetchResponse(true);
+        self.consumeFetchResponse(true);
         success = true;
       } else if (self.getFetchStatus() === fetchStatus.BAD_RESPONSE) {
         // The fetch completed but the response was not appropriate, so we fail
@@ -1002,14 +1017,14 @@ export class SparqlEndpointStat extends SparqlStat {
           };
         } else if (self.getFetchStatus() === fetchStatus.COMPLETE) {
           // The fetch completed but the response was not understood
-          const response = self.consumeFetchResponse(true);
+          self.consumeFetchResponse(true);
           console.log('Unable to obtain service description');
           self.serviceInfo = {
             version: '1.0 (inferred)',
           };      
         } else if (self.getFetchStatus() === fetchStatus.RESPONSE) {
           // The fetch completed but the response was not consumed
-          const response = self.consumeFetchResponse(true);
+          self.consumeFetchResponse(true);
           console.log('Unable to obtain service description');
           self.serviceInfo = {
             version: '1.0 (inferred)',
