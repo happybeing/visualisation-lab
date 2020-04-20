@@ -13,13 +13,7 @@ function statClass(text) {
   return text === 'no' ? 'main value-no' : (text === 'unknown' || text === '-' ? 'main value-unknown' : 'main');
 }
 
-$: awaitingResponse = gfs(statValueText)
-
-function gfs () {
-  const aw = sparqlStat.getFetchStatus(statValueText) === fetchStatus.FETCHING;
-  console.log('GFS: ' + sparqlStat.getFetchStatus(statValueText) + ' -> awaitingResponse: ' + aw);
-  return aw;
-}
+$: awaitingResponse = sparqlStat.getFetchStatus(statValueText) === fetchStatus.FETCHING;
 
 </script>
 
