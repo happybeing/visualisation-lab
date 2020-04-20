@@ -170,7 +170,7 @@ export class SourceResult {
   getLastFetchError () { return this.lastFetchError; }
   getLastFetchErrorCaller () { return this.lastFetchErrorCaller; }
   
-  responseProcessingComplete(error) {
+  responseProcessingComplete (error) {
     this.lastFetchError = error;
     if (this.fetchStatus === fetchStatus.COMPLETE || 
         this.fetchStatus === fetchStatus.BAD_RESPONSE ||
@@ -571,18 +571,22 @@ export class SourceResult {
       headers: headers,
     }).then(response => {
       this.fetchResponseReceived(response);
-      if (response.ok ) {
+      console.log('DEBUG: ' + response.status + ' ' + response.statusText);
+      if (response.status < 400 ) {
         this._processResponse(response, sourceResultStore, statusTextStore) 
       } else {
         const warning = 'Failed to load URI.\n' + response.statusText;
+        console.log('DEBUG: ' + response.status + ' ' + response.statusText + ' XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
         console.dir(response);
         console.warn(warning);
         this._notifyWarning(warning);
+        this.consumeFetchResponse(false);  // Response failed to be processed
         sourceResultStore.set(0);
         this.responseProcessingComplete();
       }
     }).catch(e => {
       console.error(e);
+      console.dir(e);
       this._notifyWarning('Query failed.');
       this._notifyError(e.message);
       this.abandonFetchResponse('SourceResult.loadUri()', e);
@@ -778,6 +782,7 @@ export class FetchMonitor {
 
   fetchAbandoned (sparqlStat) {
     this.fetchesAbandoned++;
+    this._endFetch(sparqlStat);
     if (this.statusTextStore) return this.statusTextStore.set(this.simpleTextStatus());
   }
 
@@ -868,8 +873,20 @@ export class SparqlStat extends SourceResult {
                               // as a tooltip but increases memory use and slows performance
   }
 
+  prepareForUpdate () {
+    this.errorDescription = undefined;
+  }
+
+  // Short summary of last error for UI
+  getErrorDescription () {
+    const response = this.getLastFetchResponse();
+    return this.errorDescription === undefined && response && response.status >= 400 ? 
+      response.status + ' ' + response.statusText : this.errorDescription;
+  }
+
   updateSparqlStat () {
     console.log('SparqlStat.updateSparqlStat() - ERROR - not implemented in subclass ' + this.constructor.name);
+    this.prepareForUpdate();
   }
 }
 
@@ -945,6 +962,7 @@ export class SparqlEndpointReportSuccess extends SparqlStat {
 
   updateSparqlStat () {
     console.log('SparqlEndpointReportSuccess.updateSparqlStat()');
+    this.prepareForUpdate();
     if (this.config.query.trim().length)
       this.loadSparqlQuery(this.sourceResultStore, undefined, this.config.source.endpoint, this.config.query, this.config.options)
   }
@@ -1041,6 +1059,7 @@ export class SparqlEndpointStat extends SparqlStat {
 
   updateSparqlStat () {
     console.log('SparqlEndpointStat.updateSparqlStat()');
+    this.prepareForUpdate();
     this.loadUri(this.sourceResultStore, undefined, this.config.source.endpoint, this.config.options);
   }
 }
@@ -1060,6 +1079,7 @@ export class StatWebsite extends SparqlStat {
 
   async updateSparqlStat () {
     console.log('SparqlStatWebsite.updateSparqlStat()');
+    this.prepareForUpdate();
     const url = this.config.source.endpoint;
     fetch(url)
     .then(response => 

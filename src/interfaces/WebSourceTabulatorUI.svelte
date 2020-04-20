@@ -6,9 +6,10 @@ TODO: extend this from SPARQL endpoints to support other kinds of Web data sourc
 import {onDestroy} from 'svelte';
 import {writable} from 'svelte/store';
 
-// TODO: add ability for gathered data to be saved (in dataSources.js?)
-import {dataSources} from '../data/dataSources.js';
 import {tabulationGroups} from '../data/sparqlTabulations.js';
+// TODO: add ability for gathered data to be saved (in dataSources.js?)
+import {dataSources, errorTestingSources} from '../data/dataSources.js';
+const fixedDataSources = errorTestingSources;
 
 import {SparqlStat, SparqlEndpointStat, SparqlEndpointReportSuccess, StatWebsite, FetchMonitor} from '../interfaces/SourceInterface.js';
 import SparqlStatUI from '../interfaces/SparqlStatUI.svelte';
@@ -71,7 +72,7 @@ $: tabulationGroupsToCollect = ['Basic Queries', ...chosenTabulations];
 
 $: extraDataSources = makeSourcesFromTextList(extraEndpointsInput);
 $: haveExtraSources = extraDataSources && extraDataSources[0];
-$: activeDataSources = makeSourceTabulations(dataSources);
+$: activeDataSources = makeSourceTabulations(fixedDataSources);
 
 let typeChecked = []; // Column header checkbox state
 
@@ -203,14 +204,14 @@ onDestroy( () => {
 
 function updateAll () {
   // Remake source SparqlStats to ignore any pending fetch responses
-  makeSourceTabulations(dataSources);
+  makeSourceTabulations(fixedDataSources);
   if (haveExtraSources) makeSourceTabulations(extraDataSources);
 
   fetchMonitor.reset();
   if (extraEndpointsInputChecked) {
     if (haveExtraSources) updateSources(extraDataSources);
   } else {
-    updateSources(dataSources);
+    updateSources(fixedDataSources);
   }
 }
 

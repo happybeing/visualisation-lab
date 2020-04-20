@@ -14,7 +14,7 @@ function statClass(text) {
 }
 
 $: awaitingResponse = sparqlStat.getFetchStatus(statValueText) === fetchStatus.FETCHING;
-
+$: errorDescription = awaitingResponse ? '' : sparqlStat.getErrorDescription();
 </script>
 
 <style>
@@ -33,7 +33,7 @@ $: awaitingResponse = sparqlStat.getFetchStatus(statValueText) === fetchStatus.F
 } 
 </style>
 
-  <div class={statClass(statValueText)} title={awaitingResponse ? 'awaiting response' : ''}>
+  <div class={statClass(statValueText)} title={awaitingResponse ? 'awaiting response' : errorDescription}>
   {#if statValueText && sparqlStat.siteIconUrl}
     <img alt='' src={sparqlStat.siteIconUrl} height='15px' style='vertical-align: text-top; margin-top: 1px'/>
   {/if}
@@ -49,6 +49,9 @@ $: awaitingResponse = sparqlStat.getFetchStatus(statValueText) === fetchStatus.F
 
     {#if statValueText === 'yes' || statValueText === 'no' ||  statValueText === 'unknown' }
       <span title={sparqlStat.responseText}>{sparqlStat.responseText ? sparqlStat.responseTypeAbbrev : ''}</span>
+    {/if}
+    {#if errorDescription && errorDescription !== ''}
+      <img width='20px' style='vertical-align: text-top;' src='/images/i-for-info.png'/>
     {/if}
   {/if}
 </div>
