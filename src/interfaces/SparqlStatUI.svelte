@@ -1,4 +1,6 @@
 <script>
+import {fetchStatus} from './SourceInterface.js';
+
 export let sparqlStat;
 console.log('======');console.dir(sparqlStat)
 $: statusTextStore = sparqlStat ? sparqlStat.statusTextStore : undefined;
@@ -10,6 +12,15 @@ $: statValueText = resultTextStore ? $resultTextStore : undefined;
 function statClass(text) {
   return text === 'no' ? 'main value-no' : (text === 'unknown' || text === '-' ? 'main value-unknown' : 'main');
 }
+
+$: awaitingResponse = gfs(statValueText)
+
+function gfs () {
+  const aw = sparqlStat.getFetchStatus(statValueText) === fetchStatus.FETCHING;
+  console.log('GFS: ' + sparqlStat.getFetchStatus(statValueText) + ' -> awaitingResponse: ' + aw);
+  return aw;
+}
+
 </script>
 
 <style>
@@ -28,16 +39,22 @@ function statClass(text) {
 } 
 </style>
 
-  <div class={statClass(statValueText)}>
+  <div class={statClass(statValueText)} title={awaitingResponse ? 'awaiting response' : ''}>
   {#if statValueText && sparqlStat.siteIconUrl}
     <img alt='' src={sparqlStat.siteIconUrl} height='15px' style='vertical-align: text-top; margin-top: 1px'/>
   {/if}
-  {#if sparqlStat.config.type === 'stat-website'}
-    <a href={sparqlStat.config.source.endpoint}>{statValueText ? statValueText : 'no value'}</a>
+
+  {#if awaitingResponse}
+    <img src='/images/activity-ellipsis.svg' alt='awaiting response'/>
   {:else}
-    {statValueText ? statValueText : 'no value'}
-  {/if}
-  {#if statValueText === 'yes' || statValueText === 'no' ||  statValueText === 'unknown' }
-    <span title={sparqlStat.responseText}>{sparqlStat.responseText ? sparqlStat.responseTypeAbbrev : ''}</span>
+    {#if sparqlStat.config.type === 'stat-website'}
+      <a href={sparqlStat.config.source.endpoint}>{statValueText ? statValueText : 'no value'}</a>
+    {:else}
+      {statValueText ? statValueText : 'no value'}
+    {/if}
+
+    {#if statValueText === 'yes' || statValueText === 'no' ||  statValueText === 'unknown' }
+      <span title={sparqlStat.responseText}>{sparqlStat.responseText ? sparqlStat.responseTypeAbbrev : ''}</span>
+    {/if}
   {/if}
 </div>

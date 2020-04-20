@@ -143,9 +143,13 @@ export class SourceResult {
     this.sourceInterface = sourceInterface;
     this.fetchStatus = fetchStatus.IDLE;
     this.responseStore = writable(undefined); // { response: response, error: error }
+    this.resultTextStore = writable('');      // Reactive status per SourceResult (e.g. -, unkown, fetching and some result value)
     this.useStreams = true;  // Disabling streams allows tabulator UI to display response body
                             // as a tooltip but increases memory use and slows performance
   }
+
+  setResultText (resultText) { this.resultText = resultText; this.resultTextStore.set(resultText);}
+  getResultText () { return this.resultText; }
 
   // Status allows handling of errors by subscribers to the sourceResultStore
   fetchStarting () { 
@@ -153,6 +157,7 @@ export class SourceResult {
     this.lastFetchResponse = undefined; 
     this.lastFetchResponseError = undefined; 
     if (this.fetchMonitor) this.fetchMonitor.fetchStarted(this);
+    this.setResultText('...');
   }
 
   fetchResponseReceived (response) {
@@ -540,12 +545,6 @@ export class SourceResult {
     // TODO: load multiple URIs into same store
     // TODO: consider loading multiple URIs into separate stores/views
       
-    // Note: firefox with Privacy Badger gives CORS errors when fetching different origin (URI)
-    if (statusTextStore) statusTextStore.set('loading data');
-    this.responseText = undefined;
-    this.responseType = '';
-    this.fetchStarting();
-    
     let headers = {
       // Need to avoid CORS Pre-flight checks, so avoid
       // adding headers that will trigger them:
@@ -556,6 +555,12 @@ export class SourceResult {
     if (options && options.headers) headers = {...options.headers}; // Allow override of defaults (e.g. of 'Accept')
     console.log('Request headers: ' + JSON.stringify(headers));
 
+    // Note: firefox with Privacy Badger gives CORS errors when fetching different origin (URI)
+    this.fetchStarting();
+    this.responseText = undefined;
+    this.responseType = '';
+    if (statusTextStore) statusTextStore.set('loading data');
+    
     fetch(uri, {
       method: 'GET',
       cache: "reload",
@@ -858,14 +863,10 @@ export class SparqlStat extends SourceResult {
     this.statusText = '-statusText';
     this.sourceResultStore = writable(undefined);
     this.statusTextStore = writable(this.statusText);
-    this.resultTextStore = writable('');
     this.disableNotify = true;
     this.useStreams = false;  // Disabling streams allows tabulator UI to display response body
                               // as a tooltip but increases memory use and slows performance
   }
-
-  setResultText (resultText) { this.resultText = resultText; this.resultTextStore.set(resultText);}
-  getResultText () { return this.resultText; }
 
   updateSparqlStat () {
     console.log('SparqlStat.updateSparqlStat() - ERROR - not implemented in subclass ' + this.constructor.name);
