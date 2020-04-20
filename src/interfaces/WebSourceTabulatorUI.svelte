@@ -95,6 +95,14 @@ let allTabulations = [];
   return allTabulations;
 }
 
+// Take a URL, trim it to [subdomains].domain.tld and return an array of 
+// these starting with the tld and endind with the first subdomain
+function urlTerms ( url ) {
+  url = url.indexOf('//') ? url.substring(url.indexOf('//') + 2) : url;
+  url = url.indexOf('/') !== -1 ? url.substring(0, url.indexOf('/')) : url;
+  return url.split('.').reverse();
+}
+
 function makeSourcesFromTextList(text){
   console.log('makeSourcesFromTextList()');
 
@@ -115,13 +123,31 @@ function makeSourcesFromTextList(text){
     // console.log('SOURCES:');console.dir(sources);
   }
 
-/* TODO: sort by TLD, domain, subdomains, protocol
+  // sort by TLD, domain, subdomains, protocol
   // Sort ignoring protocol
   sources.sort((s1, s2) => {
+    console.log('sort(' + s1.endpoint + ',' + s2.endpoint + ')');
+    const terms1 = urlTerms(s1.endpoint);
+    const terms2 = urlTerms(s2.endpoint);
+    console.log(JSON.stringify(terms1));
+    console.log(JSON.stringify(terms2));
+    let result;
+    terms1.forEach((term, index) => {
+      if (!result && term !== terms2[index]) {
+        console.log('term, index: ', term + ', ' + index);
+        console.log('terms2[index]:', terms2[index]);
+        result = terms2[index] === undefined ? 1 : (term < terms2[index] ? -1 : 1);
+      }
+    });
+    if (result === undefined && terms1.length !== terms2.length) result = terms1.length < terms2.length ? -1 : 1;
+    if (result === undefined) result = 0;
 
+    console.log('result: ' + result);
+    return result;
   });
-*/
-return sources;
+
+  console.dir(sources);
+  return sources;
 }
 
 function makeSourceTabulations (sources) {
@@ -275,6 +301,9 @@ function getTabulationAsTextJson () {
 .vspace {
   margin-top: 8px;
 }
+.rightjustify {
+  text-align: right;
+}
 </style>
 
 <div class="main">
@@ -335,9 +364,9 @@ function getTabulationAsTextJson () {
       </tr>
         {#each activeDataSources as source}
         <tr>
-          {#each source.sparqlStats as stat}
+          {#each source.sparqlStats as stat, index}
             {#if tabulationGroupsToCollect.includes(stat.config.group)}
-              <td>
+              <td class={index === 0 && stat.resultText.indexOf('.') !== -1 ? 'rightjustify' : ''}>
               <!-- stat.config.source.endpoint: {stat.config.source.endpoint} -->
               <div hidden={!typeChecked[stat.config.heading]}><svelte:component this={stat.uiComponent} sparqlStat={stat}/></div>
               </td>
