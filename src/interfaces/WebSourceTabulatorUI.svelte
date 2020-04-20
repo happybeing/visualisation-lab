@@ -9,7 +9,8 @@ import {writable} from 'svelte/store';
 import {tabulationGroups} from '../data/sparqlTabulations.js';
 // TODO: add ability for gathered data to be saved (in dataSources.js?)
 import {dataSources, errorTestingSources} from '../data/dataSources.js';
-const fixedDataSources = errorTestingSources;
+let fixedDataSources = errorTestingSources;
+fixedDataSources = [{name: '', endpoint: 'http://biordf.net/sparql', options: {}},];
 
 import {SparqlStat, SparqlEndpointStat, SparqlEndpointReportSuccess, StatWebsite, FetchMonitor} from '../interfaces/SourceInterface.js';
 import SparqlStatUI from '../interfaces/SparqlStatUI.svelte';
@@ -66,7 +67,7 @@ let optionalTabulations = [
   ];
 
 let allTabulationGroups = ['Basic Queries', ...optionalTabulations];
-let chosenTabulations = [];//['SPARQL 1.1'];
+let chosenTabulations = ['SPARQL 1.1'];
 
 $: tabulationGroupsToCollect = ['Basic Queries', ...chosenTabulations];
 

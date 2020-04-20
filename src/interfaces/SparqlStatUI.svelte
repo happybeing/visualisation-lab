@@ -52,6 +52,9 @@ $: errorDescription = awaitingResponse ? '' : sparqlStat.getErrorDescription();
     {/if}
     {#if errorDescription && errorDescription !== ''}
       <img width='20px' style='vertical-align: text-top;' src='/images/i-for-info.png'/>
+      {#if errorDescription.startsWith('DBG')}
+        DBG!
+      {/if}
     {/if}
   {/if}
 </div>

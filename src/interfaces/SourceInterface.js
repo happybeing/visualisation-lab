@@ -550,7 +550,7 @@ export class SourceResult {
       // adding headers that will trigger them:
       // See 'Simple Requests' at https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
 
-      'Accept': 'text/turtle', // Needed for SPARQL endpoints that return HTML, XML or JSON by default
+      // 'Accept': 'text/turtle', //NOT??? Needed for SPARQL endpoints that return HTML, XML or JSON by default
     }
     if (options && options.headers) headers = {...options.headers}; // Allow override of defaults (e.g. of 'Accept')
     console.log('Request headers: ' + JSON.stringify(headers));
@@ -571,6 +571,9 @@ export class SourceResult {
       headers: headers,
     }).then(response => {
       this.fetchResponseReceived(response);
+      // TODO remove debug assignment to errorDescription
+      if (response.status !== 200) this.errorDescription = 'DBG: ' + response.status;
+
       console.log('DEBUG: ' + response.status + ' ' + response.statusText);
       if (response.status < 400 ) {
         this._processResponse(response, sourceResultStore, statusTextStore) 
@@ -585,13 +588,19 @@ export class SourceResult {
         this.responseProcessingComplete();
       }
     }).catch(e => {
+      console.log('BEGINBEGINBEGINBEGINBEGINBEGINBEGINBEGINBEGINBEGIN');
       console.error(e);
       console.dir(e);
+      if (e.name === 'TypeError') {
+        this.errorDescription = "Network request failed. Possibly a DNS or CORS error.";
+        console.error(this.errorDescription);
+      }
       this._notifyWarning('Query failed.');
       this._notifyError(e.message);
       this.abandonFetchResponse('SourceResult.loadUri()', e);
       sourceResultStore.set(0);
       this.responseProcessingComplete(e);
+      console.log('ENDENDENDENDENDENDENDENDENDENDENDENDENDENDENDEND');
     });
   }
 
@@ -637,6 +646,12 @@ export class SourceResult {
         console.dir(response);
         response.text().then(text => console.dir({text}));
         if (statusTextStore) statusTextStore.set('Returned: ' + responseType);
+        if (responseType.startsWith('text/html')) {
+          this.responseTypeAbbrev = 'Html';
+          this.errorDescription = 'Response was HTML';
+        } else {
+          this.errorDescription = 'Unexpected response type: ' + responseType;
+        }
         throw Error(warning);
       }
     }
@@ -880,7 +895,8 @@ export class SparqlStat extends SourceResult {
   // Short summary of last error for UI
   getErrorDescription () {
     const response = this.getLastFetchResponse();
-    return this.errorDescription === undefined && response && response.status >= 400 ? 
+    return (this.errorDescription === undefined || this.errorDescription.startsWith('DBG')) 
+      && response && response.status >= 400 ? 
       response.status + ' ' + response.statusText : this.errorDescription;
   }
 
@@ -1105,6 +1121,10 @@ export class StatWebsite extends SparqlStat {
         
       if (metadata.icon) this.siteIconUrl = metadata.icon;
       this.setResultText(this.makeWebsiteName());
+    }).catch(e => {
+      console.log('SparqlStatWebsite.updateSparqlStat() error:');
+      console.log(e);
+      console.dir(e);   
     });
   }
   
