@@ -10,7 +10,7 @@ import {tabulationGroups} from '../data/sparqlTabulations.js';
 // TODO: add ability for gathered data to be saved (in dataSources.js?)
 import {dataSources, errorTestingSources} from '../data/dataSources.js';
 let fixedDataSources = dataSources;
-// fixedDataSource = errorTestingSources;
+// fixedDataSources = errorTestingSources;
 // fixedDataSources = [{name: '', endpoint: 'http://biordf.net/sparql', options: {}},];
 // fixedDataSources = [{name: '', endpoint: 'http://data.archiveshub.ac.uk/sparql', options: {}},];
 

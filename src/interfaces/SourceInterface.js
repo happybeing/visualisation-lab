@@ -649,8 +649,8 @@ export class SourceResult {
         this.consumeFetchResponse(false);  // Response failed to be processed
         console.dir(response);
         response.text().then(text => {
-          console.log(warning + 'DUMP: ');
-          console.dir(text);
+          console.log(warning + ' DUMP: ');
+          console.dir({responseText: text});
           if (text) {
             const maxlines = 40;
             let index = text.indexOf('\n');
