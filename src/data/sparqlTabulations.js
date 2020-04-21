@@ -27,11 +27,54 @@ const defaultOptions = {
   headers: {'Accept': 'text/turtle,application/sparql-results+xml,application/rdf+xml,text/csv,application/sparql-results+json'}
 };
 
+const ttlOptions = {
+  headers: {'Accept': 'text/turtle'}
+};
+
+const xmlOptions = {
+  headers: {'Accept': 'application/sparql-results+xml,application/rdf+xml'}
+};
+
+const csvOptions = {
+  headers: {'Accept': 'text/csv'}
+};
+
+const jsonOptions = {
+  headers: {'Accept': 'application/sparql-results+json'}
+};
+
 export const customTabulation = [
   { heading: 'Custom Query', type: 'sparql-custom', query: ``, options: defaultOptions }
 ];
 
 /////////////////////// My Tests
+
+  // All content types checks use query: '1.0 ASK[.]' 
+export const testContentTypes = [
+  { heading: 'Turtle', type: 'content-turtle', query: `
+  PREFIX owl: <http://www.w3.org/2002/07/owl#>
+  ASK {
+  ?s ?o owl:Thing
+  }`, options: ttlOptions, matchContent: 'Ttl' },
+
+  { heading: 'XML', type: 'content-xml', query: `
+  PREFIX owl: <http://www.w3.org/2002/07/owl#>
+  ASK {
+  ?s ?o owl:Thing
+  }`, options: xmlOptions, matchContent: 'XML' },
+
+  { heading: 'CSV', type: 'content-csv', query: `
+  PREFIX owl: <http://www.w3.org/2002/07/owl#>
+  ASK {
+  ?s ?o owl:Thing
+  }`, options: csvOptions, matchContent: 'CSV' },
+
+  { heading: 'JSON', type: 'content-json', query: `
+  PREFIX owl: <http://www.w3.org/2002/07/owl#>
+  ASK {
+  ?s ?o owl:Thing
+  }`, options: jsonOptions, matchContent: 'Json' },
+];
 
 export const testTabulations = [
   
@@ -212,6 +255,7 @@ export const queryPaper1_1 = [
 export const tabulationGroups = {
   'Basic Queries': basicTabulations,
   'Testing': testTabulations,
+  'Content Types': testContentTypes,
   'SPARQL 1.0': queryPaper1_0, 
   'SPARQL 1.1': queryPaper1_1,
   'Custom Query': customTabulation,

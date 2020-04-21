@@ -24,7 +24,11 @@ const tabulationTypes = [
   { type: 'sparql-stat', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointStat } },
   { type: 'sparql-api', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointReportSuccess } },
   { type: 'sparql-construct', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointReportSuccess } },
-  { type: 'sparql-count', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointReportSuccess } },
+
+  { type: 'content-turtle', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointReportSuccess } },
+  { type: 'content-xml', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointReportSuccess } },
+  { type: 'content-csv', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointReportSuccess } },
+  { type: 'content-json', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointReportSuccess } },
 
   { type: 'sparql-custom', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointReportSuccess } },
   { type: 'sparql-wqp-1.0', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointReportSuccess } },
@@ -63,7 +67,7 @@ let extraEndpointsInput = '';//invalidEndpointTests;
 let customQueryInput;
 
 let optionalTabulations = [
-  'Testing',
+  'Content Types',
   'SPARQL 1.0', 
   'SPARQL 1.1',
   'Custom Query'
@@ -71,6 +75,7 @@ let optionalTabulations = [
 
 let allTabulationGroups = ['Basic Queries', ...optionalTabulations];
 let chosenTabulations = ['SPARQL 1.1'];
+chosenTabulations = ['Content Types'];
 
 $: tabulationGroupsToCollect = ['Basic Queries', ...chosenTabulations];
 

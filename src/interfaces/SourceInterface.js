@@ -990,6 +990,11 @@ export class SparqlEndpointReportSuccess extends SparqlStat {
         // The fetch completed but the response was not appropriate, so we fail
         success = false;
       }
+      if (success && self.config.matchContent && self.config.matchContent !== self.responseTypeAbbrev) {
+        success = false;
+        self.errorDescription = 'Response was ' + self.responseTypeAbbrev + ':\n' + self.responseText;
+      } 
+
       const resultText = unknownResult ? unknownResult : (success ? 'yes' : 'no');
       self.setResultText(resultText, !success);
     }
