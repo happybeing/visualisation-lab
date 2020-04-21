@@ -23,8 +23,12 @@ export const basicTabulations = [
   { heading: 'Version', type: 'sparql-stat', query: `` },
 ];
 
+const defaultOptions = {
+  headers: {'Accept': 'text/turtle,application/sparql-results+xml,application/rdf+xml,text/csv,application/sparql-results+json'}
+};
+
 export const customTabulation = [
-  { heading: 'Custom Query', type: 'sparql-custom', query: `` }
+  { heading: 'Custom Query', type: 'sparql-custom', query: ``, options: defaultOptions }
 ];
 
 /////////////////////// My Tests
@@ -32,15 +36,17 @@ export const customTabulation = [
 export const testTabulations = [
   
   { heading: 'API', type: 'sparql-api', 
-  query: `SELECT * WHERE { <non-existent-subject-yndh5> rdf:type ?o }` },
+  query: `SELECT * WHERE { <non-existent-subject-yndh5> rdf:type ?o }`, options: defaultOptions },
 
   { heading: 'COUNT', type: 'sparql-count', 
-  query: `
-    SELECT (COUNT(?o) AS ?no) WHERE { <non-existent-subject-yndh5> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?o }`
+    query: `
+    SELECT (COUNT(?o) AS ?no) WHERE { <non-existent-subject-yndh5> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?o }`,
+    options: defaultOptions
   },
 
   { heading: 'CONSTRUCT', type: 'sparql-construct', 
-  query: `CONSTRUCT { <non-existent-subject-yndh5> rdf:type ?o } { <non-existent-subject-yndh5> rdf:type ?o }` },
+    query: `CONSTRUCT { <non-existent-subject-yndh5> rdf:type ?o } { <non-existent-subject-yndh5> rdf:type ?o }`, 
+    options: defaultOptions },
 
   /////////////////////// Tests
   //
@@ -54,7 +60,7 @@ export const testTabulations = [
   //     ?subject rdf:type foaf:Person .
   //     FILTER ( ?subject = <http://dbpedia.org/resource/Alice_Walker>  )
   //   }
-  // `  },
+  // `, options: defaultOptions  },
 
   // { heading: 'Testing Wikidata Turtle', type: 'test-success',
   //   query: `
@@ -119,7 +125,7 @@ export const queryPaper1_0 = [
   PREFIX owl: <http://www.w3.org/2002/07/owl#>
   ASK {
   ?s ?o owl:Thing
-  }` },
+  }`, options: defaultOptions },
 
   { heading: '1.0 CON[.]', type: 'sparql-wqp-1.0', query: `
   PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -127,7 +133,7 @@ export const queryPaper1_0 = [
   WHERE
   {
     ?x rdf:type ?o .
-  } LIMIT 100` },
+  } LIMIT 100`, options: defaultOptions },
 
   { heading: '1.0 CON[JOIN]', type: 'sparql-wqp-1.0', query: `
   PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -137,7 +143,7 @@ export const queryPaper1_0 = [
     ?x rdf:type ?o .
     ?o rdf:type ?x
   } LIMIT 100
-  ` },
+  `, options: defaultOptions },
 
   { heading: '1.0 CON[OPT]', type: 'sparql-wqp-1.0', query: `
   PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -147,9 +153,9 @@ export const queryPaper1_0 = [
     ?x rdf:type ?o .
     OPTIONAL {?o rdf:type ?v }
   } LIMIT 100
-  ` },
+  `, options: defaultOptions },
 
-  // { heading: '1.0 ???', type: 'sparql-wqp-1.0', query: `` },
+  // { heading: '1.0 ???', type: 'sparql-wqp-1.0', query: ``, options: defaultOptions },
 ];
 
 export const queryPaper1_1 = [
@@ -161,12 +167,12 @@ export const queryPaper1_1 = [
   ASK {
     FILTER(2 NOT IN ())
   }
-  ` },
+  `, options: defaultOptions },
   
   { heading: '1.1 CON-[.]', type: 'sparql-wqp-1.1', query: `
   PREFIX : <http://example.org/>
   CONSTRUCT WHERE { ?s ?p ?o} LIMIT 100
-  ` },
+  `, options: defaultOptions },
   
   { heading: '1.1 SEL[AVG]', type: 'sparql-wqp-1.1', query: `
   PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -174,7 +180,7 @@ export const queryPaper1_1 = [
   WHERE {
     ?s rdf:type ?o
   } LIMIT 100
-  ` },
+  `, options: defaultOptions },
 
   { heading: '1.1 SEL[BIND]', type: 'sparql-wqp-1.1', query: `
   PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -183,7 +189,7 @@ export const queryPaper1_1 = [
     ?s rdf:type ?o .
     BIND(?o+10 AS ?z)
   } LIMIT 100
-  ` },
+  `, options: defaultOptions },
 
   { heading: '1.1 SEL[FIL(!EXISTS)]', type: 'sparql-wqp-1.1', query: `
   PREFIX  rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -196,7 +202,7 @@ export const queryPaper1_1 = [
       ?p owl:sameAs ?same
     }
   } LIMIT 100
-  ` },
+  `, options: defaultOptions },
 
   // { heading: '1.1 ???', type: 'sparql-wqp-1.1', query: `` },
   // { heading: '1.1 ???', type: 'sparql-wqp-1.1', query: `` },
