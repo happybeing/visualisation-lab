@@ -651,16 +651,7 @@ export class SourceResult {
         response.text().then(text => {
           console.log(warning + ' DUMP: ');
           console.dir({responseText: text});
-          if (text) {
-            const maxlines = 40;
-            let index = text.indexOf('\n');
-            for (let line = 1 ; line < maxlines && index != -1 ; ++line) index = text.indexOf('\n', index + 1);
-            if (index != -1) {
-              text = text.substring(0, index);
-              text += '\n[truncated after ' + maxlines + ' lines]';
-            }
-          }
-
+          if (text) text = this._truncateText(text, 40);
           if (statusTextStore) statusTextStore.set('Returned: ' + responseType);
           if (responseType.startsWith('text/html')) {
             this.responseTypeAbbrev = 'Html';
@@ -687,7 +678,7 @@ export class SourceResult {
   _processTextResponseUsing(sourceResultStore, statusTextStore, response, {size: contentLength}, textProcessor) {
     response.text()
     .then(text => {
-      this.responseText = text; // Saved for use by tabulation UI but could be expensive on memory
+      this.errorDescription = this._truncateText(text, 40); // For tabulation UI tooltip
       this[textProcessor.name](sourceResultStore, statusTextStore, text, {size: contentLength})
       if (statusTextStore ) statusTextStore.set('');
     })
@@ -713,6 +704,17 @@ export class SourceResult {
     console.log(url);
     return this.loadUri(sourceResultStore, statusTextStore, url, options);
   }
+
+  _truncateText(text, maxlines) {
+    let index = text.indexOf('\n');
+    for (let line = 1 ; line < maxlines && index != -1 ; ++line) index = text.indexOf('\n', index + 1);
+    if (index != -1) {
+      text = text.substring(0, index);
+      text += '\n[truncated after ' + maxlines + ' lines]';
+    }
+    return text;
+  }
+
 }
 
 function readableStreamToConsumer(readableStream, consumer) {
@@ -1108,7 +1110,12 @@ export class SparqlEndpointStat extends SparqlStat {
   updateSparqlStat () {
     console.log('SparqlEndpointStat.updateSparqlStat()');
     this.prepareForUpdate();
-    this.loadUri(this.sourceResultStore, undefined, this.config.source.endpoint, this.config.options);
+    const options = {
+      headers: {
+        'Accept': 'text/turtle',
+      }
+    }
+    this.loadUri(this.sourceResultStore, undefined, this.config.source.endpoint, options);
   }
 }
 

@@ -69,7 +69,7 @@ let optionalTabulations = [
   ];
 
 let allTabulationGroups = ['Basic Queries', ...optionalTabulations];
-let chosenTabulations = ['SPARQL 1.1'];
+let chosenTabulations = [];//['SPARQL 1.1'];
 
 $: tabulationGroupsToCollect = ['Basic Queries', ...chosenTabulations];
 
