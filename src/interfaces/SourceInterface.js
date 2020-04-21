@@ -211,7 +211,7 @@ export class SourceResult {
   getJsonModelValues () {return this.jsonModel ? this.jsonModel.values : undefined;}
 
   _notifyWarning(w) { if (!this.disableNotify) window.notifications.notifyWarning(w);}
-  _notifyError(e) { if (!this.disableNotify) window.notifications.notifyError(w);}
+  _notifyError(e) { if (!this.disableNotify) window.notifications.notifyError(e);}
   // import fetch from '@rdfjs/fetch';
   
   // const label = 'https://www.w3.org/2000/01/rdf-schema#label'
