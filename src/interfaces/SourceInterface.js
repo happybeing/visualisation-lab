@@ -648,15 +648,30 @@ export class SourceResult {
         const warning = 'Unexpected content type: ' + responseType;
         this.consumeFetchResponse(false);  // Response failed to be processed
         console.dir(response);
-        response.text().then(text => console.dir({text}));
-        if (statusTextStore) statusTextStore.set('Returned: ' + responseType);
-        if (responseType.startsWith('text/html')) {
-          this.responseTypeAbbrev = 'Html';
-          this.errorDescription = 'Response was HTML';
-        } else {
-          this.errorDescription = 'Unexpected response type: ' + responseType;
-        }
-        throw Error(warning);
+        response.text().then(text => {
+          console.log(warning + 'DUMP: ');
+          console.dir(text);
+          if (text) {
+            const maxlines = 40;
+            let index = text.indexOf('\n');
+            for (let line = 1 ; line < maxlines && index != -1 ; ++line) index = text.indexOf('\n', index + 1);
+            if (index != -1) {
+              text = text.substring(0, index);
+              text += '\n[truncated after ' + maxlines + ' lines]';
+            }
+          }
+
+          if (statusTextStore) statusTextStore.set('Returned: ' + responseType);
+          if (responseType.startsWith('text/html')) {
+            this.responseTypeAbbrev = 'Html';
+            this.errorDescription = 'Response was HTML:\n' + text;
+          } else {
+            this.errorDescription = 'Unexpected response type ' + responseType + ':\n' + text;
+          }
+          this._notifyWarning(warning);
+          sourceResultStore.set(0);
+          this.responseProcessingComplete();
+        });
       }
     }
     catch(e) {
