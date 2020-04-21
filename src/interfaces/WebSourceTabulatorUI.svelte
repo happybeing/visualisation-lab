@@ -287,7 +287,9 @@ function getTabulationAsTextJson () {
 `;
 
   activeDataSources.forEach(source => {
-    json += "  { name: '" + source.name + "', endpoint: '" + source.endpoint + "', options: " + JSON.stringify(source.options) + '},\n';
+    json += "  { name: '" + (source.name ? source.name : '') + 
+            "', endpoint: '" + source.endpoint + 
+            "', options: " + JSON.stringify(source.options ? source.options : {}) + '},\n';
   });
 
   json += '];'
