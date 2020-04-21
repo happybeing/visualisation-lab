@@ -15,6 +15,7 @@ function statClass(text) {
 
 $: awaitingResponse = sparqlStat.getFetchStatus(statValueText) === fetchStatus.FETCHING;
 $: errorDescription = awaitingResponse ? '' : sparqlStat.getErrorDescription();
+
 </script>
 
 <style>

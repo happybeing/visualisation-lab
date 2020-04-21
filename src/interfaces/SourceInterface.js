@@ -571,21 +571,24 @@ export class SourceResult {
       headers: headers,
     }).then(response => {
       this.fetchResponseReceived(response);
-      // TODO remove debug assignment to errorDescription
-      if (response.status !== 200) this.errorDescription = 'DBG: ' + response.status;
-
       console.log('DEBUG: ' + response.status + ' ' + response.statusText);
       if (response.status < 400 ) {
         this._processResponse(response, sourceResultStore, statusTextStore) 
       } else {
-        const warning = 'Failed to load URI.\n' + response.statusText;
-        console.log('DEBUG: ' + response.status + ' ' + response.statusText + ' XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
-        console.dir(response);
-        console.warn(warning);
-        this._notifyWarning(warning);
-        this.consumeFetchResponse(false);  // Response failed to be processed
-        sourceResultStore.set(0);
-        this.responseProcessingComplete();
+        this.errorDescription = 'DBG: ' + response.status;
+        response.text().then(text => {
+          console.log('RESPONSE ' + response.status + ' \n' + text);
+          response.errorText = text;
+
+          const warning = 'Failed to load URI.\n' + response.statusText;
+          console.log('DEBUG: ' + response.status + ' ' + response.statusText + ' XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
+          console.dir(response);
+          console.warn(warning);
+          this._notifyWarning(warning);
+          this.consumeFetchResponse(false);  // Response failed to be processed
+          sourceResultStore.set(0);
+          this.responseProcessingComplete();  
+        });
       }
     }).catch(e => {
       console.log('BEGINBEGINBEGINBEGINBEGINBEGINBEGINBEGINBEGINBEGIN');
@@ -896,9 +899,22 @@ export class SparqlStat extends SourceResult {
   // Short summary of last error for UI
   getErrorDescription () {
     const response = this.getLastFetchResponse();
-    return (this.errorDescription === undefined || this.errorDescription.startsWith('DBG')) 
-      && response && response.status >= 400 ? 
-      response.status + ' ' + response.statusText : this.errorDescription;
+
+    let description = this.errorDescription;
+    if ((description === undefined || description.startsWith('DBG')) && 
+        response && response.status >= 400) {
+
+        description = response.errorText ? response.errorText : '';
+        const responseStatusDescription = response.status + ' ' + response.statusText;
+        if (!description.startsWith(responseStatusDescription))
+          description = responseStatusDescription + '\n' + description;
+        
+        this.errorDescription = description;
+      }
+    else
+      description = this.errorDescription;
+
+    return description;
   }
 
   updateSparqlStat () {
