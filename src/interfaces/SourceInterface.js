@@ -565,9 +565,9 @@ export class SourceResult {
       method: 'GET',
       cache: "reload",
       pragma: "no-cache",
-      // mode: 'no-cors', // Last examples-sparql.js query not working, this doesn't help
-                       // Won't help because response content blocked by browser in opaque response
-                       // See: https://stackoverflow.com/a/54906434/4802953
+
+      // mode: 'no-cors', // Won't help because response content blocked by browser in opaque response
+                          // See: https://stackoverflow.com/a/54906434/4802953
       headers: headers,
     }).then(response => {
       this.fetchResponseReceived(response);
