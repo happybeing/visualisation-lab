@@ -652,6 +652,7 @@ export class SourceResult {
           console.log(warning + ' DUMP: ');
           console.dir({responseText: text});
           if (text) text = this._truncateText(text, 40);
+          this.responseText = text;
           if (statusTextStore) statusTextStore.set('Returned: ' + responseType);
           if (responseType.startsWith('text/html')) {
             this.responseTypeAbbrev = 'Html';
