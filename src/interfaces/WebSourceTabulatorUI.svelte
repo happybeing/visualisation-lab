@@ -13,6 +13,7 @@ let fixedDataSources = workingSources;
 // fixedDataSources = errorTestingSources;
 // fixedDataSources = [{name: '', endpoint: 'http://biordf.net/sparql', options: {}},];
 // fixedDataSources = [{name: '', endpoint: 'http://data.archiveshub.ac.uk/sparql', options: {}},];
+// fixedDataSources = [{name: '', endpoint: 'https://dbpedia.org/sparql', options: {}},];
 
 import {SparqlStat, SparqlEndpointStat, SparqlEndpointReportSuccess, StatWebsite, FetchMonitor} from '../interfaces/SourceInterface.js';
 import SparqlStatUI from '../interfaces/SparqlStatUI.svelte';
@@ -69,7 +70,7 @@ let optionalTabulations = [
   ];
 
 let allTabulationGroups = ['Basic Queries', ...optionalTabulations];
-let chosenTabulations = [];//['SPARQL 1.1'];
+let chosenTabulations = ['SPARQL 1.1'];
 
 $: tabulationGroupsToCollect = ['Basic Queries', ...chosenTabulations];
 

@@ -14,7 +14,9 @@ function statClass(text) {
 }
 
 $: awaitingResponse = sparqlStat.getFetchStatus(statValueText) === fetchStatus.FETCHING;
-$: errorDescription = awaitingResponse ? '' : sparqlStat.getErrorDescription();
+$: isError = awaitingResponse ? false : sparqlStat.isError;
+$: responseTooltip = awaitingResponse ? '' : sparqlStat.responseText;
+$: overallTooltip = awaitingResponse ? 'awaiting response' : isError ? sparqlStat.getErrorDescription() : responseTooltip;
 
 </script>
 
@@ -34,7 +36,7 @@ $: errorDescription = awaitingResponse ? '' : sparqlStat.getErrorDescription();
 } 
 </style>
 
-  <div class={statClass(statValueText)} title={awaitingResponse ? 'awaiting response' : errorDescription}>
+<div class={statClass(statValueText)} title={awaitingResponse ? 'awaiting response' : ''}>
   {#if statValueText && sparqlStat.siteIconUrl}
     <img alt='' src={sparqlStat.siteIconUrl} height='15px' style='vertical-align: text-top; margin-top: 1px'/>
   {/if}
@@ -48,14 +50,14 @@ $: errorDescription = awaitingResponse ? '' : sparqlStat.getErrorDescription();
       {statValueText ? statValueText : 'no value'}
     {/if}
 
-    {#if statValueText === 'yes' || statValueText === 'no' ||  statValueText === 'unknown' }
-      <span title={sparqlStat.responseText}>{sparqlStat.responseText ? sparqlStat.responseTypeAbbrev : ''}</span>
-    {/if}
-    {#if errorDescription && errorDescription !== ''}
-      <img width='20px' style='vertical-align: text-top;' src='/images/i-for-info.png'/>
-      {#if errorDescription.startsWith('DBG')}
-        DBG!
+      <span title={overallTooltip}>
+      {!isError && sparqlStat.responseTypeAbbrev ? sparqlStat.responseTypeAbbrev : ''}
+      {#if isError && overallTooltip}
+        <img width='20px' style='vertical-align: text-top;' src='/images/i-for-info.png'/>
+        {#if overallTooltip && overallTooltip.startsWith('DBG')}
+          DBG!
+        {/if}
       {/if}
-    {/if}
+      </span>
   {/if}
 </div>

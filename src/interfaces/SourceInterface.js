@@ -148,7 +148,12 @@ export class SourceResult {
                             // as a tooltip but increases memory use and slows performance
   }
 
-  setResultText (resultText) { this.resultText = resultText; this.resultTextStore.set(resultText);}
+  setResultText (resultText, isError) { 
+    this.resultText = resultText; 
+    this.resultTextStore.set(resultText);
+    this.isError = isError ? true : false;
+  }
+
   getResultText () { return this.resultText; }
 
   // Status allows handling of errors by subscribers to the sourceResultStore
@@ -679,7 +684,7 @@ export class SourceResult {
   _processTextResponseUsing(sourceResultStore, statusTextStore, response, {size: contentLength}, textProcessor) {
     response.text()
     .then(text => {
-      this.errorDescription = this._truncateText(text, 40); // For tabulation UI tooltip
+      this.responseText = this._truncateText(text, 40); // For tabulation UI tooltip
       this[textProcessor.name](sourceResultStore, statusTextStore, text, {size: contentLength})
       if (statusTextStore ) statusTextStore.set('');
     })
@@ -828,25 +833,6 @@ export class FetchMonitor {
     this._endFetch(sparqlStat);
     if (this.statusTextStore) return this.statusTextStore.set(this.simpleTextStatus());
   }
-
-  /* TODO ...
-  ??? need to provide the consume/abandon functions with granularity which can be passed to the fetchMonitor 
-  ??? to collect all the stats I want for UI status, development and testing. 
-  For example:
-  - responses that are accepted = ok, content ok, >= 400 code which the SparqlStat regards as not an error
-    -> add a ignoreFetchAbandon (etc) flags to SparqlStat saying its ok for the current fetch to fail which prevents errors being counted as errors
-  - responses with >= 400 error codes that are errors
-    -> record the error code, the URI, log these plus SparqlStat to console
-  - responses which fail during processing 
-    -> record the failure when known (parsing, and what was being parsed) the URI, 
-       or the error object if not known, 
-       log these plus SparqlStat to console 
-  - timeouts, CORS and other errors that need to be classified as well as counted as errors
-    -> record the error type, the URI, log these plus SparqlStat to console
-  - add a debug command to:
-    - print a summary of the stats and response code counts
-    - tabulate the fetch status of all SparqlStats in the fetchMonitor by URI, by tabulation etc
-  */
 
   _endFetch(sparqlStat) {
     const response = sparqlStat.getLastFetchResponse();
@@ -1005,7 +991,7 @@ export class SparqlEndpointReportSuccess extends SparqlStat {
         success = false;
       }
       const resultText = unknownResult ? unknownResult : (success ? 'yes' : 'no');
-      self.setResultText(resultText);
+      self.setResultText(resultText, !success);
     }
 
     this.unsubscribe = this.responseStore.subscribe(_handleResponse);
@@ -1102,7 +1088,7 @@ export class SparqlEndpointStat extends SparqlStat {
         }
       }
   
-      self.setResultText(self.serviceInfo.version);
+      self.setResultText(self.serviceInfo.version, unknownResult !== undefined);
     }
 
     this.unsubscribe = this.responseStore.subscribe(_handleResponse);
