@@ -8,7 +8,6 @@ export const workingSources =
   { name: 'UniProt', endpoint: 'https://sparql.uniprot.org/', options: {}},
 
   { name: 'Carnegie Hall', endpoint: 'https://data.carnegiehall.org/sparql', options: {}},  // Only returns HTML
-  { name: '', endpoint: 'http://os.rkbexplorer.com/sparql/', options: {}}, // CORS errors to be investigated
 
   { name: '', endpoint: 'http://lod.ac/bdls/sparql', options: {}},
   { name: '', endpoint: 'http://lod.openlinksw.com/sparql', options: {}},
