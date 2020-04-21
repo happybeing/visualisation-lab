@@ -89,15 +89,15 @@ class AppNotifications {
     this._notify({...this.notificationOptions, ...{text: message, type: 'default'}, ...(options ? options : {})});
   }
 
-  notifySuccess(message) {
+  notifySuccess(message, options) {
     this._notify({...this.notificationOptions, ...{text: message, type: 'success'}, ...(options ? options : {})});
   }
 
-  notifyWarning(message) {
+  notifyWarning(message, options) {
     this._notify({...this.notificationOptions, ...{text: message, type: 'warning'}, ...(options ? options : {})});
   }
 
-  notifyError(message) {
+  notifyError(message, options) {
     this._notify({...this.notificationOptions, ...{text: message, type: 'danger'}, ...(options ? options : {})});
   }
     
