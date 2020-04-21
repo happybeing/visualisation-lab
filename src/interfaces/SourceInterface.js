@@ -634,7 +634,8 @@ export class SourceResult {
         this.consumeFetchResponse(true);
         this.responseTypeAbbrev = 'Json';
         this._processTextResponseUsing(sourceResultStore, statusTextStore, response, {size: contentLength}, this.consumeJsonText);
-      } else if (responseType.startsWith('application/sparql-results+xml')) {
+      } else if (responseType.startsWith('application/sparql-results+xml') ||
+            responseType.startsWith('application/rdf+xml')) {
         this.consumeFetchResponse(true);
         this.responseTypeAbbrev = 'XML';
         this._processTextResponseUsing(sourceResultStore, statusTextStore, response, {size: contentLength}, this.consumeXmlText);
