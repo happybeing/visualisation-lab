@@ -6,6 +6,10 @@ TODO: extend this from SPARQL endpoints to support other kinds of Web data sourc
 import {onDestroy} from 'svelte';
 import {writable} from 'svelte/store';
 
+import Clipboard from '../utils/Clipboard.svelte';
+let clipboardText;
+let copySuccessMessage;
+
 import {tabulationGroups} from '../data/sparqlTabulations.js';
 // TODO: add ability for gathered data to be saved (in dataSources.js?)
 import {workingSources, errorTestingSources} from '../data/dataSources.js';
@@ -239,24 +243,14 @@ function updateStatEnable(statType) {
   console.dir(typeChecked);
 }
 
-function copyTabulationToClipboardAsCsv () { copyTabulationToClipboard('CSV'); }
-function copyTabulationToClipboardAsJson () { copyTabulationToClipboard('JSON'); }
+function copyTabulationToClipboardAsCsv () { copyTabulationToClipboardComponent('CSV'); }
+function copyTabulationToClipboardAsJson () { copyTabulationToClipboardComponent('JSON'); }
 
-function copyTabulationToClipboard (type) {
-  console.log('copyTabulationToClipboard()');console.dir(type);
-  navigator.permissions.query({name: "clipboard-write"}).then(result => {
-    const tabulationText = (type === 'JSON' ? getTabulationAsTextJson() : getTabulationAsTextCsv());
+function copyTabulationToClipboardComponent (type) {
+  console.log('copyTabulationToClipboardComponent()');
 
-    if (result.state == "granted" || result.state == "prompt") {
-      navigator.clipboard.writeText(tabulationText).then(function() {
-        window.notifications.notify('Tabulation written to clipboard as ' + type, {removeAfter: 1000});
-      }, function() {
-        window.notifications.notifyWarning('Write to clipboard failed.');
-      });
-    }
-    else
-        window.notifications.notifyWarning('Permission to write to clipboard was denied.');
-  });
+  copySuccessMessage = 'Tabulation written to clipboard as ' + type;
+  clipboardText = (type === 'JSON' ? getTabulationAsTextJson() : getTabulationAsTextCsv());
 }
 
 function getTabulationAsTextCsv () {
@@ -389,4 +383,5 @@ function getTabulationAsTextJson () {
       </table>
     </div>
   </div>
+  <Clipboard value={clipboardText} successMessage={copySuccessMessage} />
 </div>
