@@ -269,10 +269,13 @@ function getTabulationAsTextCsv () {
   activeDataSources.forEach(source => {
     csv += source.endpoint;
     source.sparqlStats.forEach(stat => {
+      let resultText = stat.getResultText();
+      resultText = resultText ? resultText.trim().replace(',', '') : '';
       if (stat.config.type === 'stat-website')
-        csv += separator + ( stat.getResultText() ? stat.getResultText().trim() : source.name );
+        csv += separator + ( resultText ? resultText : source.name );
       else if (typeChecked[stat.config.heading])
-        csv += separator + stat.resultText;
+        csv += separator + resultText;
+      if(stat.isError && stat.responseTypeAbbrev) csv += ' ' + stat.responseTypeAbbrev;
     });
     csv += '\n';
   });
