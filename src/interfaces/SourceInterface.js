@@ -900,6 +900,20 @@ export class SparqlStat extends SourceResult {
     this.errorDescription = undefined;
   }
 
+  getResultTextForError () {
+    let resultTextForError;
+    let errorDesc = this.getErrorDescription();
+    if (errorDesc) {
+      if (errorDesc.indexOf('\n') > 0) errorDesc = errorDesc.substring(0, errorDesc.indexOf('\n'));
+      if (errorDesc.indexOf(':') > 0) errorDesc = errorDesc.substring(errorDesc.indexOf(':') + 1);
+      resultTextForError = 'error: ' + errorDesc.substring(0, 20);
+    } else if (this.isError) {
+      console.warning('fetch() error flagged without SparqlStat.errorDescription');
+      resultTextForError = 'error';
+    }
+    return resultTextForError;
+  }
+
   // Short summary of last error for UI
   getErrorDescription () {
     const response = this.getLastFetchResponse();
@@ -941,11 +955,11 @@ export class SparqlEndpointReportSuccess extends SparqlStat {
 
     const self = this;
     function _handleResponse (responseOrErrorObject) {
-      console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
-      console.log('self.config.source.endpoint: ' + self.config.source.endpoint);
-      console.log('SparqlEndpointReportSuccess._handleResponse()'); console.dir(self);console.dir(responseOrErrorObject);
-      console.log('fetch status; ' + self.getFetchStatus());
-      console.log('DATA MODEL:');console.dir(self.jsonModel);
+      // console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
+      // console.log('self.config.source.endpoint: ' + self.config.source.endpoint);
+      // console.log('SparqlEndpointReportSuccess._handleResponse()'); console.dir(self);console.dir(responseOrErrorObject);
+      // console.log('fetch status; ' + self.getFetchStatus());
+      // console.log('DATA MODEL:');console.dir(self.jsonModel);
         
       let response;
       let error;
@@ -993,18 +1007,8 @@ export class SparqlEndpointReportSuccess extends SparqlStat {
 
       // Default result summary is 'yes' or 'no'
       let resultText = unknownResult ? unknownResult : (success ? 'yes' : 'no');
-
-      // ...overridden at any stage by setting an errorDescription
-      // Use 'error' here as these errors may be connectivity, CORS and not endpoint characteristics
-      let errorDesc = self.getErrorDescription();
-      if (errorDesc) {
-        if (errorDesc.indexOf('\n') > 0) errorDesc = errorDesc.substring(0, errorDesc.indexOf('\n'));
-        if (errorDesc.indexOf(':') > 0) errorDesc = errorDesc.substring(errorDesc.indexOf(':') + 1);
-        resultText = 'error: ' + errorDesc.substring(0, 20);
-      } else if (self.isError) {
-        console.warning('fetch() error flagged without SparqlStat.errorDescription');
-        resultText = 'error';
-      }
+      let resultTextForError = self.getResultTextForError();
+      if (resultTextForError) resultText = resultTextForError;
 
       // Checking for response content type is a yes/no status
       if (success && self.config.matchContent && self.config.matchContent !== self.responseTypeAbbrev) {
@@ -1045,11 +1049,11 @@ export class SparqlEndpointStat extends SparqlStat {
     const self = this;
     function _handleResponse (responseOrErrorObject) {
 
-      // console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
-      // console.log('self.config.source.endpoint: ' + self.config.source.endpoint);
-      // console.log('SparqlEndpointStat._handleResponse()'); console.dir(self);console.dir(responseOrErrorObject);
-      // console.log('fetch status; ' + self.getFetchStatus());
-      // console.log('DATA MODEL:');console.dir(self.jsonModel);
+      console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
+      console.log('self.config.source.endpoint: ' + self.config.source.endpoint);
+      console.log('SparqlEndpointStat._handleResponse()'); console.dir(self);console.dir(responseOrErrorObject);
+      console.log('fetch status; ' + self.getFetchStatus());
+      console.log('DATA MODEL:');console.dir(self.jsonModel);
 
       let response;
       let error;
@@ -1069,7 +1073,8 @@ export class SparqlEndpointStat extends SparqlStat {
       let unknownResult;  // When set we can't determine the outcome and this holds an explanatory
       if (!response) {
         // The fetch failed without a response (e.g. blocked by CORS)
-        unknownResult = 'unknown';
+        const errorText = self.getResponseTextForError();
+        unknownResult = 'unknown' + errorText ? ': ' + errorText : '';
       } else {
         unknownResult = response.status >= 400 ? 'error ' + response.status : undefined; // Errors  we haven't handled as 'unknown' result
 
@@ -1110,7 +1115,8 @@ export class SparqlEndpointStat extends SparqlStat {
         }
       }
   
-      self.setResultText(self.serviceInfo.version, unknownResult !== undefined);
+      let resultText = self.serviceInfo.version;
+      self.setResultText(resultText, unknownResult !== undefined);
     }
 
     this.unsubscribe = this.responseStore.subscribe(_handleResponse);

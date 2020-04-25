@@ -13,7 +13,7 @@ $: statValueText = resultTextStore ? $resultTextStore : undefined;
 function statClass(text) {
   if (awaitingResponse || text === '-') return 'main value-unknown';
 
-let classValue = 'main value-error';
+  let classValue = 'main value-error';
 
   if (sparqlStat.config.type === 'sparql-stat') {
     const respType = sparqlStat.responseTypeAbbrev;
@@ -23,7 +23,7 @@ let classValue = 'main value-error';
       classValue = 'main value-unknown';
     else if (text === 'unknown')
       classValue = 'main value-unkown';
-  } else if (text === 'unknown' || text === '-') 
+  } else if (text.startsWith('unknown') || text === '-') 
     classValue = 'main value-unknown';
   else if (sparqlStat.config.type === 'stat-website' || !isError)
     classValue = 'main';
