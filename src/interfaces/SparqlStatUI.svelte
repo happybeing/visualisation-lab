@@ -2,7 +2,7 @@
 import {fetchStatus} from './SourceInterface.js';
 
 export let sparqlStat;
-console.log('======');console.dir(sparqlStat)
+// console.log('======');console.dir(sparqlStat)
 $: statusTextStore = sparqlStat ? sparqlStat.statusTextStore : undefined;
 $: statStatus = statusTextStore ? $statusTextStore : undefined;
 

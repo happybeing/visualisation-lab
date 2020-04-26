@@ -96,7 +96,7 @@ function makeAllTabulations() {
 
 let allTabulations = [];
   allTabulationGroups.forEach(group => {
-    console.log('group: ' + group); console.dir(group);
+    // console.log('group: ' + group); console.dir(group);
     tabulationGroups[group].forEach(tabulation => {
       tabulation.group = group;
       allTabulations.push(tabulation)
@@ -105,7 +105,7 @@ let allTabulations = [];
   console.log('allTabulations updated:');console.log(allTabulations);
 
   allTabulations.forEach(tab => {if (typeChecked[tab.heading] === undefined) typeChecked[tab.heading] = true;} );
-  console.log('typeChecked initialised:');console.dir(typeChecked);
+  // console.log('typeChecked initialised:');console.dir(typeChecked);
   return allTabulations;
 }
 
