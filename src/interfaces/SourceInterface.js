@@ -92,7 +92,7 @@ export class SourceInterfaceManager {
           newInterface = new SourceInterface(def.shortName, def.description, def.uiClass, def.options);
 
         this.sourceInterfaces.set(def.shortName, newInterface);
-        console.dir(newInterface);
+        // console.dir(newInterface);
       } catch(e) {
         console.warn(e);
         window.notifications.notifyWarning(e);
@@ -149,9 +149,9 @@ export class SourceResult {
   }
 
   setResultText (resultText, isError) { 
+    this.isError = isError ? true : false;
     this.resultText = resultText; 
     this.resultTextStore.set(resultText);
-    this.isError = isError ? true : false;
   }
 
   getResultText () { return this.resultText; }
@@ -235,7 +235,7 @@ export class SourceResult {
   // TODO: - extend MIME type support using graphy reader based on mimeType
   consumeRdfStream (sourceResultStore, statusTextStore, stream,  {mimeType, size}) {
     console.log('SourceResult.consumeRdfFile()');
-    console.dir(stream);
+    // console.dir(stream);
     console.log('Size: ', size);
     this.sourceResultStore = sourceResultStore;
     
@@ -337,7 +337,7 @@ export class SourceResult {
   // TODO consider supporting queries that return JSON (e.g. wikidata won't provides JSON and XML, but not CSV)
   consumeJsonText (sourceResultStore, statusTextStore, jsonText,  {mimeType, size}) {
     console.log('SourceResult.consumeJsonText()');
-    console.dir({jsonText});
+    // console.dir({jsonText});
     console.log('Size: ', jsonText.length);
     const json = JSON.parse(jsonText);
     this.sourceResultStore = sourceResultStore;
@@ -350,7 +350,7 @@ export class SourceResult {
   // TODO consider supporting queries that return XML (e.g. wikidata won't provides JSON and XML, but not CSV)
   consumeXmlText (sourceResultStore, statusTextStore, xmlText,  {mimeType, size}) {
     console.log('SourceResult.consumeXmlText()');
-    console.dir({xmlText});
+    // console.dir({xmlText});
     console.log('Size: ', xmlText.length);
     const xmlJson = xmlParser.convertToJson(xmlText);
     this.sourceResultStore = sourceResultStore;
@@ -405,8 +405,8 @@ export class SourceResult {
       // console.log('END');
       parser.end();
     } catch(e) {
-      console.dir(e);
-      // console.error(e);
+      // console.dir(e);
+      console.error(e);
       this._notifyWarning('Failed to parse CSV result.')
       throw e;
     }
@@ -415,7 +415,7 @@ export class SourceResult {
   // TODO: a consumeStream() which uses the options.mimeType param to choose the consume function
   consumeCsvStream (sourceResultStore, statusTextStore, stream, {mimeType, size, stringToNumber}) {
     console.log('SourceResult.consumeCsvStream)');
-    console.dir(stream);
+    // console.dir(stream);
     console.log('Size: ', size);
     this.sourceResultStore = sourceResultStore;
     try {
@@ -445,8 +445,8 @@ export class SourceResult {
       })
       readableStreamToConsumer(stream, parser);
     } catch(e) {
-      console.dir(e);
-      // console.error(e);
+      // console.dir(e);
+      console.error(e);
       this._notifyWarning('Failed to parse CSV result.')
       throw e;
     }
@@ -455,7 +455,7 @@ export class SourceResult {
   // TODO: a consumeStream() which uses the options.mimeType param to choose the consume function
   consumeTextStream (sourceResultStore, statusTextStore, stream, {mimeType, size, stringToNumber}) {
     console.log('SourceResult.consumeTextStream)');
-    console.dir(stream);
+    // console.dir(stream);
     console.log('Size: ', size);
     this.sourceResultStore = sourceResultStore;
     try {
@@ -486,8 +486,8 @@ export class SourceResult {
       })
       readableStreamToConsumer(stream, parser);
     } catch(e) {
-      console.dir(e);
-      // console.error(e);
+      // console.dir(e);
+      console.error(e);
       this._notifyWarning('Failed to parse CSV result.')
       throw e;
     }
@@ -587,7 +587,7 @@ export class SourceResult {
 
           const warning = 'Failed to load URI.\n' + response.statusText;
           console.log('DEBUG: ' + response.status + ' ' + response.statusText + ' XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
-          console.dir(response);
+          // console.dir(response);
           console.warn(warning);
           this._notifyWarning(warning);
           this.consumeFetchResponse(false);  // Response failed to be processed
@@ -598,7 +598,7 @@ export class SourceResult {
     }).catch(e => {
       console.log('BEGINBEGINBEGINBEGINBEGINBEGINBEGINBEGINBEGINBEGIN');
       console.error(e);
-      console.dir(e);
+      // console.dir(e);
       if (e.name === 'TypeError') {
         this.errorDescription = "network, DNS or CORS";
         console.error(this.errorDescription);
@@ -615,7 +615,7 @@ export class SourceResult {
   _processResponse(response, sourceResultStore, statusTextStore) {
     try {
       console.log('Processing Content-Type: ' + response.headers.get('Content-Type'));
-      console.dir(response);
+      // console.dir(response);
       console.log('length: ' + response.headers.get('Content-Length'));
 
       const contentLength = (response.headers.get('Content-Length'));
@@ -652,10 +652,10 @@ export class SourceResult {
         // Unexpected response type
         const warning = 'Unexpected content type: ' + responseType;
         this.consumeFetchResponse(false);  // Response failed to be processed
-        console.dir(response);
+        // console.dir(response);
         response.text().then(text => {
-          console.log(warning + ' DUMP: ');
-          console.dir({responseText: text});
+          // console.log(warning + ' DUMP: ');
+          // console.dir({responseText: text});
           if (text) text = this._truncateText(text, 40);
           this.responseText = text;
           if (statusTextStore) statusTextStore.set('Returned: ' + responseType);
@@ -874,11 +874,11 @@ export class FetchMonitor {
     this.abandonErrors.forEach((error) => {
       console.log('\nDMP caller: ' + error.caller);
       console.log(' response/error:');
-      console.dir(error.response);
-      console.dir(error.error);
+      // console.dir(error.response);
+      // console.dir(error.error);
     });
-    console.log('DMP SparqlStats:');
-    console.dir(this.sparqlStats);
+    // console.log('DMP SparqlStats:');
+    // console.dir(this.sparqlStats);
   }
 }
 
@@ -955,9 +955,16 @@ export class SparqlEndpointReportSuccess extends SparqlStat {
 
     const self = this;
     function _handleResponse (responseOrErrorObject) {
+      if (!responseOrErrorObject) {
+        self.setResultText('-');
+        return;
+      }
+
       // console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
       // console.log('self.config.source.endpoint: ' + self.config.source.endpoint);
-      // console.log('SparqlEndpointReportSuccess._handleResponse()'); console.dir(self);console.dir(responseOrErrorObject);
+      // console.log('SparqlEndpointReportSuccess._handleResponse()');
+      // console.log(self);
+      // console.dir(self);console.dir(responseOrErrorObject);
       // console.log('fetch status; ' + self.getFetchStatus());
       // console.log('DATA MODEL:');console.dir(self.jsonModel);
         
@@ -973,12 +980,7 @@ export class SparqlEndpointReportSuccess extends SparqlStat {
           (response ? response.url : '') + 
           '\nTODO: error: ' + error + 
           '\nTODO: response object: ');
-          console.dir(response);
-      }
-
-      if (self.getFetchStatus() === fetchStatus.IDLE ) {
-        self.setResultText('-');
-        return;
+          // console.dir(response);
       }
 
       let success = false;
@@ -1048,12 +1050,16 @@ export class SparqlEndpointStat extends SparqlStat {
 
     const self = this;
     function _handleResponse (responseOrErrorObject) {
+      if (!responseOrErrorObject) {
+        self.setResultText('-');
+        return;
+      }
 
-      console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
-      console.log('self.config.source.endpoint: ' + self.config.source.endpoint);
-      console.log('SparqlEndpointStat._handleResponse()'); console.dir(self);console.dir(responseOrErrorObject);
-      console.log('fetch status; ' + self.getFetchStatus());
-      console.log('DATA MODEL:');console.dir(self.jsonModel);
+      // console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
+      // console.log('self.config.source.endpoint: ' + self.config.source.endpoint);
+      // console.log('SparqlEndpointStat._handleResponse()'); console.dir(self);console.dir(responseOrErrorObject);
+      // console.log('fetch status; ' + self.getFetchStatus());
+      // console.log('DATA MODEL:');console.dir(self.jsonModel);
 
       let response;
       let error;
@@ -1062,19 +1068,14 @@ export class SparqlEndpointStat extends SparqlStat {
         error = responseOrErrorObject.error;
       }
 
-      if (self.getFetchStatus() === fetchStatus.IDLE) {
-        self.setResultText('-');
-        return;
-      }
-
       // Error code ref: https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#4xx_Client_errors
 
       self.serviceInfo = { version: '1.0 (inferred)' };  // Default unless the result is not valid
       let unknownResult;  // When set we can't determine the outcome and this holds an explanatory
       if (!response) {
         // The fetch failed without a response (e.g. blocked by CORS)
-        const errorText = self.getResponseTextForError();
-        unknownResult = 'unknown' + errorText ? ': ' + errorText : '';
+        const errorText = self.getResultTextForError();
+        unknownResult = 'unknown' + (errorText ? ': ' + errorText : '');
       } else {
         unknownResult = response.status >= 400 ? 'error ' + response.status : undefined; // Errors  we haven't handled as 'unknown' result
 
@@ -1093,7 +1094,7 @@ export class SparqlEndpointStat extends SparqlStat {
           // Request for service description worked suggests v1.1 but service
           // descriptions are not reliable so we don't trust/use what it says
           const dataset = self.jsonModel.values;
-          console.log('serviceInfo dataset:'); console.dir(dataset);
+          // console.log('serviceInfo dataset:'); console.dir(dataset);
           // TODO: could extract info from service description (dataset) here
           self.serviceInfo = {
             version: '1.1 (inferred)',
@@ -1171,14 +1172,14 @@ export class StatWebsite extends SparqlStat {
     .then(html => {
       const doc = domino.createWindow(html).document;
       const metadata = getMetadata(doc, url);
-      console.log('METADATA TEST: ' + url);console.dir(metadata);
+      // console.log('METADATA TEST: ' + url);console.dir(metadata);
         
       if (metadata.icon) this.siteIconUrl = metadata.icon;
       this.setResultText(this.makeWebsiteName());
     }).catch(e => {
       console.log('SparqlStatWebsite.updateSparqlStat() error:');
       console.log(e);
-      console.dir(e);   
+      // console.dir(e);   
     });
   }
   
