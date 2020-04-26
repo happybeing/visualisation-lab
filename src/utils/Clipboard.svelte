@@ -54,6 +54,7 @@ async function copyToClipboard(value) {
 // Return undefined for success, or a string describing the error
 async function copyToClipboardViaCommand (data) {
   await tick();
+  tinyAreaDom.hidden = false;
   tinyAreaDom.focus();
   tinyAreaDom.select();
   let successful = false;
@@ -62,6 +63,7 @@ async function copyToClipboardViaCommand (data) {
   } catch (e) {
     console.error(e);
   }
+  tinyAreaDom.hidden = true;
 
   return successful ? undefined : 'Copy to clipboard failed.'
 }
@@ -103,7 +105,7 @@ async function askUserToCopyManually(data) {
 }
 </script>
 
-<textarea class='method1' bind:this={tinyAreaDom} width='1px' height='1px'>{valueCopy}</textarea>
+<textarea class='method1' hidden=true bind:this={tinyAreaDom} width='1px' height='1px'>{valueCopy}</textarea>
 <div  class='centered userCopyControl' hidden={!showDataToUser}>
   <div class='centered' style='width: 90%; height: 93%;' >
     Press Ctrl-C to copy the selected text:
