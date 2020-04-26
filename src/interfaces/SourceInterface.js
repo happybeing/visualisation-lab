@@ -4,6 +4,15 @@
 
 import {modelFormats} from '../modelFormats.js';
 
+export const responseTypeAbbrev = {
+  turtle: 'Ttl',
+  xml: 'XML',
+  csv: 'CSV',
+  json: 'Json',
+  html: 'HTML',
+  text: 'Text',
+}
+
 /** Base class for interfaces to different kinds of data source (file, database, web) 
  */
  class SourceInterface {
@@ -122,9 +131,10 @@ const ttlReader = require('@graphy/content.ttl.read');
 const RdfDataset = require('@graphy/memory.dataset.fast');
 
 // CSV Support
-// import {parser as csvParse} from 'csv-parse';
 const csvParse = require('csv-parse');
-const xmlParser = require('fast-xml-parser');
+
+// XML Support (note )
+var xmlParser = require('xml-js');  // Note: 'fast-xml-parser' didn't work, always returned empty string!
 
 /** Load multiple external data formats into a JSON ViewModel representation
  * 
@@ -291,72 +301,102 @@ export class SourceResult {
     }
   }
 
-  consumeRdfTtlText (sourceResultStore, statusTextStore, textTtl) {
+  consumeRdfTtlText (sourceResultStore, statusTextStore, textTtl, {mimeType, size, validateOnly}) {
     console.log('SourceResult.consumeRdfTtlText()');
     this.sourceResultStore = sourceResultStore;
 
+    let success = false;
     try {
       const rdfDataset = RdfDataset();
       const self = this;
       ttlReader(textTtl, {
         data(y_quad) {
-          console.log(JSON.stringify(y_quad));
-          rdfDataset.add(y_quad);
-          if (statusTextStore) statusTextStore.set(rdfDataset.size + ' triples loaded');
+          // console.log(JSON.stringify(y_quad));
+          success = true;
+          if (!validateOnly) { 
+            rdfDataset.add(y_quad);
+            if (statusTextStore) statusTextStore.set(rdfDataset.size + ' triples loaded');
+          }
         },
   
         eof(h_prefixes) {
           console.log('done!');
           console.log('rdfDataset size: ', rdfDataset.size);
-          self.setJsonModel({
-            values: rdfDataset, 
-            modelFormat: modelFormats.RAW_RDFDATASET,  
-            sourceInterface: this,
-          });
-          self.sourceResultStore.update(v => self);
-          self.responseProcessingComplete();
+          if (!validateOnly) { 
+            self.setJsonModel({
+              values: rdfDataset, 
+              modelFormat: modelFormats.RAW_RDFDATASET,  
+              sourceInterface: this,
+            });
+            if (self.sourceResultStore) self.sourceResultStore.update(v => self);
+            self.responseProcessingComplete();
+          }
         },
         error (e) {
           // this._notifyWarning('Failed to parse RDF text.')
           console.log('error: ', e);
           console.log('rdfDataset size: ', rdfDataset.size);
-          self.setJsonModel(undefined);
-          self.sourceResultStore.update(v => self);
-          self.responseProcessingComplete(e);
+          success = false;
+          if (!validateOnly) { 
+            self.setJsonModel(undefined);
+            if (self.sourceResultStore) self.sourceResultStore.update(v => self);
+            self.responseProcessingComplete(e);
           }
-      })
+        }
+      });
     } catch (e) { 
       console.error(e); 
       this._notifyWarning(e);
+      success = false;
       throw e;
     } 
 
+    return success;
   }
 
   // JSON - currently only used to check for JSON response body
   // TODO consider supporting queries that return JSON (e.g. wikidata won't provides JSON and XML, but not CSV)
-  consumeJsonText (sourceResultStore, statusTextStore, jsonText,  {mimeType, size}) {
+  consumeJsonText (sourceResultStore, statusTextStore, jsonText, {mimeType, size, validateOnly}) {
     console.log('SourceResult.consumeJsonText()');
     // console.dir({jsonText});
     console.log('Size: ', jsonText.length);
-    const json = JSON.parse(jsonText);
-    this.sourceResultStore = sourceResultStore;
-    this.setJsonModel({values: json, modelFormat: modelFormats.RAW_JSON});
-    this.sourceResultStore.update(v => {instance: this});    
-    this.responseProcessingComplete();
+    let success = false;
+    try {
+      const json = JSON.parse(jsonText);
+      if (json) success = true;
+      if (!validateOnly) {
+        this.sourceResultStore = sourceResultStore;
+        this.setJsonModel({values: json, modelFormat: modelFormats.RAW_JSON});
+        if (sourceResultStore) sourceResultStore.update(v => {instance: this});    
+        this.responseProcessingComplete();
+      }    
+    } catch (e) {
+      if (!validateOnly) throw e;
+    }
+    return success;
   }
 
   // XML - currently only used to check for valid XML response body
   // TODO consider supporting queries that return XML (e.g. wikidata won't provides JSON and XML, but not CSV)
-  consumeXmlText (sourceResultStore, statusTextStore, xmlText,  {mimeType, size}) {
+  consumeXmlText (sourceResultStore, statusTextStore, xmlText, {mimeType, size, validateOnly}) {
     console.log('SourceResult.consumeXmlText()');
     // console.dir({xmlText});
-    console.log('Size: ', xmlText.length);
-    const xmlJson = xmlParser.convertToJson(xmlText);
-    this.sourceResultStore = sourceResultStore;
-    this.setJsonModel({values: xmlJson, modelFormat: modelFormats.RAW_JSON});
-    this.sourceResultStore.update(v => {instance: this});    
-    this.responseProcessingComplete();
+    let success = false;
+    try {
+      console.log('Size: ', xmlText.length);
+      // const xmlJson = xmlParser.convertToJson(xmlText);
+      const xmlJson = xmlParser.xml2json(xmlText, {compact: true});
+      if (xmlJson) success = true;
+      if (!validateOnly) {
+        this.sourceResultStore = sourceResultStore;
+        this.setJsonModel({values: xmlJson, modelFormat: modelFormats.RAW_JSON});
+        if (sourceResultStore) sourceResultStore.update(v => {instance: this});    
+        this.responseProcessingComplete();
+      }    
+    } catch (e) {
+      if (!validateOnly) throw e;
+    }
+    return success;
   }
 
   // JSON - initially just used to load a JSON graph test file into the resultStore as VM_GRAPH_JSON
@@ -365,39 +405,47 @@ export class SourceResult {
     console.log('SourceResult.consumeJson()');
     this.sourceResultStore = sourceResultStore;
     this.setJsonModel({values: lesMisData, modelFormat: modelFormats.VM_GRAPH_JSON});
-    this.sourceResultStore.update(v => {instance: this});
+    if(sourceResultStore) sourceResultStore.update(v => {instance: this});
     this.responseProcessingComplete();
   }
 
-  consumeCsvText (sourceResultStore, statusTextStore, csvText, {mimeType, size, stringToNumber}) {
+  consumeCsvText (sourceResultStore, statusTextStore, csvText, {mimeType, size, stringToNumber, validateOnly}) {
     console.log('SourceResult.consumeCsvText()');
     this.sourceResultStore = sourceResultStore;
+    let success = false;
     try {
       const self = this;
       const csvJson = [];
       let records = 1;
-      if (statusTextStore) statusTextStore.set('loading CSV...');
+      if (statusTextStore) statusTextStore.set((validateOnly ? 'validating' : 'loading') + ' CSV...');
       const parser = csvParse();
       parser.on('readable', function(){
         let record
         while (record = parser.read()) {
           // console.log('READ: ' + record);
-          if (stringToNumber) {
-            record.forEach((v,i,a) => {if (!isNaN(Number(v))) a[i] = Number(v);});
+          success = true;
+          if (!validateOnly) {
+            if (stringToNumber) {
+              record.forEach((v,i,a) => {if (!isNaN(Number(v))) a[i] = Number(v);});
+            }
+            csvJson.push(record)
+            if (statusTextStore) statusTextStore.set(records + ' records ' + (validateOnly ? 'valid' : 'loaded'));
+            records++;
           }
-          csvJson.push(record)
-          if (statusTextStore) statusTextStore.set(records++ + ' records loaded');
         }
-      })
+      });
       parser.on('error', function(err){
+        success = false;
         throw(err);
-      })
+      });
       parser.on('end', function(){
-        if (statusTextStore) statusTextStore.set(records + ' records loaded');
-        self.setJsonModel({values: csvJson, modelFormat: modelFormats.VM_TABULAR_JSON});
-        self.sourceResultStore.update(v => self);
-        self.responseProcessingComplete();
-      })
+        if (statusTextStore) statusTextStore.set(records + ' records ' + (validateOnly ? 'valid' : 'loaded'));
+        if (!validateOnly) {
+          self.setJsonModel({values: csvJson, modelFormat: modelFormats.VM_TABULAR_JSON});
+          if (self.sourceResultStore) self.sourceResultStore.update(v => self);
+          self.responseProcessingComplete();
+        }
+      });
       // Pass the text to the parser
       csvText.split('\n').forEach(line => {
         if (line.length > 0) parser.write(line + '\n')
@@ -408,8 +456,10 @@ export class SourceResult {
       // console.dir(e);
       console.error(e);
       this._notifyWarning('Failed to parse CSV result.')
-      throw e;
+      if (!validateOnly) throw e;
     }
+
+    return success;
   }
 
   // TODO: a consumeStream() which uses the options.mimeType param to choose the consume function
@@ -440,7 +490,7 @@ export class SourceResult {
       parser.on('end', function(){
         if (statusTextStore) statusTextStore.set(records + ' records loaded');
         self.setJsonModel({values: csvJson, modelFormat: modelFormats.VM_TABULAR_JSON});
-        self.sourceResultStore.update(v => self);
+        if (self.sourceResultStore) self.sourceResultStore.update(v => self);
         self.responseProcessingComplete();
       })
       readableStreamToConsumer(stream, parser);
@@ -481,7 +531,7 @@ export class SourceResult {
       parser.on('end', function(){
         if (statusTextStore) statusTextStore.set(records + ' records loaded');
         self.setJsonModel({values: csvJson, modelFormat: modelFormats.VM_TABULAR_JSON});
-        self.sourceResultStore.update(v => self);
+        if (self.sourceResultStore) self.sourceResultStore.update(v => self);
         self.responseProcessingComplete(e);
       })
       readableStreamToConsumer(stream, parser);
@@ -493,8 +543,20 @@ export class SourceResult {
     }
   }
 
-  /** Load and parse files into a SourceResult store 
-   * 
+  detectSerialisationFormat (text) {
+    let formatDetected;
+    if (this.consumeXmlText(undefined, undefined, text, {validateOnly: true})) {
+      formatDetected = responseTypeAbbrev.xml;
+    } else if (this.consumeJsonText(undefined, undefined, text, {validateOnly: true})) {
+      formatDetected = responseTypeAbbrev.json;
+    } else if (this.consumeRdfTtlText(undefined, undefined, text, {validateOnly: true})) {
+      formatDetected = responseTypeAbbrev.turtle;
+    }
+    return formatDetected;
+  }
+    
+    /** Load and parse files into a SourceResult store 
+     * 
    * Currently assumes RDF input
    * TODO: LATER: provide file selection with optional default file extensions (use 'options' in the interfaces list)
    *
@@ -626,7 +688,7 @@ export class SourceResult {
           this.consumeCsvStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
           if (statusTextStore ) statusTextStore.set('');
         } else {
-          this.responseTypeAbbrev = 'CSV';
+          this.responseTypeAbbrev = responseTypeAbbrev.csv;
           this._processTextResponseUsing(sourceResultStore, statusTextStore, response, {size: contentLength}, this.consumeCsvText);
         }
       } else if (responseType.startsWith('text/turtle')) {
@@ -635,17 +697,17 @@ export class SourceResult {
           this.consumeRdfStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
           if (statusTextStore ) statusTextStore.set('');
         } else {
-          this.responseTypeAbbrev = 'Ttl';
+          this.responseTypeAbbrev = responseTypeAbbrev.turtle;
           this._processTextResponseUsing(sourceResultStore, statusTextStore, response, {size: contentLength}, this.consumeRdfTtlText);
         }
       } else if (responseType.startsWith('application/sparql-results+json')) {
         this.consumeFetchResponse(true);
-        this.responseTypeAbbrev = 'Json';
+        this.responseTypeAbbrev = responseTypeAbbrev.json;
         this._processTextResponseUsing(sourceResultStore, statusTextStore, response, {size: contentLength}, this.consumeJsonText);
       } else if (responseType.startsWith('application/sparql-results+xml') ||
             responseType.startsWith('application/rdf+xml')) {
         this.consumeFetchResponse(true);
-        this.responseTypeAbbrev = 'XML';
+        this.responseTypeAbbrev = responseTypeAbbrev.xml;
         this._processTextResponseUsing(sourceResultStore, statusTextStore, response, {size: contentLength}, this.consumeXmlText);
       }
       else {
@@ -656,15 +718,26 @@ export class SourceResult {
         response.text().then(text => {
           // console.log(warning + ' DUMP: ');
           // console.dir({responseText: text});
+          let reportedType = responseType.split(';')[0];
+          if (responseType.startsWith('text/html'))
+            reportedType = responseTypeAbbrev.html;
+
+          const responseTypeDetected = this.detectSerialisationFormat(text);
+          console.log('TYPEDETECTED: ' + responseTypeDetected);
           if (text) text = this._truncateText(text, 40);
           this.responseText = text;
-          if (statusTextStore) statusTextStore.set('Returned: ' + responseType);
-          if (responseType.startsWith('text/html')) {
-            this.responseTypeAbbrev = 'Html';
-            this.errorDescription = 'Unexpected response type HTML:\n' + text;
+
+          let statusText;
+          if (responseTypeDetected) {
+            this.responseTypeAbbrev = responseTypeDetected;
+            statusText = 'Reported ' + reportedType + ' is ';
           } else {
-            this.errorDescription = 'Unexpected response type ' + responseType + ':\n' + text;
+            this.responseTypeAbbrev = reportedType;
+            statusText = 'Unexpected response type ';
           }
+          this.errorDescription = statusText + ':' + this.responseTypeAbbrev + ':\n' + text;
+          if (statusTextStore) statusTextStore.set(statusText);
+
           this._notifyWarning(warning);
           sourceResultStore.set(0);
           this.responseProcessingComplete();
@@ -900,13 +973,14 @@ export class SparqlStat extends SourceResult {
     this.errorDescription = undefined;
   }
 
+  // Short summary of last error for UI
   getResultTextForError () {
     let resultTextForError;
     let errorDesc = this.getErrorDescription();
     if (errorDesc) {
       if (errorDesc.indexOf('\n') > 0) errorDesc = errorDesc.substring(0, errorDesc.indexOf('\n'));
-      if (errorDesc.indexOf(':') > 0) errorDesc = errorDesc.substring(errorDesc.indexOf(':') + 1);
-      resultTextForError = 'error: ' + errorDesc.substring(0, 20);
+      if (errorDesc.indexOf(':') > 0) errorDesc = errorDesc.substring(0, errorDesc.indexOf(':'));
+      resultTextForError = 'error: ' + errorDesc.substring(0, 25);
     } else if (this.isError) {
       console.warning('fetch() error flagged without SparqlStat.errorDescription');
       resultTextForError = 'error';
@@ -914,7 +988,6 @@ export class SparqlStat extends SourceResult {
     return resultTextForError;
   }
 
-  // Short summary of last error for UI
   getErrorDescription () {
     const response = this.getLastFetchResponse();
 
@@ -976,7 +1049,7 @@ export class SparqlEndpointReportSuccess extends SparqlStat {
       }
 
       if (error) {
-        console.log('TODO: ' + this.constructor.name + '_handleResponse()\nTODO url: ' + 
+        console.log('TODO: SparqlEndpointReportSuccess._handleResponse()\nTODO: url: ' + 
           (response ? response.url : '') + 
           '\nTODO: error: ' + error + 
           '\nTODO: response object: ');
