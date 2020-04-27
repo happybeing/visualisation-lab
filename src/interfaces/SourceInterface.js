@@ -13,6 +13,15 @@ export const responseTypeAbbrev = {
   text: 'Text',
 }
 
+// Types which if mis-described in response (e.g. as text or HTML) 
+// may indicate a valid result (Test Summary 'I')
+export const sparqlResponseTypes = [
+  responseTypeAbbrev.turtle,
+  responseTypeAbbrev.xml,
+  responseTypeAbbrev.json,
+  responseTypeAbbrev.csv,
+];
+
 /** Base class for interfaces to different kinds of data source (file, database, web) 
  */
  class SourceInterface {
@@ -850,6 +859,7 @@ to customise their behaviour.
 
 */
 
+
 import {writable} from 'svelte/store';
 
 /** Class to hold aggregate summary data for SparqlStat activity (such as outstanding fetch operations)
@@ -971,8 +981,55 @@ export class SparqlStat extends SourceResult {
 
   prepareForUpdate () {
     this.errorDescription = undefined;
+    this.testSummary = undefined;
   }
 
+  /** These methods manage the test summary state of the SparqlStat and its source.
+
+  Test Summary Values
+
+  Values are chosen to help sort CSV imported into spreadsheet:
+  'G' = Good = at least one SparqlStat resolved to 'yes'
+  'I' = Invalid = at least one response was Turtle, XML or JSON though not invalid
+  'U' = Unknown = no good responses (as above) but not all fetches completed
+  'X' = Failed = all fetches completed with errors
+  */
+
+  // On completing, SparqlStat calls with G(ood), I(nvalid) or X(fail) result
+  // This is set on the SparqlStat, and trigger a check to update the source.testSummary
+  setTestSummary (testSummary) {
+    if (['G', 'I', 'X'].includes(testSummary)) {
+      if (this.testSummary) throw Error('Attempt to set SparqlStat.testSummary when already set');
+      this.testSummary = testSummary;
+    } else throw Error('SparqlStat.setTestSummary() - Invalid test summary value: ' + testSummary);
+    this._UpdateSourceFinalTestSummary();
+  }
+
+  getTestSummary () {
+    return this.testSummary ? this.testSummary : 'U';
+  }
+
+  _UpdateSourceFinalTestSummary () {
+    let endpointIsComplete = true;
+    let testSummary;
+    this.config.source.sparqlStats.forEach(stat => {
+      if (stat.config.type !== 'stat-website' && stat.fetchStatus !== fetchStatus.IDLE) {
+        if (!stat.testSummary)
+          endpointIsComplete = false;
+        else  if (!testSummary || stat.testSummary === 'G') 
+          testSummary = stat.testSummary;
+        else if (stat.testSummary === 'I' && testSummary === 'X')
+          testSummary = 'I';
+      }
+    });
+
+    if (endpointIsComplete) {
+      if (!testSummary) testSummary = 'X';
+      this.config.source.testSummary = testSummary;
+    }
+  }
+
+ 
   // Short summary of last error for UI
   getResultTextForError () {
     let resultTextForError;
@@ -1025,6 +1082,8 @@ export class SparqlEndpointReportSuccess extends SparqlStat {
     this.serviceInfo = {
       version: '-',
     };
+
+    // Note: _handleResponse must use setTestSummary() to set a test summary value on completion
 
     const self = this;
     function _handleResponse (responseOrErrorObject) {
@@ -1092,6 +1151,12 @@ export class SparqlEndpointReportSuccess extends SparqlStat {
         self.errorDescription = 'Unexpected response type ' + self.responseTypeAbbrev + ':\n' + self.responseText;
       } 
 
+      let testSummary = success ? 'G' : 'X';  // G(ood) or X(fail)
+      if (!success && !self.config.matchContent && 
+          sparqlResponseTypes.includes(self.responseTypeAbbrev)) {
+        testSummary = 'I';  // I(nvalid) but possibly a SPARQL response (e.g. given wrong response Content Type)
+      }
+      self.setTestSummary(testSummary);
       self.setResultText(resultText, !success);
     }
 
@@ -1120,6 +1185,8 @@ export class SparqlEndpointStat extends SparqlStat {
     this.serviceInfo = {
       version: '-',
     };
+
+    // Note: _handleResponse must use setTestSummary() to set a test summary value on completion
 
     const self = this;
     function _handleResponse (responseOrErrorObject) {
@@ -1188,9 +1255,13 @@ export class SparqlEndpointStat extends SparqlStat {
           };      
         }
       }
-  
+ 
+      const success = unknownResult !== undefined;
+      let testSummary = success ? 'G' : 'X';  // G(ood) or X(fail)
+      self.setTestSummary(testSummary);
+
       let resultText = self.serviceInfo.version;
-      self.setResultText(resultText, unknownResult !== undefined);
+      self.setResultText(resultText, success);
     }
 
     this.unsubscribe = this.responseStore.subscribe(_handleResponse);

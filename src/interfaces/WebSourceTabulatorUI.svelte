@@ -199,6 +199,7 @@ function makeSourceTabulations (sources) {
 // The fetchMonitor has an array of the SparqlStats so must be re-initialised to release its refs
 function destroySources(sources) {
   sources.forEach(source => {
+    source.testSummary = undefined;
     if (source.sparqlStats)
       source.sparqlStats.forEach(stat => {
         if (stat.unsubscribge) stat.unsubscribe();
@@ -256,8 +257,8 @@ function copyTabulationToClipboardComponent (type) {
 function getTabulationAsTextCsv () {
   const separator = ',';
   
-  // First line is header and we pre-pend a column for the Endpoint URL
-  let csv = 'Endpoint URL';
+  // First line is header and we pre-pend columns for the Endpoint URL and test summary
+  let csv = 'Endpoint URL' + separator + 'Summary';
   activeDataSources[0].sparqlStats.forEach(stat => {
     if (stat.config.type !== 'stat-website' || typeChecked[stat.config.heading]) {
       csv += separator + stat.config.heading;
@@ -268,6 +269,7 @@ function getTabulationAsTextCsv () {
   // One row per source
   activeDataSources.forEach(source => {
     csv += source.endpoint;
+    csv += separator + (source.testSummary ? source.testSummary : '');
     source.sparqlStats.forEach(stat => {
       let resultText = stat.getResultText();
       resultText = resultText ? resultText.trim().replace(',', '') : '';
