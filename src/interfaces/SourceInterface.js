@@ -965,6 +965,8 @@ export class FetchMonitor {
   }
 }
 
+const settableTestSummaryValues = ['G', 'I', 'X'];
+
 export class SparqlStat extends SourceResult {
   constructor (config, fetchMonitor) {
     super(null); // SparqlStat has source URI in config, does not use a SourceInterface
@@ -981,7 +983,7 @@ export class SparqlStat extends SourceResult {
 
   prepareForUpdate () {
     this.errorDescription = undefined;
-    this.testSummary = undefined;
+    this.testSummary;
   }
 
   /** These methods manage the test summary state of the SparqlStat and its source.
@@ -998,7 +1000,9 @@ export class SparqlStat extends SourceResult {
   // On completing, SparqlStat calls with G(ood), I(nvalid) or X(fail) result
   // This is set on the SparqlStat, and trigger a check to update the source.testSummary
   setTestSummary (testSummary) {
-    if (['G', 'I', 'X'].includes(testSummary)) {
+    if (!this.providesTestSummary) throw Error('Contribution to endpoint test summary not flagged. Must set providesTestSummary in constructor.');
+  
+    if (settableTestSummaryValues.includes(testSummary)) {
       if (this.testSummary) throw Error('Attempt to set SparqlStat.testSummary when already set');
       this.testSummary = testSummary;
     } else throw Error('SparqlStat.setTestSummary() - Invalid test summary value: ' + testSummary);
@@ -1006,6 +1010,7 @@ export class SparqlStat extends SourceResult {
   }
 
   getTestSummary () {
+    if (!this.providesTestSummary) throw Error('Contribution to endpoint test summary not flagged. Must set providesTestSummary in constructor.');
     return this.testSummary ? this.testSummary : 'U';
   }
 
@@ -1013,7 +1018,7 @@ export class SparqlStat extends SourceResult {
     let endpointIsComplete = true;
     let testSummary;
     this.config.source.sparqlStats.forEach(stat => {
-      if (stat.config.type !== 'stat-website' && stat.fetchStatus !== fetchStatus.IDLE) {
+      if (stat.providesTestSummary && stat.fetchStatus !== fetchStatus.IDLE) {
         if (!stat.testSummary)
           endpointIsComplete = false;
         else  if (!testSummary || stat.testSummary === 'G') 
@@ -1079,6 +1084,7 @@ export class SparqlEndpointReportSuccess extends SparqlStat {
   constructor (config, fetchMonitor) {
     super(config, fetchMonitor);
     console.log('NEW SparqlEndpointReportSuccess has config.source.endpoint: ' + this.config.source.endpoint);
+    this.providesTestSummary = true; // Must call setTestSummary() on completion of test
     this.serviceInfo = {
       version: '-',
     };
@@ -1257,9 +1263,6 @@ export class SparqlEndpointStat extends SparqlStat {
       }
  
       const success = unknownResult !== undefined;
-      let testSummary = success ? 'G' : 'X';  // G(ood) or X(fail)
-      self.setTestSummary(testSummary);
-
       let resultText = self.serviceInfo.version;
       self.setResultText(resultText, success);
     }

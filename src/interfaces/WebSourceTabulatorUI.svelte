@@ -200,7 +200,6 @@ function makeSourceTabulations (sources) {
 // The fetchMonitor has an array of the SparqlStats so must be re-initialised to release its refs
 function destroySources(sources) {
   sources.forEach(source => {
-    source.testSummary = undefined;
     if (source.sparqlStats)
       source.sparqlStats.forEach(stat => {
         if (stat.unsubscribge) stat.unsubscribe();
