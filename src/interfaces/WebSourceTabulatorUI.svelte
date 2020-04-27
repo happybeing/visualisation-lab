@@ -83,6 +83,7 @@ chosenTabulations = ['Content Types'];
 
 $: tabulationGroupsToCollect = ['Basic Queries', ...chosenTabulations];
 
+$: showCustomQuery = chosenTabulations.includes('Custom Query');
 $: extraDataSources = makeSourcesFromTextList(extraEndpointsInput);
 $: haveExtraSources = extraDataSources && extraDataSources[0];
 $: activeDataSources = makeSourceTabulations(fixedDataSources);
@@ -333,6 +334,7 @@ function getTabulationAsTextJson () {
           {/each}
         </select>
       </div>
+      {#if showCustomQuery}
         <textarea 
           style='vertical-align: bottom; display: inline-block;'
           rows='4'
@@ -341,6 +343,7 @@ function getTabulationAsTextJson () {
           bind:value={customQueryInput}
           placeholder="Optional 'Custom' SPARQL query"
           />
+      {/if}
     </div>
     <div class='vspace'>
       <label style='position: relative; '><input type=checkbox bind:checked={extraEndpointsInputChecked}/>Specify endpoints{#if extraEndpointsInputChecked}:{/if}</label>
