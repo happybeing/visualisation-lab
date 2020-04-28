@@ -742,7 +742,7 @@ export class SourceResult {
           this.responseText = text;
 
           let statusText;
-          if (responseTypeDetected) {
+          if (responseTypeDetected && responseTypeDetected !== reportedType) {
             this.responseTypeAbbrev = responseTypeDetected;
             statusText = 'Reported ' + reportedType + ' is ';
           } else {
