@@ -554,7 +554,11 @@ export class SourceResult {
 
   detectSerialisationFormat (text) {
     let formatDetected;
-    if (this.consumeXmlText(undefined, undefined, text, {validateOnly: true})) {
+    const lowercase = text.toLowerCase();
+    if (lowercase.startsWith('<html') || 
+        (lowercase.indexOf('<!doctype html') >= 0 && lowercase.indexOf('<!doctype html') < 200)) {
+      formatDetected = responseTypeAbbrev.html;
+    } else if (this.consumeXmlText(undefined, undefined, text, {validateOnly: true})) {
       formatDetected = responseTypeAbbrev.xml;
     } else if (this.consumeJsonText(undefined, undefined, text, {validateOnly: true})) {
       formatDetected = responseTypeAbbrev.json;
@@ -731,6 +735,7 @@ export class SourceResult {
           if (responseType.startsWith('text/html'))
             reportedType = responseTypeAbbrev.html;
 
+          text = text.trim();
           const responseTypeDetected = this.detectSerialisationFormat(text);
           console.log('TYPEDETECTED: ' + responseTypeDetected);
           if (text) text = this._truncateText(text, 40);
@@ -1085,9 +1090,6 @@ export class SparqlEndpointReportSuccess extends SparqlStat {
     super(config, fetchMonitor);
     console.log('NEW SparqlEndpointReportSuccess has config.source.endpoint: ' + this.config.source.endpoint);
     this.providesTestSummary = true; // Must call setTestSummary() on completion of test
-    this.serviceInfo = {
-      version: '-',
-    };
 
     // Note: _handleResponse must use setTestSummary() to set a test summary value on completion
 
