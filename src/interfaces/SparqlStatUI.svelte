@@ -2,34 +2,12 @@
 import {fetchStatus} from './SourceInterface.js';
 
 export let sparqlStat;
-// console.log('======');console.dir(sparqlStat)
-$: statusTextStore = sparqlStat ? sparqlStat.statusTextStore : undefined;
-$: statStatus = statusTextStore ? $statusTextStore : undefined;
 
 $: resultTextStore = sparqlStat ? sparqlStat.resultTextStore : undefined;
 $: statValueText = resultTextStore ? $resultTextStore : undefined;
 
-
-function statClass(text) {
-  if (awaitingResponse || text === '-') return 'main value-unknown';
-
-  let classValue = 'main value-error';
-
-  if (sparqlStat.config.type === 'sparql-stat') {
-    const respType = sparqlStat.responseTypeAbbrev;
-    if (respType === 'Ttl' || respType === 'XMl' || respType === 'Json')
-      classValue = 'main';
-    else if (text.startsWith('1.') || text.startsWith('2.') || text.startsWith('3.'))
-      classValue = 'main value-unknown';
-    else if (text === 'unknown')
-      classValue = 'main value-unkown';
-  } else if (text.startsWith('unknown') || text === '-') 
-    classValue = 'main value-unknown';
-  else if (sparqlStat.config.type === 'stat-website' || !isError)
-    classValue = 'main';
-
-  return classValue;
-}
+$: testResultStore = sparqlStat ? sparqlStat.testResultStore : undefined;
+$: testResult = testResultStore ? $testResultStore : undefined;
 
 // We pass statValueText here so trigger update of awaitingResponse whenever the text is updated
 $: awaitingResponse = sparqlStat.getFetchStatus(statValueText) === fetchStatus.FETCHING;
@@ -38,25 +16,53 @@ $: isError = awaitingResponse ? false : sparqlStat.isError;
 $: responseTooltip = awaitingResponse ? '' : sparqlStat.responseText;
 $: overallTooltip = awaitingResponse ? 'awaiting response' : isError ? sparqlStat.getErrorDescription() : responseTooltip;
 
+$: statClass = updateOnResult(testResult, isError, awaitingResponse);
+
+// Test Summary values determine cell colour
+//
+// Values are chosen to help sort CSV imported into spreadsheet:
+// 'G' = Good = at least one SparqlStat resolved to 'yes'
+// 'I' = Invalid = at least one response was Turtle, XML or JSON though not invalid
+// 'U' = Unknown = no good responses (as above) but not all fetches completed
+// 'X' = Failed = all fetches completed with errors
+
+function updateOnResult(testResult, isError, awaitingResponse) {
+  if (isError) return 'value-fail';
+  if (awaitingResponse) return 'value-unknown';
+
+let classValue = 'value-unknown';
+  switch (testResult) { 
+    case 'G': classValue = 'value-good'; break;
+    case 'I': classValue = 'value-invalid'; break;
+    case 'X': classValue = 'value-fail'; break;
+  }
+  return 'main ' + classValue;
+}
+
 </script>
 
 <style>
 .main {
-  background: rgba(0, 255, 146, 0.582);
-  border: 1px solid;
+  /* border: 1px solid;
   border-radius: 1cm;
   padding-left: 0.5cm;
-  padding-right: 0.5cm;
+  padding-right: 0.5cm; */
 }
-.value-error {
-  background: rgba(248, 179, 188, 0.782)  ;
+.value-good {
+  background: rgba(0, 255, 146, 0.582);
+} 
+.value-invalid {
+  background: rgba(231, 231, 37, 1)  ;
 } 
 .value-unknown {
   background: rgba(30, 179, 188, 0.782)  ;
 } 
+.value-fail {
+  background: rgba(248, 179, 188, 0.782)  ;
+} 
 </style>
 
-<div class={statClass(statValueText)} title={awaitingResponse ? 'awaiting response' : ''}>
+<div class={statClass} title={awaitingResponse ? 'awaiting response' : ''}>
   {#if statValueText && sparqlStat.siteIconUrl}
     <img alt='' src={sparqlStat.siteIconUrl} height='15px' style='vertical-align: text-top; margin-top: 1px'/>
   {/if}

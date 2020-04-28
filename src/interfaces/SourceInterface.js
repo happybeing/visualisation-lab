@@ -970,7 +970,7 @@ export class FetchMonitor {
   }
 }
 
-const settableTestSummaryValues = ['G', 'I', 'X'];
+const settableTestResultValues = ['G', 'I', 'X'];
 
 export class SparqlStat extends SourceResult {
   constructor (config, fetchMonitor) {
@@ -980,7 +980,7 @@ export class SparqlStat extends SourceResult {
     this.config = config;
     this.statusText = '-statusText';  // A string that should never be seen.
     this.sourceResultStore = writable(undefined);
-    this.statusTextStore = writable(this.statusText);
+    this.testResultStore = writable(undefined);
     this.disableNotify = true;
     this.useStreams = false;  // Disabling streams allows tabulator UI to display response body
                               // as a tooltip but increases memory use and slows performance
@@ -988,12 +988,12 @@ export class SparqlStat extends SourceResult {
 
   prepareForUpdate () {
     this.errorDescription = undefined;
-    this.testSummary;
+    this.testResultStore.set(undefined);
   }
 
   /** These methods manage the test summary state of the SparqlStat and its source.
 
-  Test Summary Values
+  Test Result Values
 
   Values are chosen to help sort CSV imported into spreadsheet:
   'G' = Good = at least one SparqlStat resolved to 'yes'
@@ -1004,38 +1004,48 @@ export class SparqlStat extends SourceResult {
 
   // On completing, SparqlStat calls with G(ood), I(nvalid) or X(fail) result
   // This is set on the SparqlStat, and trigger a check to update the source.testSummary
-  setTestSummary (testSummary) {
-    if (!this.providesTestSummary) throw Error('Contribution to endpoint test summary not flagged. Must set providesTestSummary in constructor.');
-  
-    if (settableTestSummaryValues.includes(testSummary)) {
-      if (this.testSummary) throw Error('Attempt to set SparqlStat.testSummary when already set');
-      this.testSummary = testSummary;
-    } else throw Error('SparqlStat.setTestSummary() - Invalid test summary value: ' + testSummary);
-    this._UpdateSourceFinalTestSummary();
+  setTestResult(testResult, resultText) {
+    if (!this.providesTestResult) throw Error('Contribution to endpoint test summary not flagged. Must set providesTestResult in constructor.');
+    if (settableTestResultValues.includes(testResult)) {
+      if (this.testResult) throw Error('Attempt to set SparqlStat.testResult when already set');
+
+      this.testResult = testResult;
+      this.testResultStore.set(testResult);
+    } else throw Error('SparqlStat.setTestResult() - Invalid test result value: ' + testResult);
+    this._UpdateSourceTestSummary();
+
+    this.setResultText(resultText, testResult !== 'G'); // TODO TODAY get rid of second param
   }
 
-  getTestSummary () {
-    if (!this.providesTestSummary) throw Error('Contribution to endpoint test summary not flagged. Must set providesTestSummary in constructor.');
-    return this.testSummary ? this.testSummary : 'U';
+  getTestResult () {
+    if (!this.providesTestResult) throw Error('Contribution to endpoint test summary not flagged. Must set providesTestResult in constructor.');
+    return this.testResult ? this.testResult : 'U';
   }
 
-  _UpdateSourceFinalTestSummary () {
+  _UpdateSourceTestSummary () {
     let endpointIsComplete = true;
     let testSummary;
-    this.config.source.sparqlStats.forEach(stat => {
-      if (stat.providesTestSummary && stat.fetchStatus !== fetchStatus.IDLE) {
-        if (!stat.testSummary)
+    const source = this.config.source;
+    source.sparqlStats.forEach(stat => {
+      if (stat.providesTestResult && stat.fetchStatus !== fetchStatus.IDLE) {
+        if (!stat.testResult)
           endpointIsComplete = false;
-        else  if (!testSummary || stat.testSummary === 'G') 
-          testSummary = stat.testSummary;
-        else if (stat.testSummary === 'I' && testSummary === 'X')
+ 
+        if (stat.testResult === 'G') 
+            testSummary = stat.testResult;
+        else if (testSummary === undefined)
+          testSummary = stat.testResult;
+        else if (stat.testResult === 'I' && testSummary !== 'G')
           testSummary = 'I';
       }
     });
 
     if (endpointIsComplete) {
       if (!testSummary) testSummary = 'X';
-      this.config.source.testSummary = testSummary;
+      source.testSummary = testSummary;
+      // Update the first two tabulations which use the summary as their rest result
+      source.sparqlStats[0].testResultStore.set(testSummary);
+      source.sparqlStats[1].testResultStore.set(testSummary);
     }
   }
 
@@ -1089,7 +1099,7 @@ export class SparqlEndpointReportSuccess extends SparqlStat {
   constructor (config, fetchMonitor) {
     super(config, fetchMonitor);
     console.log('NEW SparqlEndpointReportSuccess has config.source.endpoint: ' + this.config.source.endpoint);
-    this.providesTestSummary = true; // Must call setTestSummary() on completion of test
+    this.providesTestResult = true; // Must call setTestSummary() on completion of test
 
     // Note: _handleResponse must use setTestSummary() to set a test summary value on completion
 
@@ -1159,13 +1169,12 @@ export class SparqlEndpointReportSuccess extends SparqlStat {
         self.errorDescription = 'Unexpected response type ' + self.responseTypeAbbrev + ':\n' + self.responseText;
       } 
 
-      let testSummary = success ? 'G' : 'X';  // G(ood) or X(fail)
+      let testResult = success ? 'G' : 'X';  // G(ood) or X(fail)
       if (!success && !self.config.matchContent && 
           sparqlResponseTypes.includes(self.responseTypeAbbrev)) {
-        testSummary = 'I';  // I(nvalid) but possibly a SPARQL response (e.g. given wrong response Content Type)
+        testResult = 'I';  // I(nvalid) but possibly a SPARQL response (e.g. given wrong response Content Type)
       }
-      self.setTestSummary(testSummary);
-      self.setResultText(resultText, !success);
+      self.setTestResult(testResult, resultText);
     }
 
     this.unsubscribe = this.responseStore.subscribe(_handleResponse);
