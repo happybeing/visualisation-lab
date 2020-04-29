@@ -277,7 +277,7 @@ function getTabulationAsTextCsv () {
         csv += separator + ( resultText ? resultText : source.name );
       else if (typeChecked[stat.config.heading])
         csv += separator + resultText;
-      if(stat.isError && stat.responseTypeAbbrev) csv += ' ' + stat.responseTypeAbbrev;
+      if(stat.responseTypeAbbrev) csv += ' ' + stat.responseTypeAbbrev;
     });
     csv += '\n';
   });

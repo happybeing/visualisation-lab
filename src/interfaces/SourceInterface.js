@@ -1014,7 +1014,7 @@ export class SparqlStat extends SourceResult {
     } else throw Error('SparqlStat.setTestResult() - Invalid test result value: ' + testResult);
     this._UpdateSourceTestSummary();
 
-    this.setResultText(resultText, testResult !== 'G'); // TODO TODAY get rid of second param
+    this.setResultText(resultText, testResult !== 'G');
   }
 
   getTestResult () {
