@@ -144,20 +144,20 @@ function makeSourcesFromTextList(text){
     console.log('sort(' + s1.endpoint + ',' + s2.endpoint + ')');
     const terms1 = urlTerms(s1.endpoint);
     const terms2 = urlTerms(s2.endpoint);
-    console.log(JSON.stringify(terms1));
-    console.log(JSON.stringify(terms2));
+    // console.log(JSON.stringify(terms1));
+    // console.log(JSON.stringify(terms2));
     let result;
     terms1.forEach((term, index) => {
       if (!result && term !== terms2[index]) {
-        console.log('term, index: ', term + ', ' + index);
-        console.log('terms2[index]:', terms2[index]);
+        // console.log('term, index: ', term + ', ' + index);
+        // console.log('terms2[index]:', terms2[index]);
         result = terms2[index] === undefined ? 1 : (term < terms2[index] ? -1 : 1);
       }
     });
     if (result === undefined && terms1.length !== terms2.length) result = terms1.length < terms2.length ? -1 : 1;
     if (result === undefined) result = 0;
 
-    console.log('result: ' + result);
+    // console.log('result: ' + result);
     return result;
   });
 
