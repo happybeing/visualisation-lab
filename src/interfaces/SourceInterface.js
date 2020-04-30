@@ -165,6 +165,8 @@ export class SourceResult {
     this.resultTextStore = writable('');      // Reactive status per SourceResult (e.g. -, unkown, fetching and some result value)
     this.useStreams = true;  // Disabling streams allows tabulator UI to display response body
                             // as a tooltip but increases memory use and slows performance
+
+    this.responseTextLines = 0; // Set to number of lines to save as this.responseText
   }
 
   setResultText (resultText, isError) { 
@@ -738,7 +740,7 @@ export class SourceResult {
           text = text.trim();
           const responseTypeDetected = this.detectSerialisationFormat(text);
           console.log('TYPEDETECTED: ' + responseTypeDetected);
-          if (text) text = this._truncateText(text, 40);
+          if (text) text = this._truncateText(text, this.responseTextLines);
           this.responseText = text;
 
           let statusText;
@@ -771,7 +773,7 @@ export class SourceResult {
   _processTextResponseUsing(sourceResultStore, statusTextStore, response, {size: contentLength}, textProcessor) {
     response.text()
     .then(text => {
-      this.responseText = this._truncateText(text, 40); // For tabulation UI tooltip
+      this.responseText = this._truncateText(text, this.responseTextLines); // For tabulation UI tooltip
       this[textProcessor.name](sourceResultStore, statusTextStore, text, {size: contentLength})
       if (statusTextStore ) statusTextStore.set('');
     })
@@ -800,6 +802,8 @@ export class SourceResult {
 
   _truncateText(text, maxlines) {
     let index = text.indexOf('\n');
+    if (maxlines === 0) return undefined;
+
     for (let line = 1 ; line < maxlines && index != -1 ; ++line) index = text.indexOf('\n', index + 1);
     if (index != -1) {
       text = text.substring(0, index);
@@ -984,6 +988,10 @@ export class SparqlStat extends SourceResult {
     this.disableNotify = true;
     this.useStreams = false;  // Disabling streams allows tabulator UI to display response body
                               // as a tooltip but increases memory use and slows performance
+
+    // Number of lines to save as this.responseText
+    this.responseTextLines = 80; 
+    if (config.type === 'sparql-custom') this.responseTextLines = 1000;
   }
 
   prepareForUpdate () {
