@@ -244,14 +244,26 @@ function updateStatEnable(statType) {
   console.dir(typeChecked);
 }
 
-function copyTabulationToClipboardAsCsv () { copyTabulationToClipboardComponent('CSV'); }
+function saveTextToClipboard(content, successMessage) {
+  copySuccessMessage = successMessage;
+  clipboardText = content;
+}
+
+function copyTabulationToClipboardAsCsv (e) {
+  if (e.shiftKey) {
+    copySuccessMessage = 'Endpoint URLs written to clipboard as text';
+    clipboardText = getAllEndpointUrlsAsText();
+  } else
+    copyTabulationToClipboardComponent('CSV'); 
+}
+
 function copyTabulationToClipboardAsJson () { copyTabulationToClipboardComponent('JSON'); }
 
 function copyTabulationToClipboardComponent (type) {
   console.log('copyTabulationToClipboardComponent()');
 
-  copySuccessMessage = 'Tabulation written to clipboard as ' + type;
-  clipboardText = (type === 'JSON' ? getTabulationAsTextJson() : getTabulationAsTextCsv());
+  let text = (type === 'JSON' ? getTabulationAsTextJson() : getTabulationAsTextCsv());
+  saveTextToClipboard(text, 'Tabulation written to clipboard as ' + type);
 }
 
 function getTabulationAsTextCsv () {
@@ -282,6 +294,14 @@ function getTabulationAsTextCsv () {
     csv += '\n';
   });
 
+  return csv;
+}
+
+function getAllEndpointUrlsAsText () {
+  let csv = '';
+  activeDataSources.forEach(source => {
+    csv += source.endpoint + '\n';
+  });
   return csv;
 }
 
@@ -381,7 +401,7 @@ function getTabulationAsTextJson () {
             {#if tabulationGroupsToCollect.includes(stat.config.group)}
               <td class={index === 0 && stat.resultText.indexOf('.') !== -1 ? 'rightjustify' : ''}>
               <!-- stat.config.source.endpoint: {stat.config.source.endpoint} -->
-              <div hidden={!typeChecked[stat.config.heading]}><svelte:component this={stat.uiComponent} sparqlStat={stat}/></div>
+              <div hidden={!typeChecked[stat.config.heading]}><svelte:component this={stat.uiComponent} sparqlStat={stat} {saveTextToClipboard}/></div>
               </td>
             {/if}
           {/each}

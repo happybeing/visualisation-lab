@@ -2,6 +2,7 @@
 import {fetchStatus} from './SourceInterface.js';
 
 export let sparqlStat;
+export let saveTextToClipboard;
 
 $: resultTextStore = sparqlStat ? sparqlStat.resultTextStore : undefined;
 $: statValueText = resultTextStore ? $resultTextStore : undefined;
@@ -12,7 +13,7 @@ $: testResult = testResultStore ? $testResultStore : undefined;
 // We pass statValueText here so trigger update of awaitingResponse whenever the text is updated
 $: awaitingResponse = sparqlStat.getFetchStatus(statValueText) === fetchStatus.FETCHING;
 
-$: isError = awaitingResponse ? false : sparqlStat.isError;
+$: isError = awaitingResponse ? false : sparqlStat.isError || testResult === 'X';
 $: responseTooltip = awaitingResponse ? '' : sparqlStat.responseText;
 $: overallTooltip = awaitingResponse ? 'awaiting response' : isError ? sparqlStat.getErrorDescription() : responseTooltip;
 
@@ -39,6 +40,21 @@ let classValue = 'value-unknown';
   return 'main ' + classValue;
 }
 
+function handleClick(e) {
+  if (awaitingResponse) return;
+  let text = sparqlStat.responseText;
+  let message = '';
+
+  if (isError) {
+    message += 'Incorrect '
+    if (!text || text.length === 0) 
+      text = sparqlStat.getErrorDescription();
+  }
+
+  message += sparqlStat.responseTypeAbbrev ? sparqlStat.responseTypeAbbrev : '';
+  message += ' response saved to clipboard';
+  saveTextToClipboard(text, message);
+}
 </script>
 
 <style>
@@ -62,7 +78,7 @@ let classValue = 'value-unknown';
 } 
 </style>
 
-<div class={statClass} title={awaitingResponse ? 'awaiting response' : ''}>
+<div class={statClass} title={awaitingResponse ? 'awaiting response' : ''} on:click={() => handleClick()}>
   {#if statValueText && sparqlStat.siteIconUrl}
     <img alt='' src={sparqlStat.siteIconUrl} height='15px' style='vertical-align: text-top; margin-top: 1px'/>
   {/if}
