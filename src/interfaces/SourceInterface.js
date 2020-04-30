@@ -664,12 +664,22 @@ export class SourceResult {
 
           const warning = 'Failed to load URI.\n' + response.statusText;
           console.log('DEBUG: ' + response.status + ' ' + response.statusText + ' XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
-          // console.dir(response);
+          console.dir(response);
           console.warn(warning);
           this._notifyWarning(warning);
           this.consumeFetchResponse(false);  // Response failed to be processed
           sourceResultStore.set(0);
           this.responseProcessingComplete();  
+        }).catch(e => { 
+          console.log('DDEEBBUUGG START'); 
+          console.error(e);
+          console.dir(e);
+          this._notifyWarning('Query failed.');
+          this._notifyError(e.message);
+          this.abandonFetchResponse('SourceResult.loadUri()', e);
+          sourceResultStore.set(0);
+          this.responseProcessingComplete(e);
+          console.log('DDEEBBUUGG END'); 
         });
       }
     }).catch(e => {
