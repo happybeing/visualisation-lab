@@ -340,8 +340,24 @@ function getTabulationAsTextJson () {
 <div class="main">
   <datalist id="example-endpoints"></datalist>
   <div>
-    <b>&lt;WebSourceTabulatorUI&gt;</b><br/>
-    <br/>
+    <h2>SPARQL Endpoint Tabulator</h2>
+    <p>
+    This tool gathers data on a preset or user provided list of SPARQL endpoints. 
+    </p> <p> 
+    The results are displayed as a table and can be copied to the clipboard in
+    CSV format ready for pasting into a spreadsheet. You can view the content of
+    individual responses by hovering over the response types in the table cells
+    (i.e. 'Ttl', 'XML', 'Json', 'CSV' and 'HTML'), or you can copy the response
+    to an individual query by left-clicking on a cell.
+    </p> <p>
+    The results of testing 782 SPARQL endpoints are available as a spreadsheet
+    in CSV or Open Document Format along with lists of the endpoint URLs
+    themselves on <a href='https://github.com/theWebalyst/SPARQL-endpoints-lists/'> github.</a>
+    </p>
+    <p>
+    NOTE: when using the tool you may find it helps to avoid CORS errors if you first
+    disable CORS in the browser using a browser plugin.
+    </p>
     <div style='width: 100%;'>
       <div style='margin-right: 20px; display: inline-block;'>
         <label>Select Queries:</label>
@@ -365,7 +381,7 @@ function getTabulationAsTextJson () {
       {/if}
     </div>
     <div class='vspace'>
-      <label style='position: relative; '><input type=checkbox bind:checked={extraEndpointsInputChecked}/>Specify endpoints{#if extraEndpointsInputChecked}:{/if}</label>
+      <label style='position: relative; '><input type=checkbox bind:checked={extraEndpointsInputChecked}/>Provide endpoints{#if extraEndpointsInputChecked}:{/if}</label>
       <textarea 
         rows='4' 
         cols='40'
