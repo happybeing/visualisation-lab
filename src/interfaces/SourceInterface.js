@@ -706,7 +706,8 @@ export class SourceResult {
       console.log('length: ' + response.headers.get('Content-Length'));
 
       const contentLength = (response.headers.get('Content-Length'));
-      const responseType = this.responseType = response.headers.get('Content-Type');
+      let responseType = this.responseType = response.headers.get('Content-Type');
+      if (!responseType) responseType = "'none'";
       if (responseType.startsWith('text/csv')) {
         this.consumeFetchResponse(true);
         if (this.useStreams) {
