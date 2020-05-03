@@ -135,10 +135,10 @@ function makeSourcesFromTextList(text){
 
     let urls = [];
     lines.forEach(line => {
-      let url = line.toLowerCase().trim();
-      if (url.endsWith('/')) url = url.substring(0, url.length-1);
+      const url = line.toLowerCase().trim();
+      let urlNoSlash = url.endsWith('/') ? url.substring(0, url.length-1) : url;
 
-      if (line.length && !urls.includes(url)) {
+      if (line.length && !urls.includes(url) && !urls.includes(urlNoSlash)) {
         urls.push(url);
         sources.push({ endpoint: url });
       }
