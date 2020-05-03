@@ -37,6 +37,8 @@ const tabulationTypes = [
   { type: 'sparql-custom', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointReportSuccess } },
   { type: 'sparql-wqp-1.0', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointReportSuccess } },
   { type: 'sparql-wqp-1.1', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointReportSuccess } },
+
+  { type: 'sportal-query', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointReportSuccess } },
   { type: 'test-success', value: { uiComponent: SparqlStatUI, tabClass: SparqlEndpointReportSuccess } },
 ];
 
@@ -74,12 +76,18 @@ let optionalTabulations = [
   'Content Types',
   'SPARQL 1.0', 
   'SPARQL 1.1',
+  'SPORTAL QA',
+  'SPORTAL QB',
+  'SPORTAL QC',
+  'SPORTAL QD',
+  'SPORTAL QE',
+  'SPORTAL QF',
   'Custom Query'
   ];
 
 let allTabulationGroups = ['Basic Queries', ...optionalTabulations];
 let chosenTabulations = ['SPARQL 1.1'];
-chosenTabulations = ['Content Types'];
+chosenTabulations = ['SPORTAL QD'];
 
 $: tabulationGroupsToCollect = ['Basic Queries', ...chosenTabulations];
 

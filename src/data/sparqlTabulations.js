@@ -24,7 +24,7 @@ export const basicTabulations = [
 ];
 
 const defaultOptions = {
-  headers: {'Accept': 'text/turtle,application/sparql-results+xml,application/rdf+xml,text/csv,application/sparql-results+json'}
+  headers: {'Accept': 'text/turtle,application/sparql-results+xml,application/xml,application/rdf+xml,application/sparql-results+xml,text/csv,application/sparql-results+json'}
 };
 
 const ttlOptions = {
@@ -45,6 +45,263 @@ const jsonOptions = {
 
 export const customTabulation = [
   { heading: 'Custom Query', type: 'sparql-custom', query: ``, options: defaultOptions }
+];
+
+/////////////////////// SPORTAL Tests
+// Ref: https://users.dcc.uchile.cl/~ahogan/docs/sportal-ijswis.pdf
+
+const sportalPrefixes = `
+PREFIX bp:     <http://www.biopax.org/release/biopax-level3.owl#>
+PREFIX dct:    <http://purl.org/dc/terms/>
+PREFIX dbo:    <http://dbpedia.org/ontology/>
+PREFIX e:      <http://ldf.fi/void-ext#>
+PREFIX f:      <http://xmlns.com/foaf/0.1/>
+PREFIX mo:     <http://purl.org/ontology/mo/>
+PREFIX p:      <http://www.w3.org/ns/prov#>
+PREFIX s:      <http://vocab.deri.ie/sad#>
+PREFIX sp:     <http://spinrdf.org/spin#>
+PREFIX rs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX v:      <http://rdfs.org/ns/void#>
+PREFIX x:      <http://www.w3.org/2001/XMLSchema#>
+`;
+
+export const sportalQA = [
+  { heading: 'SPARQL v1.0', type: 'sportal-query', query: sportalPrefixes +
+`
+SELECT * WHERE { ?s ?p ?o } LIMIT 1
+`, options: defaultOptions },
+{ heading: 'SPARQL v1.1', type: 'sportal-query', query: sportalPrefixes +
+`
+SELECT (COUNT(*) as ?c) 
+		WHERE { SELECT * WHERE { ?s ?p ?o } LIMIT 1 }
+`, options: defaultOptions },
+];
+
+export const sportalQB = [
+
+{ heading: '# triples', type: 'sportal-query', query: sportalPrefixes +
+`
+CONSTRUCT {  <D> v:triples ?x }
+		WHERE { SELECT (COUNT(*) AS ?x) 
+		WHERE { ?s ?p ?o } }
+`, options: defaultOptions },
+
+{ heading: '# classes', type: 'sportal-query', query: sportalPrefixes +
+`
+CONSTRUCT { <D> v:classes ?x }
+		WHERE { SELECT (COUNT(DISTINCT ?o) AS ?x) 
+		WHERE { ?s a ?o } }
+`, options: defaultOptions },
+
+{ heading: '# properties', type: 'sportal-query', query: sportalPrefixes +
+`
+CONSTRUCT { <D> v:properties ?x }
+		WHERE { SELECT (COUNT(DISTINCT ?p) AS ?x) 
+		WHERE { ?s ?p ?o } }
+`, options: defaultOptions },
+
+{ heading: '# subjects', type: 'sportal-query', query: sportalPrefixes +
+`
+CONSTRUCT { <D> v:distinctSubjects ?x }
+		WHERE { SELECT (COUNT(DISTINCT ?s) AS ?x) 
+		WHERE { ?s ?p ?o } }
+`, options: defaultOptions },
+
+{ heading: '# objects', type: 'sportal-query', query: sportalPrefixes +
+`
+CONSTRUCT { <D> v:distinctObjects ?x }
+		WHERE { SELECT (COUNT(DISTINCT ?o) AS ?x) 
+		WHERE { ?s ?p ?o } }
+`, options: defaultOptions },
+
+
+// { heading: '', type: 'sportal-query', query: sportalPrefixes +
+// `
+// `, options: defaultOptions },
+];
+
+export const sportalQC = [
+{ heading: 'Class Partitions', type: 'sportal-query', query: sportalPrefixes +
+`
+CONSTRUCT { <D> v:classPartition [ v:class ?c ] } WHERE { ?s a ?c }
+`, options: defaultOptions },
+
+{ heading: 'C Partition # triples', type: 'sportal-query', query: sportalPrefixes +
+`
+CONSTRUCT { <D> v:classPartition [ v:class ?c ; v:triples ?x ] }
+			WHERE { SELECT (COUNT(?p) AS ?x) ?c WHERE { ?s a ?c ; ?p ?o } GROUP BY ?c }
+`, options: defaultOptions },
+
+{ heading: 'C Partition # classes', type: 'sportal-query', query: sportalPrefixes +
+`
+CONSTRUCT { <D> v:classPartition [ v:class ?c ; v:classes ?x ] }
+			WHERE { SELECT (COUNT(DISTINCT ?d) AS ?x) ?c WHERE { ?s a ?c , ?d } GROUP BY ?c }
+`, options: defaultOptions },
+
+{ heading: 'C Partition # predicates', type: 'sportal-query', query: sportalPrefixes +
+`
+CONSTRUCT { <D> v:classPartition [ v:class ?c ; v:properties ?x ] }
+			WHERE { SELECT (COUNT(DISTINCT ?p) AS ?x) ?c WHERE { ?s a ?c ; ?p ?o } GROUP BY ?c }
+`, options: defaultOptions },
+
+{ heading: 'C Partition # subjects', type: 'sportal-query', query: sportalPrefixes +
+`
+CONSTRUCT { <D> v:classPartition [ v:class ?c ; v:distinctSubjects ?x ] }
+			WHERE { SELECT (COUNT(DISTINCT ?s) AS ?x) ?c WHERE { ?s a ?c } GROUP BY ?c }
+`, options: defaultOptions },
+
+{ heading: 'C Partition # objects', type: 'sportal-query', query: sportalPrefixes +
+`
+CONSTRUCT { <D> v:classPartition [ v:class ?c ; v:distinctObjects ?x ] }
+			WHERE { SELECT (COUNT(DISTINCT ?o) AS ?x) ?c WHERE { ?s a ?c ; ?p ?o } GROUP BY ?c  }
+`, options: defaultOptions },
+
+// { heading: '', type: 'sportal-query', query: sportalPrefixes +
+// `
+// `, options: defaultOptions },
+
+];
+
+export const sportalQD = [
+{ heading: 'Property Partitions', type: 'sportal-query', query: sportalPrefixes +
+`
+CONSTRUCT { <D> v:propertyPartition [ v:property ?p ] } WHERE { ?s ?p ?o }
+`, options: defaultOptions },
+
+{ heading: 'P Partition # tripes', type: 'sportal-query', query: sportalPrefixes +
+`
+CONSTRUCT { <D> v:propertyPartition [ v:property ?p ; v:triples ?x ] }
+			WHERE { SELECT (COUNT(?o) AS ?x) ?p  WHERE { ?s ?p ?o } GROUP BY ?p }
+`, options: defaultOptions },
+
+{ heading: 'P Partition # subjects', type: 'sportal-query', query: sportalPrefixes +
+`
+CONSTRUCT { <D> v:propertyPartition [ v:property ?p ; v:distinctSubjects ?x ] }
+			WHERE { SELECT (COUNT(DISTINCT ?s) AS ?x) ?p WHERE { ?s ?p ?o } GROUP BY ?p }
+`, options: defaultOptions },
+
+{ heading: 'P Partition # objects', type: 'sportal-query', query: sportalPrefixes +
+`
+CONSTRUCT { <D> v:propertyPartition [ v:property ?p ; v:distinctObjects ?x ] }
+			WHERE { SELECT (COUNT(DISTINCT ?o) AS ?x) ?p WHERE { ?s ?p ?o } GROUP BY ?p }
+`, options: defaultOptions },
+
+// { heading: '', type: 'sportal-query', query: sportalPrefixes +
+// `
+// `, options: defaultOptions },                         
+];
+
+export const sportalQE = [
+  { heading: 'PP\'s by Class', type: 'sportal-query', query: sportalPrefixes +
+`
+CONSTRUCT { <D> v:classPartition [ v:class ?c ; v:propertyPartition [ v:property ?p ] ] }
+		WHERE { ?s a ?c ; ?p ?o }
+`, options: defaultOptions },                         
+
+  
+{ heading: '# triples w C as Pred.', type: 'sportal-query', query: sportalPrefixes +
+`
+CONSTRUCT { <D> v:classPartition [ v:class ?c ;
+            v:propertyPartition [ v:property ?p ; v:triples ?x ] ] }
+						WHERE { SELECT (COUNT(?o) AS ?x) ?p  WHERE { ?s a ?c ; ?p ?o }  GROUP BY ?c ?p  }
+`, options: defaultOptions },                         
+  
+{ heading: '# subjects in C/P/T', type: 'sportal-query', query: sportalPrefixes +
+`
+CONSTRUCT { <D> v:classPartition [ v:class ?c ;
+  v:propertyPartition [ v:distinctSubjects ?x ] ] }
+  WHERE { SELECT (COUNT(DISTINCT ?s) AS ?x) ?c ?p WHERE { ?s a ?c ; ?p ?o } GROUP BY ?c ?p }
+`, options: defaultOptions },                         
+  
+{ heading: '# objects in C/P/T', type: 'sportal-query', query: sportalPrefixes +
+`
+CONSTRUCT {  <D> v:classPartition [ v:class ?c ;
+  v:propertyPartition [ v:distinctObjects ?x ; v:property ?p ] ] }
+  WHERE { SELECT (COUNT(DISTINCT ?o) AS ?x) ?c ?p WHERE { ?s a ?c ; ?p ?o } GROUP BY ?c ?p }
+`, options: defaultOptions },                         
+  
+// { heading: '', type: 'sportal-query', query: sportalPrefixes +
+// `
+//
+// `, options: defaultOptions },                         
+];
+
+export const sportalQF = [
+{ heading: 'QF1', type: 'sportal-query', query: sportalPrefixes +
+`
+CONSTRUCT { <D> e:distinctIRIReferenceSubjects ?x }
+		WHERE { SELECT (COUNT(DISTINCT ?s ) AS ?x) 
+		WHERE { ?s ?p ?o  FILTER(isIri(?s))} }
+`, options: defaultOptions },                         
+
+{ heading: 'QF2', type: 'sportal-query', query: sportalPrefixes +
+`
+CONSTRUCT { <D> e:distinctBlankNodeSubjects ?x }
+		WHERE { SELECT (COUNT(DISTINCT ?s) AS ?x) 
+		WHERE { ?s ?p ?o  FILTER(isBlank(?s))} }
+`, options: defaultOptions },                         
+
+{ heading: 'QF3', type: 'sportal-query', query: sportalPrefixes +
+`
+CONSTRUCT { <D> e:distinctIRIReferenceObjects ?x }
+		WHERE { SELECT (COUNT(DISTINCT ?o ) AS ?x) 
+		WHERE {  ?s ?p ?o  FILTER(isIri(?o))} }
+`, options: defaultOptions },                         
+
+{ heading: 'QF4', type: 'sportal-query', query: sportalPrefixes +
+`
+CONSTRUCT { <D> e:distinctLiterals ?x }
+		WHERE { SELECT (COUNT(DISTINCT ?o ) AS ?x) 
+		WHERE { ?s ?p ?o  FILTER(isLiteral(?o))} }
+`, options: defaultOptions },                         
+
+{ heading: 'QF5', type: 'sportal-query', query: sportalPrefixes +
+`
+CONSTRUCT { <D> e:distinctBlankNodeObjects ?x }
+		WHERE { SELECT (COUNT(DISTINCT ?o ) AS ?x) 
+		WHERE { ?s ?p ?o  FILTER(isBlank(?o))} }
+`, options: defaultOptions },                         
+
+{ heading: 'QF6', type: 'sportal-query', query: sportalPrefixes +
+`
+CONSTRUCT { <D> e:distinctBlankNodes ?x }
+		WHERE { SELECT (COUNT(DISTINCT ?b ) AS ?x) 
+		WHERE { { ?s ?p ?b } UNION { ?b ?p ?o } FILTER(isBlank(?b)) } }
+`, options: defaultOptions },                         
+
+{ heading: 'QF7', type: 'sportal-query', query: sportalPrefixes +
+`
+CONSTRUCT { <D> e:distinctIRIReferences ?x }
+		WHERE { SELECT (COUNT(DISTINCT ?u ) AS ?x) 
+		WHERE { { ?u ?p ?o } UNION { ?s ?u ?o } UNION { ?s ?p ?u } FILTER(isIri(?u)) } }
+`, options: defaultOptions },                         
+
+{ heading: 'QF8', type: 'sportal-query', query: sportalPrefixes +
+`
+CONSTRUCT { <D> e:distinctRDFNodes ?x }
+		WHERE { SELECT (COUNT(DISTINCT ?n ) AS ?x) 
+		WHERE { { ?n ?p ?o } UNION { ?s ?n ?o } UNION { ?s ?p ?n } } }
+`, options: defaultOptions },                         
+
+{ heading: 'QF9', type: 'sportal-query', query: sportalPrefixes +
+`
+CONSTRUCT { <D> v:propertyPartition [ v:property ?p ;
+  s:subjectTypes [ s:subjectClass ?sType ; s:distinctMembers ?x ] ] }
+  WHERE { SELECT (COUNT(?s) AS ?x) ?p ?sType
+  WHERE { ?s ?p ?o ; a ?sType . } GROUP BY ?p ?sType }
+  `, options: defaultOptions },                         
+
+{ heading: 'QF10', type: 'sportal-query', query: sportalPrefixes +
+`
+CONSTRUCT { <D> v:propertyPartition [ v:property ?p ;
+  s:objectTypes [ s:objectClass ?oType ; s:distinctMembers ?x ] ] }
+  WHERE { SELECT (COUNT(?o) AS ?x) ?p ?oType
+  WHERE { ?s ?p ?o . ?o a ?oType . } GROUP BY ?p ?oType }
+`, options: defaultOptions },                         
+    
+// { heading: '', type: 'sportal-query', query: sportalPrefixes +
+// `
+// `, options: defaultOptions },                         
 ];
 
 /////////////////////// My Tests
@@ -258,6 +515,12 @@ export const tabulationGroups = {
   'Content Types': testContentTypes,
   'SPARQL 1.0': queryPaper1_0, 
   'SPARQL 1.1': queryPaper1_1,
+  'SPORTAL QA': sportalQA,
+  'SPORTAL QB': sportalQB,
+  'SPORTAL QC': sportalQC,
+  'SPORTAL QD': sportalQD,
+  'SPORTAL QE': sportalQE,
+  'SPORTAL QF': sportalQF,
   'Custom Query': customTabulation,
 };
 
