@@ -215,6 +215,7 @@ export class SourceResult {
   consumeFetchResponse (responseAccepted) {
     this.fetchStatus = responseAccepted ? fetchStatus.COMPLETE : fetchStatus.BAD_RESPONSE;
   }
+  
   abandonFetchResponse (caller, e) { 
     this.lastFetchErrorCaller = caller; 
     this.lastFetchError = e; 
@@ -1091,16 +1092,23 @@ export class SparqlStat extends SourceResult {
     const response = this.getLastFetchResponse();
 
     let description = this.errorDescription;
-    if ((description === undefined || description.startsWith('DBG')) && 
-        response && response.status >= 400) {
-
-        description = response.errorText ? response.errorText : '';
+    if (description === undefined || description.startsWith('DBG')) {
+      if (response) {
         const responseStatusDescription = response.status + ' ' + response.statusText;
-        if (!description.startsWith(responseStatusDescription))
-          description = responseStatusDescription + '\n' + description;
-        
-        this.errorDescription = description;
+        if (response.status >= 400) {
+          description = response.errorText ? response.errorText : '';
+
+          if (!description.startsWith(responseStatusDescription))
+            description = responseStatusDescription + '\n' + description;
+          
+          this.errorDescription = description;
+        } else if (this.lastFetchError) {
+          description = '' + this.lastFetchError;
+          if (description.startsWith('Error:')) description = description.substring(6);
+          this.errorDescription = description;
+        }
       }
+    }
     else
       description = this.errorDescription;
 
