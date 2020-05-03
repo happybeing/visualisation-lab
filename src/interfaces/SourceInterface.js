@@ -725,12 +725,15 @@ export class SourceResult {
           this.responseTypeAbbrev = responseTypeAbbrev.turtle;
           this._processTextResponseUsing(sourceResultStore, statusTextStore, response, {size: contentLength}, this.consumeRdfTtlText);
         }
-      } else if (responseType.startsWith('application/sparql-results+json')) {
+      } else if (responseType.startsWith('application/sparql-results+json') ||
+                  responseType.startsWith('application/ld+json') ||
+                  responseType.startsWith('application/json') ) {
         this.consumeFetchResponse(true);
         this.responseTypeAbbrev = responseTypeAbbrev.json;
         this._processTextResponseUsing(sourceResultStore, statusTextStore, response, {size: contentLength}, this.consumeJsonText);
       } else if (responseType.startsWith('application/sparql-results+xml') ||
-            responseType.startsWith('application/rdf+xml')) {
+                  responseType.startsWith('application/rdf+xml') ||
+                  responseType.startsWith('application/xml')) {
         this.consumeFetchResponse(true);
         this.responseTypeAbbrev = responseTypeAbbrev.xml;
         this._processTextResponseUsing(sourceResultStore, statusTextStore, response, {size: contentLength}, this.consumeXmlText);
