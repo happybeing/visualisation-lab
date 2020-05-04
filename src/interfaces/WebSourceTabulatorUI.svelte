@@ -237,14 +237,27 @@ function updateAll () {
   }
 }
 
+// Fetch activity variables bound to UI:
+let maxFetchesOutstanding = 250;
+const fetchPauseInterval = 5000;  // Milliseconds to wait when too many fetches are outstanding
+
 function updateSources (sources) {
+  statusText = 'preparing to update ' + sources.length + ' endpoints';
   activeDataSources = sources;
-  activeDataSources.forEach(source => {  
-    console.log('DEBUG source:');console.dir(source)
-    source.sparqlStats.forEach(stat => {
-      if (tabulationGroupsToCollect.includes(stat.config.group)) stat.updateSparqlStat();
-    });
-  });
+  let i = 0;
+  const updateSources = function (sources) {
+    console.log('updateSources() i: ', i);
+    while (i < sources.length && fetchMonitor.fetchesOutstanding() <= maxFetchesOutstanding) {
+      const source = sources[i++];
+      source.sparqlStats.forEach(stat => {
+        if (stat && tabulationGroupsToCollect.includes(stat.config.group)) stat.updateSparqlStat();
+      });
+    }
+
+    if (i >= sources.length) clearInterval(updateIntervalId);
+  }
+
+  const updateIntervalId = setInterval(updateSources, fetchPauseInterval, activeDataSources);
 }
 
 function updateStatEnable(statType) {
@@ -411,6 +424,8 @@ function getTabulationAsTextJson () {
       </td></tr>
       <tr><td style='padding-top: 8px;' colspan='100'>
         <b>Status: </b>{statusText}
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        Max outstanding fetches: <input style='width: 7em;' title='maximum outstanding fetches' type=number min='1' max='10000' bind:value={maxFetchesOutstanding}/>
       </td></tr>
       <tr>
         {#each activeDataSources[0].sparqlStats as stat}
