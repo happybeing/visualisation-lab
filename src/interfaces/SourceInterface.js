@@ -1028,7 +1028,7 @@ export class SparqlStat extends SourceResult {
 
   // On completing, SparqlStat calls with G(ood), I(nvalid) or X(fail) result
   // This is set on the SparqlStat, and trigger a check to update the source.testSummary
-  setTestResult(testResult, resultText) {
+  setTestResult (testResult, resultText) {
     if (!this.providesTestResult) throw Error('Contribution to endpoint test summary not flagged. Must set providesTestResult in constructor.');
     if (settableTestResultValues.includes(testResult)) {
       if (this.testResult) throw Error('Attempt to set SparqlStat.testResult when already set');
@@ -1042,8 +1042,7 @@ export class SparqlStat extends SourceResult {
   }
 
   getTestResult () {
-    if (!this.providesTestResult) throw Error('Contribution to endpoint test summary not flagged. Must set providesTestResult in constructor.');
-    return this.testResult ? this.testResult : 'U';
+    return (!this.providesTestResult || !this.testResult) ? 'U' : this.testResult;
   }
 
   _UpdateSourceTestSummary () {
@@ -1073,15 +1072,17 @@ export class SparqlStat extends SourceResult {
     }
   }
 
- 
-  // Short summary of last error for UI
-  getResultTextForError () {
+   // Short summary of last error for UI
+  getResultTextForError (testResult) {
+    if (!testResult) testResult = this.getTestResult();
+
     let resultTextForError;
     let errorDesc = this.getErrorDescription();
     if (errorDesc) {
       if (errorDesc.indexOf('\n') > 0) errorDesc = errorDesc.substring(0, errorDesc.indexOf('\n'));
       if (errorDesc.indexOf(':') > 0) errorDesc = errorDesc.substring(0, errorDesc.indexOf(':'));
-      resultTextForError = 'error: ' + errorDesc.substring(0, 25);
+      const prefix = testResult === 'I' ? 'invalid: ' : 'error: ';
+      resultTextForError = prefix + errorDesc.substring(0, 25);
     } else if (this.isError) {
       console.warning('fetch() error flagged without SparqlStat.errorDescription');
       resultTextForError = 'error';
@@ -1189,9 +1190,7 @@ export class SparqlEndpointReportSuccess extends SparqlStat {
       }
 
       // Default result summary is 'yes' or 'no'
-      let resultText = unknownResult ? unknownResult : (success ? 'yes' : 'no');
-      let resultTextForError = self.getResultTextForError();
-      if (resultTextForError) resultText = resultTextForError;
+      let resultText = undefined;
 
       // Checking for response content type is a yes/no status
       if (success && self.config.matchContent && self.config.matchContent !== self.responseTypeAbbrev) {
@@ -1205,6 +1204,13 @@ export class SparqlEndpointReportSuccess extends SparqlStat {
           sparqlResponseTypes.includes(self.responseTypeAbbrev)) {
         testResult = 'I';  // I(nvalid) but possibly a SPARQL response (e.g. given wrong response Content Type)
       }
+
+      if (!resultText) {
+        resultText = unknownResult ? unknownResult : (success ? 'yes' : 'no');
+        let resultTextForError = self.getResultTextForError(testResult);
+        if (resultTextForError) resultText = resultTextForError;
+      }
+
       self.setTestResult(testResult, resultText);
     }
 
