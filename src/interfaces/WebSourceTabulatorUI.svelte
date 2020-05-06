@@ -368,7 +368,7 @@ function getTabulationAsTextJson () {
   <div>
     <h2>SPARQL Endpoint Tabulator</h2>
     <p>
-    This tool gathers data on a preset or user provided list of SPARQL endpoints. 
+    This tool gathers data on a preset or user provided list of SPARQL endpoints.
     </p> <p> 
     The results are displayed as a table and can be copied to the clipboard in
     CSV format ready for pasting into a spreadsheet. You can view the content of
@@ -376,13 +376,21 @@ function getTabulationAsTextJson () {
     (i.e. 'Ttl', 'XML', 'Json', 'CSV' and 'HTML'), or you can copy the response
     to an individual query by left-clicking on a cell.
     </p> <p>
-    The results of testing 782 SPARQL endpoints are available as a spreadsheet
+    The results of testing over 800 SPARQL endpoints are available as a spreadsheet
     in CSV or Open Document Format along with lists of the endpoint URLs
     themselves on <a href='https://github.com/theWebalyst/SPARQL-endpoints-lists/'> github.</a>
     </p>
     <p>
-    NOTE: when using the tool you may find it helps to avoid CORS errors if you first
-    disable CORS in the browser using a browser plugin.
+    USAGE NOTES:
+    <br/>1) For best results you should use a browser plugin to disable CORS pre-flight
+    checks, and a host with the same http/https as the target endpoints. If not
+    you will receive CORS errors for endpoints which are valid but which have not
+    enabled CORS, which is often the case for older SPARQL endoints.
+    <br/>2) To check availability of enpoints, a good combination of queries is
+    'Content Types', 'SPARQL 1.0', 'SPARQL 1.1' and 'SPORTAL QA'.
+    <br/>3) The other queries may provide more detail about an endpoint, but in
+    some cases are very costly in time and resources to execute, and may cause
+    your browser to run out of memory if you try too many endpoints at once.
     </p>
     <div style='width: 100%;'>
       <div style='margin-right: 20px; display: inline-block;'>
