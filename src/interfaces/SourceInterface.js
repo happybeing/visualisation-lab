@@ -624,6 +624,7 @@ export class SourceResult {
    */
   loadUri (sourceResultStore, statusTextStore, uri, options) {
     console.log('SourceResult.loadUri(' + uri + ')');
+    console.log('fetchMonitor:');console.dir(window.fetchMonitor);
 
     // TODO: load multiple URIs into same store
     // TODO: consider loading multiple URIs into separate stores/views
@@ -1063,7 +1064,7 @@ export class SparqlStat extends SourceResult {
       }
     });
 
-    if (endpointIsComplete) {
+    if (endpointIsComplete || testSummary === 'G') {  // If G(ood) now the summary will remain so 
       if (!testSummary) testSummary = 'X';
       source.testSummary = testSummary;
       // Update the first two tabulations which use the summary as their rest result
@@ -1274,7 +1275,7 @@ export class SparqlEndpointStat extends SparqlStat {
         }
       }
       if (unknownResult) self.serviceInfo = { version: unknownResult, }
-      
+
       // Result can be determined
       if (unknownResult === undefined) {
         if (self.jsonModel) {
@@ -1303,8 +1304,21 @@ export class SparqlEndpointStat extends SparqlStat {
         }
       }
  
+      if (response) {
+        // Servers don't generally set Access-Control-Expose-Headers to allow access to browser JS
+        // but we're optimistic!
+        const server = response ? response.headers.get('Server') : undefined;
+        if (server) {
+          console.log('SERVER: ' + server);
+          self.serviceInfo.server = server;
+        }
+      }
+
       const success = unknownResult !== undefined;
       let resultText = self.serviceInfo.version;
+      if (self.serviceInfo.server)
+        self.responseText = 'Server: ' + self.serviceInfo.server + '\n' + self.responseText;
+
       self.setResultText(resultText, success);
     }
 
