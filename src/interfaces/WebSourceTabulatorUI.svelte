@@ -86,8 +86,13 @@ let optionalTabulations = [
   ];
 
 let allTabulationGroups = ['Basic Queries', ...optionalTabulations];
-let chosenTabulations = ['SPARQL 1.1'];
-chosenTabulations = ['SPORTAL QD'];
+let chosenTabulations = [
+    'Content Types',
+  'SPARQL 1.0', 
+  'SPARQL 1.1',
+  'SPORTAL QA',
+];
+// chosenTabulations = ['SPORTAL QD'];
 
 $: tabulationGroupsToCollect = ['Basic Queries', ...chosenTabulations];
 
