@@ -28,7 +28,6 @@ $: statClass = updateOnResult(testResult, isError, awaitingResponse);
 // 'X' = Failed = all fetches completed with errors
 
 function updateOnResult(testResult, isError, awaitingResponse) {
-  if (isError) return 'value-fail';
   if (awaitingResponse) return 'value-unknown';
 
 let classValue = 'value-unknown';
