@@ -136,9 +136,7 @@ function makeSourcesFromTextList(text){
     let urls = [];
     lines.forEach(line => {
       const url = line.toLowerCase().trim();
-      let urlNoSlash = url.endsWith('/') ? url.substring(0, url.length-1) : url;
-
-      if (line.length && !urls.includes(url) && !urls.includes(urlNoSlash)) {
+      if (line.length) {
         urls.push(url);
         sources.push({ endpoint: url });
       }
@@ -254,10 +252,12 @@ function updateSources (sources) {
       });
     }
 
-    if (i >= sources.length) clearInterval(updateIntervalId);
+    if (i >= sources.length && updateIntervalId !== -1) clearInterval(updateIntervalId);
   }
 
-  const updateIntervalId = setInterval(updateSources, fetchPauseInterval, activeDataSources);
+  let updateIntervalId = -1;
+  updateSources(activeDataSources); // Call directly once to avoid a delay in starting
+  updateIntervalId = setInterval(updateSources, fetchPauseInterval, activeDataSources);
 }
 
 function updateStatEnable(statType) {
