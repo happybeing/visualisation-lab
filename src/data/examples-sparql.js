@@ -1,6 +1,18 @@
 export const sparqlExamples =
 [{ description: '<nothing selected>', endpoint: '', options: {}, sparqlText: ''},
 
+{ description: 'Test Yago/XML-RDF - Albert Einstein', endpoint: 'http://yago.r2.enst.fr/sparql/query', options: {}, sparqlText: `
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX so: <http://schema.org/>
+
+CONSTRUCT { <http://yago-knowledge.org/resource/Albert_Einstein> ?predicate ?object }
+WHERE {
+  <http://yago-knowledge.org/resource/Albert_Einstein> ?predicate ?object .
+} 
+LIMIT 100
+`},
+
 { description: 'Cnut the Great and relatives', endpoint: 'https://dbpedia.org/sparql', options: {}, sparqlText: `PREFIX dbo: <http://dbpedia.org/ontology/>
 PREFIX dbpedia2: <http://dbpedia.org/property/>
 CONSTRUCT {
