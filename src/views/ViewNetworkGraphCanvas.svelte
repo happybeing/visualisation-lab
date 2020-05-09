@@ -194,7 +194,7 @@ function simulationUpdate () {
     const imageUri = nodeImageUrl(d);
     if (imageUri) {
       console.log('node image: ' + imageUri);
-      console.dir(d);
+      // console.dir(d);
       let image = new Image;
       image.src = imageUri;
       image.alt = "it works!";
