@@ -142,8 +142,10 @@ const RdfDataset = require('@graphy/memory.dataset.fast');
 // CSV Support
 const csvParse = require('csv-parse');
 
-// XML Support (note )
-var xmlParser = require('xml-js');  // Note: 'fast-xml-parser' didn't work, always returned empty string!
+// XML Support 
+const xmlToJsonParser = require('xml-js'); // Note: 'fast-xml-parser' didn't work, always returned empty string!
+const XmlToDatasetParser = require('rdfxml-streaming-parser').RdfXmlParser;
+const Readable = require('stream').Readable;
 
 /** Load multiple external data formats into a JSON ViewModel representation
  * 
@@ -157,6 +159,7 @@ export const fetchStatus = {
   COMPLETE: 'source-result-complete', // Response has been consumed
   FAILED: 'source-result-failed',     // Failed without response (e.g. blocked by CORS)
 };
+
 export class SourceResult {
   constructor (sourceInterface) {
     this.sourceInterface = sourceInterface;
@@ -256,7 +259,7 @@ export class SourceResult {
   // TODO: Unify data consumption and move to ViewModel:
   // TODO: - extend MIME type support using graphy reader based on mimeType
   consumeRdfStream (sourceResultStore, statusTextStore, stream,  {mimeType, size}) {
-    console.log('SourceResult.consumeRdfFile()');
+    console.log('SourceResult.consumeRdfStream()');
     // console.dir(stream);
     console.log('Size: ', size);
     this.sourceResultStore = sourceResultStore;
@@ -285,7 +288,7 @@ export class SourceResult {
           self.responseProcessingComplete(e);
           }
         });
-        readableStreamToGraphyReader(stream, graphyReader);
+        readableStreamToConsumer(stream, graphyReader);
       // The above code allows me to use whatwg (browser) streams with graphy.
       // When graphy adds whatwg streams the following can be used instead (issue #20).
       // const rdfDataset = RdfDataset(); 
@@ -388,16 +391,188 @@ export class SourceResult {
     return success;
   }
 
-  // XML - currently only used to check for valid XML response body
-  // TODO consider supporting queries that return XML (e.g. wikidata won't provides JSON and XML, but not CSV)
+  // XML - consume RDF-XML stream and stores an RDF Dataset
+  //
+  // Note: stream is assumed to be a whatwg browser stream (not nodejs readable stream)
+  //
+  consumeXmlStreamTEST (sourceResultStore, statusTextStore, stream,  {mimeType, size}) {
+    console.log('SourceResult.consumeXmlStream<<<TEST>>>()');
+    // console.dir(stream);
+    console.log('Size: ', size);
+    this.sourceResultStore = sourceResultStore;
+    
+    try {
+      const rdfDataset = RdfDataset();
+      const self = this;
+      const myParser = new XmlToDatasetParser;
+      myParser
+        .on('data', console.log)
+        .on('error', console.error)
+        .on('end', () => console.log('All triples were parsed!'));
+
+      myParser.write('<?xml version="1.0"?>');
+      myParser.write(`<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+              xmlns:ex="http://example.org/stuff/1.0/"
+              xml:base="http://example.org/triples/">`);
+      myParser.write(`<rdf:Description rdf:about="http://www.w3.org/TR/rdf-syntax-grammar">`);
+      myParser.write(`<ex:prop />`);
+      myParser.write(`</rdf:Description>`);
+      myParser.write(`</rdf:RDF>`);
+      myParser.end();
+    } catch(e) {
+      console.error(e);
+      this._notifyWarning('Failed to parse RDF result.')
+      throw e;
+    }
+  }
+ 
+
+  consumeXmlStream (sourceResultStore, statusTextStore, stream,  {mimeType, size}) {
+    console.log('SourceResult.consumeXmlStream()');
+    // console.dir(stream);
+    console.log('Size: ', size);
+    this.sourceResultStore = sourceResultStore;
+    
+    // TODO try graphy data factory with RdfXmlParser:
+    // See https://www.npmjs.com/package/rdfxml-streaming-parser#configuration
+    // dataFactory: require('@graphy/core.data.factory'),
+    try {
+      const rdfDataset = RdfDataset();
+      const self = this;
+      const xmlParser = new XmlToDatasetParser;
+      xmlParser
+        .on('data', console.log)
+      // .on('data', (y_quad) => {
+        //       console.log('QUAD: ', y_quad);
+        //       rdfDataset.add(y_quad);
+        //       if (statusTextStore) statusTextStore.set(rdfDataset.size + ' triples loaded');
+        //     })
+        .on('error', console.error)
+        .on('end', () => console.log('All triples were parsed!'));
+      // TODO re-instate and adapt this code xxxxxxxx:
+      // const rdfDataset = RdfDataset();
+      // const self = this;
+      // const graphyReader = ttlReader({
+      //   data (y_quad) {
+      //     rdfDataset.add(y_quad);
+      //     if (statusTextStore) statusTextStore.set(rdfDataset.size + ' triples loaded');
+      //   },
+      //   eof () {
+      //     console.log('done!');
+      //     console.log('rdfDataset size: ', rdfDataset.size);
+      //     self.setJsonModel({values: rdfDataset, modelFormat: modelFormats.RAW_RDFDATASET});
+      //     self.sourceResultStore.update(v => self);
+      //     self.responseProcessingComplete();
+      //     },
+      //   error (e) {
+      //     // this._notifyWarning('Failed to parse RDF result.')
+      //     console.log('error: ', e);
+      //     console.log('rdfDataset size: ', rdfDataset.size);
+      //     self.setJsonModel(undefined);
+      //     self.sourceResultStore.update(v => self);
+      //     self.responseProcessingComplete(e);
+      //     }
+      //   });
+      // xmlParser.write('<?xml version="1.0"?>');
+      // xmlParser.write(`<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+      //         xmlns:ex="http://example.org/stuff/1.0/"
+      //         xml:base="http://example.org/triples/">`);
+      // xmlParser.write(`<rdf:Description rdf:about="http://www.w3.org/TR/rdf-syntax-grammar">`);
+      // xmlParser.write(`<ex:prop />`);
+      // xmlParser.write(`</rdf:Description>`);
+      // xmlParser.write(`</rdf:RDF>`);
+      // xmlParser.end();
+      readableStreamToConsumer(stream, xmlParser);
+
+      // The above code allows me to use whatwg (browser) streams with graphy.
+      // When graphy adds whatwg streams the following can be used instead (issue #20).
+      // const rdfDataset = RdfDataset(); 
+      // const self = this;
+      // file.stream().pipeTo(ttlReader())
+      // .on('data', (y_quad) => {
+      //     console.log(JSON.stringify(y_quad));
+      //     rdfDataset.add(y_quad);
+      //     console.log('rdfDataset size: ', rdfDataset.size);
+      //   })
+      //   .on('eof', () => {
+      //     console.log('done!');
+      //     console.log('rdfDataset size: ', rdfDataset.size);
+      //     let sourceResult = new RdfSourceResult(this, rdfDataset);
+      //     self.setSourceResult(sourceResult);
+      //     self.sourceResultStore.update(v => sourceResult);
+
+      //     console.log('loadTestRdf() results: ');
+      //     console.dir(self.$sourceResultStore);
+      // });
+    } catch(e) {
+      console.error(e);
+      this._notifyWarning('Failed to parse RDF result.')
+      throw e;
+    }
+  }
+ 
+  // XML - consume RDF-XML as text and stores an RDF Dataset
+  // Note: some SPARQL endpoints provide results as XML or JSON/JSON-LD but not CSV, Turtle etc
   consumeXmlText (sourceResultStore, statusTextStore, xmlText, {mimeType, size, validateOnly}) {
     console.log('SourceResult.consumeXmlText()');
+    this.sourceResultStore = sourceResultStore;
+
+    let success = false;
+    try {
+      console.log('Size: ', xmlText.length);
+      const rdfDataset = RdfDataset();
+      const self = this;
+      const xmlParser = new XmlToDatasetParser;
+
+      const stream = new Readable;
+      stream.push(xmlText);
+      stream.push(null);
+      stream.pipe(xmlParser)
+        .on('data', (quad) => {
+          success = true;
+          if (!validateOnly) { 
+            rdfDataset.add(quad);
+            if (statusTextStore) statusTextStore.set(rdfDataset.size + ' triples loaded');
+          }
+        })
+        .on('end', () => {
+          console.log('done!');
+          console.log('rdfDataset size: ', rdfDataset.size);
+          if (!validateOnly) { 
+            self.setJsonModel({
+              values: rdfDataset, 
+              modelFormat: modelFormats.RAW_RDFDATASET,  
+              sourceInterface: this,
+            });
+            if (self.sourceResultStore) self.sourceResultStore.update(v => self);
+            self.responseProcessingComplete();
+          }
+        })
+        .on('error', (e) => {
+          // this._notifyWarning('Failed to parse RDF text.')
+          console.log('error: ', e);
+          console.log('rdfDataset size: ', rdfDataset.size);
+          success = false;
+          if (!validateOnly) { 
+            self.setJsonModel(undefined);
+            if (self.sourceResultStore) self.sourceResultStore.update(v => self);
+            self.responseProcessingComplete(e);
+          }
+        })
+    } catch (e) {
+      if (!validateOnly) throw e;
+    }
+    return success;
+  }
+
+  // XML - currently only used to check for valid XML response body
+  consumeXmlTextToJson (sourceResultStore, statusTextStore, xmlText, {mimeType, size, validateOnly}) {
+    console.log('SourceResult.consumeXmlTextToJson()');
     // console.dir({xmlText});
     let success = false;
     try {
       console.log('Size: ', xmlText.length);
-      // const xmlJson = xmlParser.convertToJson(xmlText);
-      const xmlJson = xmlParser.xml2json(xmlText, {compact: true});
+      const xmlJson = xmlToJsonParser.xml2json(xmlText, {compact: true});
       if (xmlJson) success = true;
       if (!validateOnly) {
         this.sourceResultStore = sourceResultStore;
@@ -738,8 +913,15 @@ export class SourceResult {
                   responseType.startsWith('application/rdf+xml') ||
                   responseType.startsWith('application/xml')) {
         this.consumeFetchResponse(true);
-        this.responseTypeAbbrev = responseTypeAbbrev.xml;
-        this._processTextResponseUsing(sourceResultStore, statusTextStore, response, {size: contentLength}, this.consumeXmlText);
+        if (false && this.useStreams) { 
+          // TODO enable when consumeXmlStream() works
+          // See issue: https://github.com/rdfjs/rdfxml-streaming-parser.js/issues/35
+          this.consumeXmlStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
+          if (statusTextStore ) statusTextStore.set('');
+        } else {
+          this.responseTypeAbbrev = responseTypeAbbrev.xml;
+          this._processTextResponseUsing(sourceResultStore, statusTextStore, response, {size: contentLength}, this.consumeXmlText);
+        }
       }
       else {
         // Unexpected response type
@@ -789,6 +971,7 @@ export class SourceResult {
   _processTextResponseUsing(sourceResultStore, statusTextStore, response, {size: contentLength}, textProcessor) {
     response.text()
     .then(text => {
+      console.log('RESPONSETEXT: \n' + text);
       this.responseText = this._truncateText(text, this.responseTextLines); // For tabulation UI tooltip
       this[textProcessor.name](sourceResultStore, statusTextStore, text, {size: contentLength})
       if (statusTextStore ) statusTextStore.set('');
@@ -842,29 +1025,8 @@ function readableStreamToConsumer(readableStream, consumer) {
       consumer.end();
       return;
     }
-
+    // console.log('CONSUMER value:'); console.dir(value);
     consumer.write(value);
-    next();
-  }
-
-  next();
-}
-
-// TODO deprecate in favour of readableStreamToConsumer()
-function readableStreamToGraphyReader(readableStream, graphyReader) {
-  const bodyReader = readableStream.getReader();
-
-  function next () {
-    bodyReader.read().then(readChunk);
-  }
-
-  function readChunk ({value, done}) {
-    if (done) {
-      graphyReader.end();
-      return;
-    }
-
-    graphyReader.write(value);
     next();
   }
 
@@ -1411,6 +1573,7 @@ export class StatWebsite extends SparqlStat {
 // TODO: change uiClass to String and use a 'factory' so I can serialise (research ways to serialise first)
 const testInterfaces = [
   // Test UIs
+  {uiClass: WebSparqlUI, shortName: "rdf-sparql", description: "SPARQL Query", options: {}},
   {uiClass: WebSourceTabulatorUI, shortName: "rdf-source-tabulator", description: "Tabulate SPARQL Endpoints", options: {}},
   {uiClass: WebQueryUI, shortName: "rdf-query-sparql", description: "Query Semantic Data Stores", options: {}},
   {uiClass: WebUI, shortName: "test-dbpedia-cnut", description: "Test Cnut dbPedia SPARQL Query", options: {fixedUri: 'http://dbpedia.org/sparql/?query=PREFIX+dbo%3A+<http%3A%2F%2Fdbpedia.org%2Fontology%2F>%0D%0APREFIX+dbpedia2%3A+<http%3A%2F%2Fdbpedia.org%2Fproperty%2F>%0D%0ACONSTRUCT+{%0D%0A++%3Fsubject+rdf%3Atype+foaf%3APerson+.%0D%0A++%3Fsubject+rdf%3Atype+%3Ftypes+.%0D%0A++%3Fsubject+rdfs%3Alabel+%3Flabel+.%0D%0A++%3Fsubject+foaf%3AgivenName+%3FgivenName+.%0D%0A++%3Fsubject+foaf%3Asurname+%3Fsurname+.%0D%0A++%3Fsubject+foaf%3Agender+%3Fgender+.%0D%0A++%3Fsubject+dbo%3AbirthDate+%3FbirthDate+.%0D%0A++%3Fsubject+dbo%3AdeathDate+%3FdeathDate+.%0D%0A++%3Fsubject+foaf%3Ahomepage+%3Fhomepage+.%0D%0A++%3Fsubject+dbpedia2%3Aoccupation+%3Foccupation+.%0D%0A++%3Fsubject+foaf%3Adepiction+%3Fdepiction+.%0D%0A++%3Fsubject+dbo%3Athumbnail+%3Fthumbnail+.%0D%0A++%3Fsubject+dbo%3Achild+%3Fchild+.%0D%0A++%3Fsubject+dbo%3Aparent+%3Fparent+.%0D%0A++%3Fsubject+dbo%3Aspouse+%3Fspouse+.%0D%0A++%3Fsubject+foaf%3Agender+%3Fgender+.%0D%0A++%3FpersonReferringToParent+dbo%3Aparent+%3Fsubject+.%0D%0A++%3FpersonReferringToChild+dbo%3Achild+%3Fsubject+.%0D%0A++%3FpersonReferringToSpouse+dbo%3Aspouse+%3Fsubject+.%0D%0A++%3Fsubject+rdfs%3Acomment+%3Fcomment+.%0D%0A}%0D%0AWHERE+{%0D%0A++{%0D%0A%09%3Fsubject+rdf%3Atype+foaf%3APerson+.%0D%0A%09FILTER+(+%0D%0A%09++%3Fsubject+%3D+<http%3A%2F%2Fdbpedia.org%2Fresource%2FCnut_the_Great>+||%0D%0A%09++%3Fsubject+%3D+<http%3A%2F%2Fdbpedia.org%2Fresource%2FSigrid_the_Haughty>+||%0D%0A%09++%3Fsubject+%3D+<http%3A%2F%2Fdbpedia.org%2Fresource%2FEmma_of_Normandy>+||%0D%0A%09++%3Fsubject+%3D+<http%3A%2F%2Fdbpedia.org%2Fresource%2FHarthacnut>+||%0D%0A%09++%3Fsubject+%3D+<http%3A%2F%2Fdbpedia.org%2Fresource%2FGunhilda_of_Denmark>+||%0D%0A%09++%3Fsubject+%3D+<http%3A%2F%2Fdbpedia.org%2Fresource%2F%25C3%2586lfgifu_of_Northampton>+||%0D%0A%09++%3Fsubject+%3D+<http%3A%2F%2Fdbpedia.org%2Fresource%2FHarold_Harefoot>+||%0D%0A%09++%3Fsubject+%3D+<http%3A%2F%2Fdbpedia.org%2Fresource%2FGunhild_of_Wenden>+||%0D%0A%09++%3Fsubject+%3D+<http%3A%2F%2Fdbpedia.org%2Fresource%2FEmma_of_Normandy>+||%0D%0A%09++%3Fsubject+%3D+<http%3A%2F%2Fdbpedia.org%2Fresource%2F%25C3%2586lfgifu_of_Northampton>+||%0D%0A%09++%3Fsubject+%3D+<http%3A%2F%2Fdbpedia.org%2Fresource%2FSvein_Knutsson>+||%0D%0A%09++%3Fsubject+%3D+<http%3A%2F%2Fdbpedia.org%2Fresource%2FThurbrand_the_Hold>+||%0D%0A%09++%3Fsubject+%3D+<http%3A%2F%2Fdbpedia.org%2Fresource%2F%25C5%259Awi%25C4%2599tos%25C5%2582awa>+||%0D%0A%09++%3Fsubject+%3D+<http%3A%2F%2Fdbpedia.org%2Fresource%2FSweyn_Forkbeard>%0D%0A%09)%0D%0A%0D%0A%09OPTIONAL+{+%3Fsubject+rdf%3Atype+%3Ftypes+.+%0D%0A%09++FILTER(+%3Ftypes+%3D+<http%3A%2F%2Fdbpedia.org%2Fclass%2Fyago%2FAristocrat109807754>+||+%3Ftypes+%3D+<http%3A%2F%2Fdbpedia.org%2Fclass%2Fyago%2FRuler110541229>+)%0D%0A%09}%0D%0A%09OPTIONAL+{+%3Fsubject+rdfs%3Alabel+%3Flabel+.+FILTER+langMatches(+lang(%3Flabel)%2C+"en"+)+}%0D%0A%09OPTIONAL+{+%3Fsubject+foaf%3AgivenName+%3FgivenName.+FILTER+langMatches(+lang(%3FgivenName)%2C+"en"+)+}%0D%0A%09OPTIONAL+{+%3Fsubject+foaf%3Asurname+%3Fsurname+.+FILTER+langMatches(+lang(%3Fsurname)%2C+"en"+)+}%0D%0A%09OPTIONAL+{+%3Fsubject+foaf%3Agender+%3Fgender+.+}%0D%0A%09OPTIONAL+{+%3Fsubject+dbo%3AbirthDate+%3FbirthDate+.+}%0D%0A%09OPTIONAL+{+%3Fsubject+dbo%3AdeathDate+%3FdeathDate+.+}%0D%0A%09OPTIONAL+{+%3Fsubject+foaf%3Ahomepage+%3Fhomepage+.+}%0D%0A%09OPTIONAL+{+%3Fsubject+dbpedia2%3Aoccupation+%3Foccupation+.+}%0D%0A%09OPTIONAL+{+%3Fsubject+foaf%3Adepiction+%3Fdepiction+.+}%0D%0A%09OPTIONAL+{+%3Fsubject+dbo%3Athumbnail+%3Fthumbnail+.+}%0D%0A%09OPTIONAL+{+%3Fsubject+dbo%3Achild+%3Fchild+.+}%0D%0A%09OPTIONAL+{+%3Fsubject+dbo%3Aparent+%3Fparent+.+}%0D%0A%09OPTIONAL+{+%3Fsubject+dbo%3Aspouse+%3Fspouse+.+}%0D%0A%09OPTIONAL+{+%3FpersonReferringToParent+dbo%3Aparent+%3Fsubject+.+}%0D%0A%09OPTIONAL+{+%3FpersonReferringToChild+dbo%3Achild+%3Fsubject+.+}%0D%0A%09OPTIONAL+{+%3FpersonReferringToSpouse+dbo%3Aspouse+%3Fsubject+.+}%0D%0A%09OPTIONAL+{+%3Fsubject+rdfs%3Acomment+%3Fcomment+.+%0D%0A%09++FILTER+langMatches(+lang(%3Fcomment)%2C+"en"+)%0D%0A%09}%0D%0A++}%0D%0A}'}},
