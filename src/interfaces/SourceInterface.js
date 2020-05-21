@@ -426,7 +426,6 @@ export class SourceResult {
     }
   }
  
-
   consumeXmlStream (sourceResultStore, statusTextStore, stream,  {mimeType, size}) {
     console.log('SourceResult.consumeXmlStream()');
     // console.dir(stream);
@@ -442,68 +441,10 @@ export class SourceResult {
       const xmlParser = new XmlToDatasetParser;
       xmlParser
         .on('data', console.log)
-      // .on('data', (y_quad) => {
-        //       console.log('QUAD: ', y_quad);
-        //       rdfDataset.add(y_quad);
-        //       if (statusTextStore) statusTextStore.set(rdfDataset.size + ' triples loaded');
-        //     })
         .on('error', console.error)
         .on('end', () => console.log('All triples were parsed!'));
-      // TODO re-instate and adapt this code xxxxxxxx:
-      // const rdfDataset = RdfDataset();
-      // const self = this;
-      // const graphyReader = ttlReader({
-      //   data (y_quad) {
-      //     rdfDataset.add(y_quad);
-      //     if (statusTextStore) statusTextStore.set(rdfDataset.size + ' triples loaded');
-      //   },
-      //   eof () {
-      //     console.log('done!');
-      //     console.log('rdfDataset size: ', rdfDataset.size);
-      //     self.setJsonModel({values: rdfDataset, modelFormat: modelFormats.RAW_RDFDATASET});
-      //     self.sourceResultStore.update(v => self);
-      //     self.responseProcessingComplete();
-      //     },
-      //   error (e) {
-      //     // this._notifyWarning('Failed to parse RDF result.')
-      //     console.log('error: ', e);
-      //     console.log('rdfDataset size: ', rdfDataset.size);
-      //     self.setJsonModel(undefined);
-      //     self.sourceResultStore.update(v => self);
-      //     self.responseProcessingComplete(e);
-      //     }
-      //   });
-      // xmlParser.write('<?xml version="1.0"?>');
-      // xmlParser.write(`<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-      //         xmlns:ex="http://example.org/stuff/1.0/"
-      //         xml:base="http://example.org/triples/">`);
-      // xmlParser.write(`<rdf:Description rdf:about="http://www.w3.org/TR/rdf-syntax-grammar">`);
-      // xmlParser.write(`<ex:prop />`);
-      // xmlParser.write(`</rdf:Description>`);
-      // xmlParser.write(`</rdf:RDF>`);
-      // xmlParser.end();
       readableStreamToConsumer(stream, xmlParser);
 
-      // The above code allows me to use whatwg (browser) streams with graphy.
-      // When graphy adds whatwg streams the following can be used instead (issue #20).
-      // const rdfDataset = RdfDataset(); 
-      // const self = this;
-      // file.stream().pipeTo(ttlReader())
-      // .on('data', (y_quad) => {
-      //     console.log(JSON.stringify(y_quad));
-      //     rdfDataset.add(y_quad);
-      //     console.log('rdfDataset size: ', rdfDataset.size);
-      //   })
-      //   .on('eof', () => {
-      //     console.log('done!');
-      //     console.log('rdfDataset size: ', rdfDataset.size);
-      //     let sourceResult = new RdfSourceResult(this, rdfDataset);
-      //     self.setSourceResult(sourceResult);
-      //     self.sourceResultStore.update(v => sourceResult);
-
-      //     console.log('loadTestRdf() results: ');
-      //     console.dir(self.$sourceResultStore);
-      // });
     } catch(e) {
       console.error(e);
       this._notifyWarning('Failed to parse RDF result.')
@@ -913,7 +854,7 @@ export class SourceResult {
                   responseType.startsWith('application/rdf+xml') ||
                   responseType.startsWith('application/xml')) {
         this.consumeFetchResponse(true);
-        if (false && this.useStreams) { 
+        if (true && this.useStreams) {
           // TODO enable when consumeXmlStream() works
           // See issue: https://github.com/rdfjs/rdfxml-streaming-parser.js/issues/35
           this.consumeXmlStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
