@@ -913,9 +913,7 @@ export class SourceResult {
                   responseType.startsWith('application/rdf+xml') ||
                   responseType.startsWith('application/xml')) {
         this.consumeFetchResponse(true);
-        if (false && this.useStreams) { 
-          // TODO enable when consumeXmlStream() works
-          // See issue: https://github.com/rdfjs/rdfxml-streaming-parser.js/issues/35
+        if (this.useStreams) { 
           this.consumeXmlStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
           if (statusTextStore ) statusTextStore.set('');
         } else {
