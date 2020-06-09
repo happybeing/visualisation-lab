@@ -1,5 +1,5 @@
 <script>
-import {IUXTray, IUXTrayHolder} from 'svelte-iux';
+import {IUXTray, IUXTrayJS, IUXTrayHolder} from 'svelte-iux';
 import {IUXRevealArea, IUXRevealContainer} from 'svelte-iux';
 
 import Notifications from 'svelte-notifications';
@@ -26,7 +26,6 @@ let tray1DataSource = true;
 
 <Notifications>
   <h1>Visualisation Lab</h1>
-
   <IUXTrayHolder>
       <p>
         VisLab is an experimental workspace for visual analysis of data
@@ -51,11 +50,8 @@ let tray1DataSource = true;
         </p>
       </IUXRevealArea>
 
-    <IUXTray >
-    hello
-      <div style='height: auto;'>
-        <SourceUI/>
-      </div>
+    <IUXTray heading='Load Data' headingReveal='' headingElement={'h3'} protrudingHeight={44} buttonLabel='select' reveal={false} >
+      <SourceUI resultDataStore={resultDataStore}/>
       <IUXRevealArea>
         Area 1.2
       </IUXRevealArea>
@@ -65,18 +61,6 @@ let tray1DataSource = true;
       </IUXRevealArea>
     </IUXTray>
 
-    <IUXTray>
-      Tray 2
-      <IUXRevealArea>
-        Area 2.1
-      </IUXRevealArea>
-      <IUXRevealArea>
-        Area 2.2
-      </IUXRevealArea>
-      <IUXRevealArea>
-        Area 2.3
-      </IUXRevealArea>
-    </IUXTray>
   </IUXTrayHolder>
 
   <ViewModelUI resultDataStore={resultDataStore}/>
