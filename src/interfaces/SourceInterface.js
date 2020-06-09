@@ -391,7 +391,7 @@ export class SourceResult {
     return success;
   }
 
-  // XML - consume RDF-XML stream and stores an RDF Dataset
+  // RDF XML - consume RDF XML stream and stores an RDF Dataset
   //
   // Note: stream is assumed to be a whatwg browser stream (not nodejs readable stream)
   //
@@ -427,8 +427,8 @@ export class SourceResult {
   }
  
 
-  consumeXmlStream (sourceResultStore, statusTextStore, stream,  {mimeType, size}) {
-    console.log('SourceResult.consumeXmlStream()');
+  consumeRdfXmlStream (sourceResultStore, statusTextStore, stream,  {mimeType, size}) {
+    console.log('SourceResult.consumeRdfXmlStream()');
     // console.dir(stream);
     console.log('Size: ', size);
     this.sourceResultStore = sourceResultStore;
@@ -441,49 +441,28 @@ export class SourceResult {
       const self = this;
       const xmlParser = new XmlToDatasetParser;
       xmlParser
-        .on('data', console.log)
-      // .on('data', (y_quad) => {
-        //       console.log('QUAD: ', y_quad);
-        //       rdfDataset.add(y_quad);
-        //       if (statusTextStore) statusTextStore.set(rdfDataset.size + ' triples loaded');
-        //     })
-        .on('error', console.error)
-        .on('end', () => console.log('All triples were parsed!'));
-      // TODO re-instate and adapt this code xxxxxxxx:
-      // const rdfDataset = RdfDataset();
-      // const self = this;
-      // const graphyReader = ttlReader({
-      //   data (y_quad) {
-      //     rdfDataset.add(y_quad);
-      //     if (statusTextStore) statusTextStore.set(rdfDataset.size + ' triples loaded');
-      //   },
-      //   eof () {
-      //     console.log('done!');
-      //     console.log('rdfDataset size: ', rdfDataset.size);
-      //     self.setJsonModel({values: rdfDataset, modelFormat: modelFormats.RAW_RDFDATASET});
-      //     self.sourceResultStore.update(v => self);
-      //     self.responseProcessingComplete();
-      //     },
-      //   error (e) {
-      //     // this._notifyWarning('Failed to parse RDF result.')
-      //     console.log('error: ', e);
-      //     console.log('rdfDataset size: ', rdfDataset.size);
-      //     self.setJsonModel(undefined);
-      //     self.sourceResultStore.update(v => self);
-      //     self.responseProcessingComplete(e);
-      //     }
-      //   });
-      // xmlParser.write('<?xml version="1.0"?>');
-      // xmlParser.write(`<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-      //         xmlns:ex="http://example.org/stuff/1.0/"
-      //         xml:base="http://example.org/triples/">`);
-      // xmlParser.write(`<rdf:Description rdf:about="http://www.w3.org/TR/rdf-syntax-grammar">`);
-      // xmlParser.write(`<ex:prop />`);
-      // xmlParser.write(`</rdf:Description>`);
-      // xmlParser.write(`</rdf:RDF>`);
-      // xmlParser.end();
-      readableStreamToConsumer(stream, xmlParser);
+      .on('data', (y_quad) => {
+              console.log('QUAD: ', y_quad);
+              rdfDataset.add(y_quad);
+              if (statusTextStore) statusTextStore.set(rdfDataset.size + ' triples loaded');
+            })
+      .on('end', () => {
+          console.log('done!');
+          console.log('rdfDataset size: ', rdfDataset.size);
+          self.setJsonModel({values: rdfDataset, modelFormat: modelFormats.RAW_RDFDATASET});
+          self.sourceResultStore.update(v => self);
+          self.responseProcessingComplete();
+          })
+      .on('error', (e) => {
+          // this._notifyWarning('Failed to parse RDF XML result.')
+          console.log('error: ', e);
+          console.log('rdfDataset size: ', rdfDataset.size);
+          self.setJsonModel(undefined);
+          self.sourceResultStore.update(v => self);
+          self.responseProcessingComplete(e);
+        });
 
+        readableStreamToConsumer(stream, xmlParser);
       // The above code allows me to use whatwg (browser) streams with graphy.
       // When graphy adds whatwg streams the following can be used instead (issue #20).
       // const rdfDataset = RdfDataset(); 
@@ -511,10 +490,10 @@ export class SourceResult {
     }
   }
  
-  // XML - consume RDF-XML as text and stores an RDF Dataset
+  // RDF XML - consume RDF-XML as text and stores an RDF Dataset
   // Note: some SPARQL endpoints provide results as XML or JSON/JSON-LD but not CSV, Turtle etc
-  consumeXmlText (sourceResultStore, statusTextStore, xmlText, {mimeType, size, validateOnly}) {
-    console.log('SourceResult.consumeXmlText()');
+  consumeRdfXmlText (sourceResultStore, statusTextStore, xmlText, {mimeType, size, validateOnly}) {
+    console.log('SourceResult.consumeRdfXmlText()');
     this.sourceResultStore = sourceResultStore;
 
     let success = false;
@@ -736,7 +715,7 @@ export class SourceResult {
     if (lowercase.startsWith('<html') || 
         (lowercase.indexOf('<!doctype html') >= 0 && lowercase.indexOf('<!doctype html') < 200)) {
       formatDetected = responseTypeAbbrev.html;
-    } else if (this.consumeXmlText(undefined, undefined, text, {validateOnly: true})) {
+    } else if (this.consumeRdfXmlText(undefined, undefined, text, {validateOnly: true})) {
       formatDetected = responseTypeAbbrev.xml;
     } else if (this.consumeJsonText(undefined, undefined, text, {validateOnly: true})) {
       formatDetected = responseTypeAbbrev.json;
@@ -914,11 +893,11 @@ export class SourceResult {
                   responseType.startsWith('application/xml')) {
         this.consumeFetchResponse(true);
         if (this.useStreams) { 
-          this.consumeXmlStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
+          this.consumeRdfXmlStream(sourceResultStore, statusTextStore, response.body, {size: contentLength});
           if (statusTextStore ) statusTextStore.set('');
         } else {
           this.responseTypeAbbrev = responseTypeAbbrev.xml;
-          this._processTextResponseUsing(sourceResultStore, statusTextStore, response, {size: contentLength}, this.consumeXmlText);
+          this._processTextResponseUsing(sourceResultStore, statusTextStore, response, {size: contentLength}, this.consumeRdfXmlText);
         }
       }
       else {
