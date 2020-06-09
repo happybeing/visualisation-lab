@@ -191,6 +191,7 @@ function simulationUpdate () {
     // context.textBaseline = "middle";    
     // context.fillText("Hello World!", d.x, d.y);
 
+    // TODO: fix bug in Firefox which grinds to halt, never displays images (works in Chromium)
     const imageUri = nodeImageUrl(d);
     if (imageUri) {
       console.log('node image: ' + imageUri);
