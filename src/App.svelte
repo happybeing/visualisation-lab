@@ -35,7 +35,7 @@ h1 {
     returned from searches on a wide variety of data sources.
     <br/><a style='cursor: pointer;' on:click={() => dataSourceUI = !dataSourceUI}>{dataSourceUIButtonText}</a>
   </p>
-  <IUXRevealArea disabled={true} reveal={dataSourceUI}>
+  <IUXRevealArea disabled={false} reveal={dataSourceUI}>
     <p>
       It supports
       multiple mappings from results to different 'view models' and multiple

@@ -191,20 +191,21 @@ let tableViewOpen = false;
       <ViewTable {activeModelsByFormat}  {viewModelProxyStore}/>
     </IUXRevealArea>
     <ViewVegaMulti {activeModelsByFormat}  {viewModelProxyStore}/>
-  </IUXFold>
 
-  <IUXFold heading='View as Table' 
-    disabled={!haveTableModels} bind:reveal={tableViewOpen} 
-    headingReveal='' 
-    headingElement={'h3'} 
-    protrudingHeight={44}
-    buttonLabel='open table' 
-    buttonLabelReveal='close'
-    buttonLabelDisabled={'no data'} >
-    <p>
-      Filter rows by choosing values from column headings. 
-    </p>
-    <ViewTable {activeModelsByFormat}  {viewModelProxyStore}/>
+    <IUXFold heading='View as Table' 
+      disabled={!haveTableModels} bind:reveal={tableViewOpen} 
+      headingReveal='' 
+      headingElement={'h3'} 
+      protrudingHeight={44}
+      buttonLabel='open table' 
+      buttonLabelReveal='close'
+      buttonLabelDisabled={'no data'} >
+      <p>
+        Filter rows by choosing values from column headings. 
+      </p>
+      <ViewTable {activeModelsByFormat}  {viewModelProxyStore}/>
+    </IUXFold>
+
   </IUXFold>
 
 </div>
