@@ -1,13 +1,12 @@
 <script>
-import {IUXTray, IUXTrayJS, IUXTrayHolder} from 'svelte-iux';
-import {IUXRevealArea, IUXRevealContainer} from 'svelte-iux';
+import {IUXFold, IUXRevealArea, IUXRevealContainer} from 'svelte-iux';
 
 import Notifications from 'svelte-notifications';
 import {notifications} from './notifications.js';
   
 import SourceUI from './interfaces/SourceUI.svelte';
 // import ViewModelUI from './viewmodels/ViewModelUI.svelte';
-import ViewModelTraysUI from './viewmodels/ViewModelTraysUI.svelte';
+import ViewModelFoldsUI from './viewmodels/ViewModelFoldsUI.svelte';
 
 import {resultDataStore} from './stores.js';
 
@@ -17,6 +16,9 @@ import {resultDataStore} from './stores.js';
 let dataSourceUI = false;
 $: dataSourceUIButtonText = dataSourceUI ? '<<Less' : 'More>>';
 let tray1DataSource = true;
+
+window.debugView = false;
+
 </script>
 
 <style>
@@ -33,7 +35,7 @@ h1 {
     returned from searches on a wide variety of data sources.
     <br/><a style='cursor: pointer;' on:click={() => dataSourceUI = !dataSourceUI}>{dataSourceUIButtonText}</a>
   </p>
-  <IUXRevealArea reveal={dataSourceUI}>
+  <IUXRevealArea disabled={true} reveal={dataSourceUI}>
     <p>
       It supports
       multiple mappings from results to different 'view models' and multiple
@@ -51,10 +53,10 @@ h1 {
     </p>
   </IUXRevealArea>
 
-  <IUXTray heading='Load Data' headingReveal='' headingElement={'h3'} protrudingHeight={44} buttonLabel='open'  buttonLabelReveal='close' reveal={true} >
+  <IUXFold disabled={false} heading='Load Data' headingReveal='' headingElement={'h3'} protrudingHeight={44} buttonLabel='open'  buttonLabelReveal='close' reveal={true} >
     <SourceUI resultDataStore={resultDataStore}/>
-  </IUXTray>
+  </IUXFold>
 
-  <ViewModelTraysUI resultDataStore={resultDataStore}/>
+  <ViewModelFoldsUI resultDataStore={resultDataStore}/>
   <!-- <ViewModelUI resultDataStore={resultDataStore}/> -->
 </Notifications>

@@ -12,8 +12,7 @@ models are used by which views.
 <script>
 import {onMount} from 'svelte';
 import {writable} from 'svelte/store';
-import {IUXTray, IUXTrayJS, IUXTrayHolder} from 'svelte-iux';
-import {IUXRevealArea, IUXRevealAreaJS, IUXRevealContainer} from 'svelte-iux';
+import {IUXFold, IUXRevealArea, IUXRevealContainer} from 'svelte-iux';
 
 import {resultDataStore, 
         activeViews, 
@@ -31,6 +30,10 @@ import ViewNetworkGraphCanvas from '../views/ViewNetworkGraphCanvas.svelte';
 import ViewTable from '../views/ViewTable.svelte';
 import ViewVegaMulti from '../views/ViewVegaMulti.svelte';
 import ViewVegaVoyager from '../views/ViewVegaVoyager.svelte';
+
+$: haveTableModels = $activeModelsByFormat ? $activeModelsByFormat.get(modelFormats.VM_TABULAR_JSON) : false;
+$: haveNetworkModels = $activeModelsByFormat ? $activeModelsByFormat.get(modelFormats.VM_TABULAR_JSON) : false;
+export let autoEnable = false;  // Disable unless model data is available
 
 // Views available for selection in UI
 const viewList = [ 
@@ -132,15 +135,21 @@ onMount(() => {
 let dataToChart = true;
 $: dataToChartButtonText = dataToChart ? '<<Close' : 'Open>>';
 
+let networkViewOpen = false;
+let chartViewOpen = false;
+let tableViewOpen = false;
+
+// window.debugView = true;
+
 </script>
 <style>
 .main { 
-  /* background: rgba(241, 203, 152, 0.582);
+  background: rgba(241, 203, 152, 0.582);
   border: 1px solid;
   border-radius: 1cm;
   padding-left: 1cm;
   padding-right: 1cm;
-  padding-bottom: 1cm; */
+  padding-bottom: 1cm;
 }
 
 .hidden {
@@ -151,31 +160,51 @@ $: dataToChartButtonText = dataToChart ? '<<Close' : 'Open>>';
 
 </style>
 
-<div class="main">
+<div  class={window.debugView ? "main" : ""}>
 
-  <IUXTray heading='View as Network Graph' headingReveal='' headingElement={'h3'} protrudingHeight={44} buttonLabel='open'  buttonLabelReveal='close' reveal={false} >
+  <IUXFold heading='View as Network Graph' 
+    disabled={!haveNetworkModels} bind:reveal={networkViewOpen}
+    headingReveal=''
+    headingElement={'h3'} 
+    protrudingHeight={44}
+    buttonLabel='open network'
+    buttonLabelReveal={'close'}
+    buttonLabelDisabled={'no data'} >
     <p>
       Use mouse to zoom or drag chart background, drag nodes, or hover over nodes for information.
     </p>
     <ViewNetworkGraphCanvas {activeModelsByFormat}  {viewModelProxyStore}/>
-  </IUXTray>
+  </IUXFold>
 
-  <IUXTray heading='View as Table with Line Graph' headingReveal='' headingElement={'h3'} protrudingHeight={44} buttonLabel='open'  buttonLabelReveal='close' reveal={false} >
+  <IUXFold heading='View as Table with Line Graph' 
+    disabled={!haveTableModels} bind:reveal={chartViewOpen} 
+    headingReveal='' headingElement={'h3'} 
+    protrudingHeight={44} 
+    buttonLabel='open charts'
+    buttonLabelReveal='close'
+    buttonLabelDisabled={'no data'} >
     <p>
       Choose one column for the X-axis and enter column names to plot: 
       <a style='cursor: pointer;' on:click={() => dataToChart = !dataToChart}>{dataToChartButtonText}</a>
     </p>
-    <IUXRevealAreaJS reveal={dataToChart}>
+    <IUXRevealArea reveal={dataToChart}>
       <ViewTable {activeModelsByFormat}  {viewModelProxyStore}/>
-    </IUXRevealAreaJS>
+    </IUXRevealArea>
     <ViewVegaMulti {activeModelsByFormat}  {viewModelProxyStore}/>
-  </IUXTray>
+  </IUXFold>
 
-  <IUXTray heading='View as Table' headingReveal='' headingElement={'h3'} protrudingHeight={44} buttonLabel='open'  buttonLabelReveal='close' reveal={false} >
+  <IUXFold heading='View as Table' 
+    disabled={!haveTableModels} bind:reveal={tableViewOpen} 
+    headingReveal='' 
+    headingElement={'h3'} 
+    protrudingHeight={44}
+    buttonLabel='open table' 
+    buttonLabelReveal='close'
+    buttonLabelDisabled={'no data'} >
     <p>
       Filter rows by choosing values from column headings. 
     </p>
     <ViewTable {activeModelsByFormat}  {viewModelProxyStore}/>
-  </IUXTray>
+  </IUXFold>
 
 </div>
