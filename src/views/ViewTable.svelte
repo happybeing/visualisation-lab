@@ -11,6 +11,7 @@ import {resultDataStore,
         filterFieldsStore,
         tableViewModelStore as viewModelProxyStore} from "../stores.js";
 import {modelFormats} from '../modelFormats.js';
+
 export let activeModelsByFormat;
 
 const emptyTable = {rows: [], headings: []};
@@ -150,16 +151,21 @@ function sanitiseTags (tags, allowedTags, allowAllCase) {
   padding-right: 1cm;
   padding-bottom: 1cm;
 }
+
+.disable {
+  enabled: false;
+}
 </style>
 
-<div class="main">
+<div class={window.debugView ? "main" : ""}>
+  {#if window.debugView}
   <p>&lt;ViewTable&gt; is a prototype tabular view with sorting and filtering.
   </p>
-
-  <TableFashionUI disabled=true {viewModelProxyStore} {filterFieldsStore}/>
-  <SvelteTable {columns} {rows}></SvelteTable>
-
   <p>TODO: NOTE this is using a local fork of svelte-table<br/>
   TODO: maybe make svelte-table allow text entry on filters<br/>
   </p>
+  {/if}
+
+  <TableFashionUI disabled=true {viewModelProxyStore} {filterFieldsStore}/>
+  <SvelteTable {columns} {rows}></SvelteTable>
 </div>
