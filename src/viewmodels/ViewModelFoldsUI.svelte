@@ -32,7 +32,7 @@ import ViewVegaMulti from '../views/ViewVegaMulti.svelte';
 import ViewVegaVoyager from '../views/ViewVegaVoyager.svelte';
 
 $: haveTableModels = $activeModelsByFormat ? $activeModelsByFormat.get(modelFormats.VM_TABULAR_JSON) : false;
-$: haveNetworkModels = $activeModelsByFormat ? $activeModelsByFormat.get(modelFormats.VM_TABULAR_JSON) : false;
+$: haveNetworkModels = $activeModelsByFormat ? $activeModelsByFormat.get(modelFormats.VM_GRAPH_JSON) : false;
 export let autoEnable = false;  // Disable unless model data is available
 
 // Views available for selection in UI
