@@ -15,10 +15,10 @@ let d3 = { zoom, zoomIdentity, scaleLinear, scaleOrdinal, schemeCategory10, sele
 
 import {modelFormats} from '../modelFormats.js';
 export let activeModelsByFormat;
+// export let width = 1000;
+// export let height = 600;
 
 let canvas;
-let width = 1000;
-let height = 600;
 const nodeRadius = 5;
 
 const padding = { top: 20, right: 40, bottom: 40, left: 25 };
@@ -54,6 +54,8 @@ onMount(() => {
     await tick();
     render();
   });
+
+  resize();
 });
 
 onDestroy(() => {
@@ -236,33 +238,44 @@ function dragended() {
   currentEvent.subject.fy = null;
 }
 
+let width, height;
+
 function resize() {
-  ({ width, height } = canvas);
+  if (context) {
+    ({width, height} = canvas);
+  }
 }
+
+async function redrawAfterResize () {
+  if (context) {
+    await tick();
+    simulationUpdate();
+  }
+}
+
+$: redrawAfterResize(width, height);
 
 </script>
 
 <svelte:window on:resize='{resize}'/>
 
 <style>
-.main { 
+
+.container {
   background: rgba(134, 174, 212, 0.185);
   border: 1px solid;
-  border-radius: 1cm;
-  padding-left: 1cm;
-  padding-right: 1cm;
-  padding-bottom: 1cm;
+  height: 500px;
 }
+
 canvas {
-    float: left;
+  width: 100%;
+  height: 100%;
 }
 </style>
 
-<div class='main' >
-  <p>&lt;ViewNetworkGraphCanvas&gt; uses d3-force to display a scalable interactive graph.</p>
-  <p>TODO: wrap ViewNetworkGraphCanvas & co. in View (or ViewUI?) and size canvas to its div</p>
-
-  <div class='container' style='width: {width}px; height: {height}px'>
-    <canvas bind:this={canvas} width='{width}' height='{height}'/>
-  </div>
+<div class='container' 
+  bind:clientWidth={width} 
+  bind:clientHeight={height} >
+  
+  <canvas bind:this={canvas} width={width} height={height}/>
 </div>
