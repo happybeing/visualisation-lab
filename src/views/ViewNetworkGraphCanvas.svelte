@@ -14,7 +14,14 @@ import {event as currentEvent} from 'd3-selection'  // Needed to get drag workin
 let d3 = { zoom, zoomIdentity, scaleLinear, scaleOrdinal, schemeCategory10, select, selectAll, mouse, drag,  forceSimulation, forceLink, forceManyBody, forceCenter }
 
 import {modelFormats} from '../modelFormats.js';
+
+export let containerStyles = 'border: 1px solid; background: rgba(134, 174, 212, 0.185);';
+export let containerHeight = '600';
 export let activeModelsByFormat;
+
+$: containerStyle = `${containerStyles} height: ${containerHeight}px; `
+
+
 // export let width = 1000;
 // export let height = 600;
 
@@ -263,9 +270,6 @@ $: redrawAfterResize(width, height);
 <style>
 
 .container {
-  background: rgba(134, 174, 212, 0.185);
-  border: 1px solid;
-  height: 500px;
 }
 
 canvas {
@@ -274,7 +278,8 @@ canvas {
 }
 </style>
 
-<div class='container' 
+<div class='container'
+  style={containerStyle}
   bind:clientWidth={width} 
   bind:clientHeight={height} >
   
