@@ -27,13 +27,18 @@
 #
 #   chmod 600 scripts/* # to protect credentials
 #   chmod +x scripts/*.sh
-#   execute the script:
+#
+# Usage:
+#   execute the script from the root of the repo:
 #     ./scripts/deploy.sh
+#
 #   or to build first
 #     ./scripts/deploy.sh build
 #
 set -e  # Exit on error
 set +v  # Don't echo output
+
+# Custom settings
 SOURCE='./public'  # Directory holding production website
 FTP_DIR='/'   # Upload directory on ftp account
 NCFTP_CONFIG=''
