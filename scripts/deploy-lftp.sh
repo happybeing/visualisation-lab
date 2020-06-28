@@ -37,6 +37,8 @@ HOST='' # ftp host must start 'ftp://'
 SOURCE='./public'  # Local directory to upload
 FTP_DIR='/'   # Upload directory for $USER on $HOST
 
+SAFE_DEST=''  # SAFE URI destination (must exist)
+
 if [ "$1" = "build" ]; then
   yarn build
   shift 1
@@ -47,20 +49,7 @@ if [ "$1" = "web" -o "$1" = "" ]; then
   lftp -e "set ftp:ssl-allow no; mirror -e -R $SOURCE $FTP_DIR ; quit" -u $USER,$PASS $HOST
 fi
 
-#if [ "$1" = "safe" -o "$1" = "" ]; then
-  # TODO modify the following to use the SAFE-CLI
-  #
-  # Deploy via SAFE Drive to an existing SAFE Network public name (website)
-  # SAFE_DIR=~/SAFE/_public/dweb/root-www
-  # if [ "$1" == "mock" ]; then
-  #   SAFE_DIR=~/SAFE/_public/tests/data1/dweb
-  #   mkdir -p $SAFE_DIR
-  # fi
-
-  # read -p "Mount SAFE Drive and press ENTER to sync..."
-  # echo Syncing via SAFE Drive...
-  # UPLOAD=$SOURCE-upload
-  # rsync -rc --delete $SOURCE/ $UPLOAD/ && \
-  # cp -ruv $UPLOAD/* $SAFE_DIR/ && \
-  # rsync -ru --delete $UPLOAD/ $SAFE_DIR/
-#fi
+if [ "$1" = "safe" -o "$1" = "" ]; then
+  echo Assuming you are logged in to SAFE. Beginning updload...
+  safe files sync --recursive --delete ./public $SAFE_DEST
+fi

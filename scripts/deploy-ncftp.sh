@@ -42,6 +42,7 @@ set +v  # Don't echo output
 SOURCE='./public'  # Directory holding production website
 FTP_DIR='/'   # Upload directory on ftp account
 NCFTP_CONFIG=''
+SAFE_DEST=''  # SAFE URI destination (must exist)
 
 yarn build
 if [ "$1" = "web" -o "$1" = "" ]; then
@@ -49,20 +50,7 @@ if [ "$1" = "web" -o "$1" = "" ]; then
   ncftpput -R -f scripts/$NCFTP_CONFIG $FTP_DIR $SOURCE/*
 fi
 
-#if [ "$1" = "safe" -o "$1" = "" ]; then
-  # TODO modify the following to use the SAFE-CLI
-  #
-  # Deploy via SAFE Drive to an existing SAFE Network public name (website)
-  # SAFE_DIR=~/SAFE/_public/dweb/root-www
-  # if [ "$1" == "mock" ]; then
-  #   SAFE_DIR=~/SAFE/_public/tests/data1/dweb
-  #   mkdir -p $SAFE_DIR
-  # fi
-
-  # read -p "Mount SAFE Drive and press ENTER to sync..."
-  # echo Syncing via SAFE Drive...
-  # UPLOAD=$SOURCE-upload
-  # rsync -rc --delete $SOURCE/ $UPLOAD/ && \
-  # cp -ruv $UPLOAD/* $SAFE_DIR/ && \
-  # rsync -ru --delete $UPLOAD/ $SAFE_DIR/
-#fi
+if [ "$1" = "safe" -o "$1" = "" ]; then
+  echo Assuming you are logged in to SAFE. Beginning updload...
+  safe files sync --recursive --delete ./public $SAFE_DEST
+fi
