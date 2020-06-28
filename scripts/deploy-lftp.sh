@@ -51,5 +51,5 @@ fi
 
 if [ "$1" = "safe" -o "$1" = "" ]; then
   echo Assuming you are logged in to SAFE. Beginning updload...
-  safe files sync --recursive --delete ./public $SAFE_DEST
+  safe files sync -r -d -u $SOURCE $SAFE_DEST
 fi
