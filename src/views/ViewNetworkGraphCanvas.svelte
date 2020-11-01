@@ -6,12 +6,11 @@ import { onMount, onDestroy, tick } from 'svelte';
 import { scaleLinear, scaleOrdinal } from 'd3-scale';
 import { zoom, zoomIdentity } from 'd3-zoom';
 import { schemeCategory10 } from 'd3-scale-chromatic';
-import { select, selectAll, mouse } from 'd3-selection';
+import { select, selectAll, pointer } from 'd3-selection';
 import { drag } from 'd3-drag';
 import { forceSimulation, forceLink, forceManyBody, forceCenter } from 'd3-force';
 
-import {event as currentEvent} from 'd3-selection'  // Needed to get drag working, see: https://github.com/d3/d3/issues/2733
-let d3 = { zoom, zoomIdentity, scaleLinear, scaleOrdinal, schemeCategory10, select, selectAll, mouse, drag,  forceSimulation, forceLink, forceManyBody, forceCenter }
+let d3 = { zoom, zoomIdentity, scaleLinear, scaleOrdinal, schemeCategory10, select, selectAll, pointer, drag,  forceSimulation, forceLink, forceManyBody, forceCenter }
 
 import {modelFormats} from '../modelFormats.js';
 
@@ -90,8 +89,8 @@ function render () {
 
   // title
   d3.select(context.canvas)
-    .on("mousemove", () => {
-    const mouse = d3.mouse(context.canvas);
+    .on("mousemove", (event) => {
+    const mouse = d3.pointer(event);
     const d = simulation.find(transform.invertX(mouse[0]), transform.invertY(mouse[1]), nodeRadius);
     
     if (d) 
@@ -99,6 +98,17 @@ function render () {
     else
       context.canvas.title = '';
   });
+
+  // d3.select(context.canvas)
+  //   .on("mousemove", () => {
+  //   const mouse = d3.mouse(context.canvas);
+  //   const d = simulation.find(transform.invertX(mouse[0]), transform.invertY(mouse[1]), nodeRadius);
+    
+  //   if (d) 
+  //     context.canvas.title = d.id;
+  //   else
+  //     context.canvas.title = '';
+  // });
 
   d3.select(canvas)
   .call(d3.drag()
@@ -214,14 +224,14 @@ function simulationUpdate () {
   context.restore();
 }
 
-function zoomed() {
-  transform = currentEvent.transform;
+function zoomed(event) {
+  transform = event.transform;
   simulationUpdate();
 }
 
 // Use the d3-force simulation to locate the node
-function dragsubject() {
-  const node = simulation.find(transform.invertX(currentEvent.x), transform.invertY(currentEvent.y), nodeRadius);
+function dragsubject(event) {
+  const node = simulation.find(transform.invertX(event.x), transform.invertY(event.y), nodeRadius);
   if (node) {
     node.x = transform.applyX(node.x);
     node.y = transform.applyY(node.y);
@@ -229,21 +239,21 @@ function dragsubject() {
   return node;
 }
 
-function dragstarted() {
-  if (!currentEvent.active) simulation.alphaTarget(0.3).restart();
-  currentEvent.subject.fx = transform.invertX(currentEvent.subject.x);
-  currentEvent.subject.fy = transform.invertY(currentEvent.subject.y);
+function dragstarted(event) {
+  if (!event.active) simulation.alphaTarget(0.3).restart();
+  event.subject.fx = transform.invertX(event.subject.x);
+  event.subject.fy = transform.invertY(event.subject.y);
 }
 
-function dragged() {
-  currentEvent.subject.fx = transform.invertX(currentEvent.x);
-  currentEvent.subject.fy = transform.invertY(currentEvent.y);
+function dragged(event) {
+  event.subject.fx = transform.invertX(event.x);
+  event.subject.fy = transform.invertY(event.y);
 }
 
-function dragended() {
-  if (!currentEvent.active) simulation.alphaTarget(0);
-  currentEvent.subject.fx = null;
-  currentEvent.subject.fy = null;
+function dragended(event) {
+  if (!event.active) simulation.alphaTarget(0);
+  event.subject.fx = null;
+  event.subject.fy = null;
 }
 
 let width, height;

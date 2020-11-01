@@ -6,12 +6,11 @@ import { onMount, onDestroy, tick } from 'svelte';
 import { scaleLinear, scaleOrdinal } from 'd3-scale';
 import { zoom, zoomIdentity } from 'd3-zoom';
 import { schemeCategory10 } from 'd3-scale-chromatic';
-import { select, selectAll } from 'd3-selection';
+import { select, selectAll, pointer } from 'd3-selection';
 import { drag } from 'd3-drag';
 import { forceSimulation, forceLink, forceManyBody, forceCenter } from 'd3-force';
 
-import {event as currentEvent} from 'd3-selection';  // Needed to get drag working, see: https://github.com/d3/d3/issues/2733
-let d3 = { zoom, zoomIdentity, scaleLinear, scaleOrdinal, schemeCategory10, select, selectAll, drag,  forceSimulation, forceLink, forceManyBody, forceCenter }
+let d3 = { zoom, zoomIdentity, scaleLinear, scaleOrdinal, schemeCategory10, select, selectAll, pointer, drag,  forceSimulation, forceLink, forceManyBody, forceCenter }
 
 export let graph;
 
@@ -116,18 +115,18 @@ if (simulation) {
     }
 }
 
-function dragstarted() {
+function dragstarted(currentEvent) {
     if (!currentEvent.active) simulation.alphaTarget(0.3).restart();
     currentEvent.subject.fx = currentEvent.x;
     currentEvent.subject.fy = currentEvent.y;
 }
 
-function dragged() {
+function dragged(currentEvent) {
     currentEvent.subject.fx = currentEvent.x;
     currentEvent.subject.fy = currentEvent.y;
 }
 
-function dragended() {
+function dragended(currentEvent) {
     if (!currentEvent.active) simulation.alphaTarget(0);
     currentEvent.subject.fx = null;
     currentEvent.subject.fy = null;
