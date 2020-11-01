@@ -48,7 +48,7 @@ The aim of this specification is to make it quicker and easier to produce
 visualisations, reduce work on producing documentation and help improve code 
 maintenance and interoperability.
 
-Having not found anything suitable I created the [JSON ViewModel Specification](https://github.com/theWebalyst/visualisation-lab/wiki/JSON-ViewModel-Specification) 
+Having not found anything suitable I created the [JSON ViewModel Specification](https://github.com/happybeing/visualisation-lab/wiki/JSON-ViewModel-Specification) 
 and welcome comments, suggestions and feedback. It is will be tested in VisLab and
 is open to changes that will improve its usefulness and effectiveness in other
 projects.
@@ -56,7 +56,7 @@ projects.
 ## Get started developing
 
 ```bash
-git clone https://github.com/theWebalyst/visualisation-lab
+git clone https://github.com/happybeing/visualisation-lab
 ```
 
 Install the dependencies...

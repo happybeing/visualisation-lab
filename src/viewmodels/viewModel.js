@@ -6,7 +6,7 @@ and other optional properties in accordance with the JSON ViewModel Specifiction
 
 Export compatibleViewModels is a map of modelFormats to ViewModel classes which consume themselves
 
-* JSON ViewModel Specification: https://github.com/theWebalyst/visualisation-lab/wiki/JSON-ViewModel-Specification
+* JSON ViewModel Specification: https://github.com/happybeing/visualisation-lab/wiki/JSON-ViewModel-Specification
 
 ViewModel - a base class which defines the ViewModel API, as used by SourceInterface and View classes
 A template subclass for each type of ViewModel, named VM<Type> (e.g. VMTable, VMGraph etc)

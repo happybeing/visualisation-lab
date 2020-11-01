@@ -1,7 +1,7 @@
 /** Data model formats offered by SourceResult and ViewModel classes
  * 
  * See VisLab JSON ViewModel Specification:
- * https://github.com/theWebalyst/visualisation-lab/wiki/JSON-ViewModel-Specification
+ * https://github.com/happybeing/visualisation-lab/wiki/JSON-ViewModel-Specification
  * 
  */
 
