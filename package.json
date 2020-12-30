@@ -58,7 +58,7 @@
     "svelte-table": "^0.1.7",
     "svelte-tags-input": "^2.0.0",
     "url-loader": "^3.0.0",
-    "vega": "^5.10.0",
+    "vega": "^5.17.3",
     "vega-embed": "^6.4.0",
     "vega-lite": "^4.7.0",
     "xml-js": "^1.6.11"
